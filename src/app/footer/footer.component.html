@@ -1,6 +1,6 @@
 <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
 <div class="footer-div">
-  <figure class="card-imageContainer">
+  <figure class="imageContainer">
     <img src="https://pruebasassets.portaloas.udistrital.edu.co/logo_universidad_acreditacion.png" class="card-image" alt="logo-udistrital">
   </figure>
   <div class="footer-column">
@@ -11,10 +11,10 @@
 
   <div class="footer-logos">
     <div class="social" *ngFor="let lista of social.list">
-      <i class="icon ion-md-{{lista.class}}"></i>
+      <a href="{{lista.link}}"><i class="icon ion-md-{{lista.class}}"></i></a>
       <div class="text-container">
         <p *ngFor="let value of lista.value">
-          {{value}}
+          {{ value }}
         </p>
       </div>
     </div>

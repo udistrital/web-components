@@ -7,6 +7,7 @@
 
 .footer-div{
     background-color: white;
+    color: var(--primary);
     width: 100%;
     display: flex;
     justify-content: center;
@@ -29,10 +30,11 @@
     width: 85%;
 }
 
-.footer-card-imageContainer {
+.footer-div .imageContainer {
     object-fit: cover;
     padding-right: 5px;
-    border-right: 0.1rem solid #000;
+    margin-block-end: 0;
+    margin-block-start: 0;
 }
 .text-container {
     align-self: center;
@@ -44,9 +46,9 @@
 .footer-column {
     color: black;
     width: 10%;
-    margin-top: 1%;
     align-self: center;
     margin-right: 3%;
+    border-left: 0.1rem solid var(--primary);
 }
 
 .footer-title {
@@ -64,7 +66,7 @@
     flex-wrap: wrap;
     width: 65%;
 }
-.social {
+.social, .social > a {
     display: flex;
     color: var(--primary);
     justify-content: center;
@@ -93,7 +95,7 @@
         width: 15%;
     }
 
-    .text-container {
+    .text-container > p  {
         display: none;
     }
 
@@ -111,7 +113,7 @@
         width: 60%;
     }
 
-    .text-container {
+    .text-container > p  {
         display: none;
     }
 }
@@ -125,7 +127,7 @@
         width: 70%;
     }
 
-    .text-container {
+    .text-container > p  {
         display: none;
     }
 }
@@ -139,7 +141,7 @@
         width: 40%;
     }
 
-    .text-container {
+    .text-container > p  {
         display: none;
     }
 
