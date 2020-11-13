@@ -13,7 +13,7 @@
     justify-content: center;
     flex-wrap: wrap;
     margin-top:1%;
-    box-shadow: 2px -2px 11px #888888;
+    box-shadow: 0 0.5rem 1rem 0 rgba(44, 51, 73, 0.1);
     position: fixed;
     bottom: 0;
     left: 0;
