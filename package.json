@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "web-components": "ng build --prod --output-hashing=none && cat dist/angular-web-components/{runtime,polyfills,scripts,main}.js | gzip > elements.js.gz\n",
+    "web-components": "cat dist/angular-web-components/{runtime,polyfills,main}.js  > elements.js",
     "serve": "http-server --gzip",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --prod --output-hashing=none",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -25,7 +25,6 @@
     "@angular/platform-browser-dynamic": "~10.0.11",
     "@angular/router": "~10.0.11",
     "document-register-element": "^1.7.2",
-    "http-server": "^0.12.3",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
@@ -34,10 +33,11 @@
     "@angular-devkit/build-angular": "~0.1000.7",
     "@angular/cli": "~10.0.7",
     "@angular/compiler-cli": "~10.0.11",
-    "@types/node": "^12.11.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
+    "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
+    "http-server": "^0.12.3",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.0.0",
