@@ -5,6 +5,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // material modules
 
@@ -67,6 +68,8 @@ import { NotioasComponent } from './notioas/notioas.component';
   ],
   imports: [
     HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
     // material modules

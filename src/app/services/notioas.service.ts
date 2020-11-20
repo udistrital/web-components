@@ -53,7 +53,7 @@ export class NotioasService {
 
     toogleMenuNotify() {
         this.menuActivo = !this.menuActivo;
-        const data = { activo: this.menuActivo }
+        const data = { activo: this.menuActivo };
         this.activo.next(data);
         if (this.menuActivo) {
             this.changeStateNoView();

@@ -7,7 +7,7 @@
             <div class="app-image-container">
                 <div *ngFor="let aplicacion of categoria.aplicaciones" class="image-application"
                     (click)="redirect(aplicacion.url)">
-                    <img class="menu-app" [id]="aplicacion.estilo_logo">
+                    <img class="menu-app" [id]="aplicacion.estilo">
                 </div>
             </div>
         </article>

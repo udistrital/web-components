@@ -144,7 +144,7 @@ export class ImplicitAutenticationService {
         return valid;
     }
 
-    // el flag es un booleano que define si abra boton de login
+    // el flag es un booleano que define si habrá boton de login
     public login(flag) {
         if (window.localStorage.getItem('id_token') === 'undefined' || window.localStorage.getItem('id_token') === null || this.logoutValid()) {
             if (!flag) {

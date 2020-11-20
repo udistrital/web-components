@@ -1,4 +1,6 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, ViewEncapsulation } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { UtilidadesCoreService } from '../services/utilidades-core.service';
 import { MenuAplicacionesService } from './../services/menuAplicaciones.service';
 import { NotioasService } from './../services/notioas.service';
 @Component({
@@ -7,12 +9,16 @@ import { NotioasService } from './../services/notioas.service';
   styleUrls: ['./header.component.css'],
   encapsulation: ViewEncapsulation.Emulated
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnChanges {
+  // tslint:disable-next-line: no-input-rename
   @Input('appname') appname: any;
+  // tslint:disable-next-line: no-input-rename
+  @Input('environment') environment: any;
   constructor(
     private notioasService: NotioasService,
+    private utilidadesCoreService: UtilidadesCoreService,
     private menuAplicacionesService: MenuAplicacionesService,
-    ) { }
+  ) { }
 
   sidebarClases = {
     open: false,
@@ -31,6 +37,15 @@ export class HeaderComponent implements OnInit {
   };
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes): void {
+    if (changes.environment !== undefined) {
+      if (changes.environment.currentValue !== undefined) {
+        console.log(changes);
+        this.utilidadesCoreService.initLib(changes.environment.currentValue);
+      }
+    }
   }
 
   logout() {
