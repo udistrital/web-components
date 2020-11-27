@@ -91,6 +91,20 @@
     font-family: "Open Sans";
 }
 
+@media screen and (max-width: 1400px) {
+    .social {
+        width: 15%;
+    }
+
+    .text-container > p  {
+        display: none;
+    }
+
+    .footer-logos {
+        width: 50%;
+    }
+}
+
 @media screen and (max-width: 1132px) {
     .social {
         width: 15%;
