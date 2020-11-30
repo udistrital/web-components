@@ -20,13 +20,16 @@ export class MenuAplicacionesService {
     userInfo: any;
     public menuActivo: Boolean = false;
 
-    constructor(private configuracionService: ConfiguracionService,
-        private implicitAutenticationService: ImplicitAutenticationService) {
+    constructor(
+        private configuracionService: ConfiguracionService,
+        private implicitAutenticationService: ImplicitAutenticationService
+    ) {
         this.implicitAutenticationService.user$.subscribe((res: any) => {
             this.userInfo = res;
-            if (typeof this.userInfo.role !== 'undefined') {
+            if (typeof this.userInfo.user.role !== 'undefined') {
+                const roles = [...res.user.role];
                 this.isLogin = true;
-                this.roles = this.userInfo.role.map((element) => ({ Nombre: element }));
+                this.roles = roles.map((element) => ({ Nombre: element }));
                 this.getAplication();
             }
         });
@@ -34,53 +37,54 @@ export class MenuAplicacionesService {
 
         up$.subscribe((data: any) => {
             if (this.activo) {
-                if (((data.path.map((info: any) => { return (info.localName) })).filter((data: any) => (data === 'menu-aplicaciones'))).length === 0) {
+                if ((
+                    data.path
+                        .map((info: any) => (info.localName))
+                        .filter((dataFilter: any) => (dataFilter === 'menu-aplicaciones'))).length === 0) {
                     this.closePanel();
                 }
             }
         });
     }
 
-    closePanel() {
+    closePanel(): void {
         this.menuActivo = false;
         this.activo.next({ activo: this.menuActivo });
     }
 
-    toogleMenuNotify() {
+    toogleMenuNotify(): void {
         this.menuActivo = !this.menuActivo;
-        const data = { activo: this.menuActivo }
+        const data = { activo: this.menuActivo };
         this.activo.next(data);
     }
 
-    init(categorias: any) {
-        console.info('...Init lib menu', categorias);
+    init(categorias: any): void {
+        console.log('...Init lib menu', categorias);
         this.categorias = categorias;
         this.dataFilterSubject.next(this.categorias);
     }
 
     public getAplication(): any {
-        const id_token = localStorage.getItem('id_token');
-        const access_token = localStorage.getItem('access_token');
-        if (id_token !== null && access_token !== null) {
+        const idToken = localStorage.getItem('id_token');
+        const accessToken = localStorage.getItem('access_token');
+        if (idToken !== null && accessToken !== null) {
             this.configuracionService.post('aplicacion_rol/aplicacion_rol', this.roles)
                 .subscribe((data: any) => {
                     let nuevasAplicaciones = this.categorias.map((categoria: any) => {
                         categoria.aplicaciones = categoria.aplicaciones.filter((aplicacion: any) => (this.existe(aplicacion.nombre, data)));
                         categoria.aplicaciones = categoria.aplicaciones.map((app: any) => {
-                            return { ...app, ...{ estilo_logo: app.estilo.split('-')[0] } }
-
+                            return { ...app, ...{ estilo_logo: app.estilo.split('-')[0] } };
                         });
                         return categoria;
                     });
                     nuevasAplicaciones = nuevasAplicaciones.filter((categoria) => (categoria.aplicaciones.length > 0));
-                    console.info(nuevasAplicaciones);
                     this.dataFilterSubject.next(nuevasAplicaciones);
                 });
             return this.eventFilter$;
         }
     }
 
-    existe(nombre: string, array: any) {
+    existe(nombre: string, array: any): boolean {
         const filtro = array.filter((data: any) => (nombre.toLowerCase() === data.Nombre.toLowerCase()));
         return filtro.length > 0;
     }

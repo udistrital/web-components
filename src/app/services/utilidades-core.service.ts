@@ -19,15 +19,11 @@ export class UtilidadesCoreService {
     }
     initLib({ CONFIGURACION_SERVICE, NOTIFICACION_SERVICE, entorno, notificaciones, menuApps, autenticacion, TOKEN }): void {
         this.confService.setPath(CONFIGURACION_SERVICE);
-
-
         if (autenticacion) {
-            console.log(autenticacion);
             this.autenticacionService.init(TOKEN);
-        }
-
-        if (menuApps) {
-            this.menuService.init(catalogo[entorno]);
+            if (this.autenticacionService.login(false)) {
+                this.autenticacionService.live();
+            }
         }
 
         this.autenticacionService.user$
@@ -37,7 +33,16 @@ export class UtilidadesCoreService {
                     if (notificaciones) {
                         this.notioasService.init(NOTIFICACION_SERVICE);
                     }
+                    if (menuApps) {
+                        this.menuService.init(catalogo[entorno]);
+                    }
+                    console.log('usuario', response);
                 }
             });
     }
+
+    logout(): void {
+        this.autenticacionService.logout();
+    }
+
 }

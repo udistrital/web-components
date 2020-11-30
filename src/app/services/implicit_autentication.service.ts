@@ -20,17 +20,16 @@ export class ImplicitAutenticationService {
     public user$ = this.userSubject.asObservable();
 
     httpOptions: { headers: HttpHeaders; };
+    constructor(private httpClient: HttpClient) {
 
+    }
     init(entorno): any {
         this.environment = entorno;
         const id_token = window.localStorage.getItem('id_token');
         if (window.localStorage.getItem('id_token') === null) {
-            var params = {},
-                queryString = location.hash.substring(1),
-                regex = /([^&=]+)=([^&]*)/g;
+            var params = {}, queryString = location.hash.substring(1), regex = /([^&=]+)=([^&]*)/g;
             let m;
             while (m = regex.exec(queryString)) {
-
                 params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
             }
             // And send the token over to the server
@@ -46,6 +45,7 @@ export class ImplicitAutenticationService {
                 window.localStorage.setItem('expires_in', params['expires_in']);
                 window.localStorage.setItem('state', params['state']);
                 window.localStorage.setItem('id_token', params['id_token']);
+                this.userSubject.next({ user: payload });
 
                 if (typeof payload.role === 'undefined') {
 
@@ -54,16 +54,13 @@ export class ImplicitAutenticationService {
                             'Accept': 'application/json',
                             'Authorization': `Bearer ${params['access_token']}`,
                         }),
-                    }
-                    console.log(this.httpOptions);
+                    };
                     this.user = { user: (payload.email.split('@'))[0] };
                     this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
                         user: (payload.email.split('@'))[0]
                     }, this.httpOptions)
                         .subscribe((res: any) => {
-                            this.user = { ...this.user, ...res };
-                            console.log(this.user);
-                            this.userSubject.next(this.user);
+                            this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
                         });
                 }
             } else {
@@ -94,21 +91,14 @@ export class ImplicitAutenticationService {
                 user: (payload.email.split('@'))[0]
             }, this.httpOptions)
                 .subscribe((res: any) => {
-                    this.user = { ...this.user, ...res }
-                    console.info(this.user);
-
-                    this.userSubject.next(this.user);
-                })
+                    this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
+                });
         }
         this.setExpiresAt();
         this.timer();
         this.clearUrl();
     }
 
-
-    constructor(private httpClient: HttpClient) {
-
-    }
 
     public logout() {
         this.logoutUrl = this.environment.SIGN_OUT_URL;
@@ -145,14 +135,15 @@ export class ImplicitAutenticationService {
     }
 
     // el flag es un booleano que define si habrá boton de login
-    public login(flag) {
-        if (window.localStorage.getItem('id_token') === 'undefined' || window.localStorage.getItem('id_token') === null || this.logoutValid()) {
+    public login(flag): boolean {
+        if (window.localStorage.getItem('id_token') === 'undefined' ||
+            window.localStorage.getItem('id_token') === null || this.logoutValid()) {
             if (!flag) {
-                this.getAuthorizationUrl()
+                this.getAuthorizationUrl();
             }
-            return false
+            return false;
         } else {
-            return true
+            return true;
         }
     }
     public live() {
@@ -175,8 +166,9 @@ export class ImplicitAutenticationService {
 
     public getAuthorizationUrl() {
         this.params = this.environment;
-        if (!this.params.nonce) {
-            this.params.nonce = this.generateState();
+        if (!this.params.hasOwnProperty('nonce')) {
+            const nonceData = this.generateState();
+            this.params = { ...this.params, ...{ nonce: nonceData } };
         }
         if (!this.params.state) {
             this.params.state = this.generateState();
@@ -187,7 +179,7 @@ export class ImplicitAutenticationService {
             'response_type=' + encodeURIComponent(this.params.RESPONSE_TYPE) + '&' +
             'scope=' + encodeURIComponent(this.params.SCOPE) + '&' +
             'state_url=' + encodeURIComponent(window.location.hash);
-        if (this.params.nonce) {
+        if (this.params.hasOwnProperty('nonce')) {
             url += '&nonce=' + encodeURIComponent(this.params.nonce);
         }
         url += '&state=' + encodeURIComponent(this.params.state);

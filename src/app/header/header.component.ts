@@ -1,5 +1,6 @@
-import { Component, Input, OnChanges, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, Output, OnChanges, OnInit, ViewEncapsulation, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { ImplicitAutenticationService } from '../services/implicit_autentication.service';
 import { UtilidadesCoreService } from '../services/utilidades-core.service';
 import { MenuAplicacionesService } from './../services/menuAplicaciones.service';
 import { NotioasService } from './../services/notioas.service';
@@ -10,14 +11,18 @@ import { NotioasService } from './../services/notioas.service';
   encapsulation: ViewEncapsulation.Emulated
 })
 export class HeaderComponent implements OnInit, OnChanges {
+  userHome = '';
   // tslint:disable-next-line: no-input-rename
   @Input('appname') appname: any;
+  // tslint:disable-next-line: no-output-rename
+  @Output('user') user: EventEmitter<any> = new EventEmitter();
   // tslint:disable-next-line: no-input-rename
   @Input('environment') environment: any;
   constructor(
     private notioasService: NotioasService,
     private utilidadesCoreService: UtilidadesCoreService,
     private menuAplicacionesService: MenuAplicacionesService,
+    private autenticacionService: ImplicitAutenticationService,
   ) { }
 
   sidebarClases = {
@@ -37,22 +42,26 @@ export class HeaderComponent implements OnInit, OnChanges {
   };
 
   ngOnInit(): void {
+    this.autenticacionService.user$
+      .subscribe((data: any) => {
+        this.userHome = data.user ? data.user.sub ? data.user.sub : '' : '';
+        console.log('homeUser', data);
+      });
   }
 
   ngOnChanges(changes): void {
     if (changes.environment !== undefined) {
       if (changes.environment.currentValue !== undefined) {
-        console.log(changes);
         this.utilidadesCoreService.initLib(changes.environment.currentValue);
       }
     }
   }
 
-  logout() {
-    // token_service.logout();
+  logout(): void {
+    this.utilidadesCoreService.logout();
   }
 
-  toogleCerrarSesion() {
+  toogleCerrarSesion(): void {
     const buttonCerrarSesion = document.getElementById('header-button-cerrarsesion-container');
     if (buttonCerrarSesion.style.display === 'none' || buttonCerrarSesion.style.display === '') {
       buttonCerrarSesion.style.display = 'block';
@@ -61,38 +70,16 @@ export class HeaderComponent implements OnInit, OnChanges {
     }
   }
 
-  toogleAplicaciones() {
+  toogleAplicaciones(): void {
     this.menuAplicacionesService.toogleMenuNotify();
   }
 
-  togglenotify() {
+  togglenotify(): void {
     this.notioasService.toogleMenuNotify();
-
-    // if (!behaviorTheme.notificacion.open) {
-    //   notificacion.changeStateNoView();
-    // }
-    // behaviorTheme.toogleNotificacion();
   }
 
-  sidebarEvent() {
-    // behaviorTheme.toogleSidebar();
+  sidebarEvent(): void {
   }
+
 
 }
-
-// if (token_service.live_token()) {
-//   isLogin = true;
-//   notificacion = notificacion;
-//   token = token_service.getPayload();
-// } else {
-//   isLogin = false;
-// }
-
-// sidebarClases = behaviorTheme.sidebar;
-
-
-// var mediaquery = window.matchMedia('(max-width: 855px)');
-// if (mediaquery.matches) {
-//   behaviorTheme.toogleSidebar();
-//   behaviorTheme.toogleSidebar();
-// }
