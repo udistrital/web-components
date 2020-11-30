@@ -56,6 +56,7 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { MenuAplicacionesComponent } from './menu-aplicaciones/menu-aplicaciones.component';
 import { NotioasComponent } from './notioas/notioas.component';
+import { LoadComponent } from './load/load.component';
 
 // end material modules
 @NgModule({
@@ -64,7 +65,8 @@ import { NotioasComponent } from './notioas/notioas.component';
     HeaderComponent,
     FooterComponent,
     MenuAplicacionesComponent,
-    NotioasComponent
+    NotioasComponent,
+    LoadComponent
   ],
   imports: [
     HttpClientModule,

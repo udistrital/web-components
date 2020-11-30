@@ -12,6 +12,7 @@ import { NotioasService } from './../services/notioas.service';
 })
 export class HeaderComponent implements OnInit, OnChanges {
   userHome = '';
+  load = true;
   // tslint:disable-next-line: no-input-rename
   @Input('appname') appname: any;
   // tslint:disable-next-line: no-output-rename
@@ -45,7 +46,9 @@ export class HeaderComponent implements OnInit, OnChanges {
     this.autenticacionService.user$
       .subscribe((data: any) => {
         this.userHome = data.user ? data.user.sub ? data.user.sub : '' : '';
-        console.log('homeUser', data);
+        if (this.userHome !== '') {
+          this.load = false;
+        }
       });
   }
 

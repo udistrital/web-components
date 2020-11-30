@@ -9,7 +9,6 @@ import { ImplicitAutenticationService } from './implicit_autentication.service';
     providedIn: 'root',
 })
 export class UtilidadesCoreService {
-
     constructor(
         private confService: ConfiguracionService,
         private notioasService: NotioasService,
@@ -28,15 +27,17 @@ export class UtilidadesCoreService {
 
         this.autenticacionService.user$
             .subscribe((response: any) => {
-                const accessToken = localStorage.getItem('access_token');
-                if (accessToken !== null && typeof response.user !== 'undefined') {
-                    if (notificaciones) {
-                        this.notioasService.init(NOTIFICACION_SERVICE);
-                    }
-                    if (menuApps) {
-                        this.menuService.init(catalogo[entorno]);
-                    }
+                if (JSON.stringify(response) !== '{}') {
+                    const accessToken = localStorage.getItem('access_token');
                     console.log('usuario', response);
+                    if (accessToken !== null && typeof response.user !== 'undefined') {
+                        if (notificaciones) {
+                            this.notioasService.init(NOTIFICACION_SERVICE);
+                        }
+                        if (menuApps) {
+                            this.menuService.init(catalogo[entorno]);
+                        }
+                    }
                 }
             });
     }

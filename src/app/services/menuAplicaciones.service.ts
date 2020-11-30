@@ -25,12 +25,14 @@ export class MenuAplicacionesService {
         private implicitAutenticationService: ImplicitAutenticationService
     ) {
         this.implicitAutenticationService.user$.subscribe((res: any) => {
-            this.userInfo = res;
-            if (typeof this.userInfo.user.role !== 'undefined') {
-                const roles = [...res.user.role];
-                this.isLogin = true;
-                this.roles = roles.map((element) => ({ Nombre: element }));
-                this.getAplication();
+            if (JSON.stringify(res) !== '{}') {
+                this.userInfo = res;
+                if (typeof this.userInfo.user.role !== 'undefined') {
+                    const roles = [...res.user.role];
+                    this.isLogin = true;
+                    this.roles = roles.map((element) => ({ Nombre: element }));
+                    this.getAplication();
+                }
             }
         });
         const up$ = fromEvent(document, 'mouseup');
