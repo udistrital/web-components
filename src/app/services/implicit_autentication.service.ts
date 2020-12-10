@@ -16,7 +16,8 @@ export class ImplicitAutenticationService {
     params: any;
     payload: any;
     private user: any;
-    private timeAlert: 300000; // alert in miliseconds
+    private timeLogoutBefore = 5000; // logout before in miliseconds
+    private timeAlert = 300000; // alert in miliseconds 5 minutes
     private userSubject = new BehaviorSubject({});
     public user$ = this.userSubject.asObservable();
 
@@ -211,16 +212,16 @@ export class ImplicitAutenticationService {
         if (expires) {
             debugger;
             const expiresIn = ((new Date(expires)).getTime() - (new Date()).getTime());
-            const timerDelay = expiresIn > 10 ? expiresIn : 10;
-            console.log('delay', timerDelay);
-            console.log('expiresIn', expiresIn);
-            of(null).pipe(delay(timerDelay)).subscribe((data) => {
-                console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
+            const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : 10;
+            console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
+            of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
                 this.logout();
                 this.clearStorage();
             });
             if (this.timeAlert < timerDelay) {
-                console.log(expires);
+                console.log('timerDelay', timerDelay );
+                console.log('timerAlert', this.timeAlert);
+                console.log('alert in', timerDelay - this.timeAlert);
                 of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {
                     Swal.fire({
                         position: 'top-end',

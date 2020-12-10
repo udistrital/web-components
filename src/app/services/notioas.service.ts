@@ -43,7 +43,7 @@ export class NotioasService {
             if (this.activo) {
                 if (((data.path
                     .map((info: any) => { return (info.localName) }))
-                    .filter((data: any) => (data === 'lib-notioas'))).length === 0) {
+                    .filter((data: any) => (data === 'ng-uui-notioas'))).length === 0) {
                     this.closePanel();
                 }
             }
@@ -70,8 +70,8 @@ export class NotioasService {
         this.NOTIFICACION_SERVICE = pathNotificacion;
         this.autenticacionService.user$.subscribe((res: any) => {
             if (typeof res.user !== 'undefined') {
-                this.user = res.user;
-                this.roles = res.role;
+                this.user = res.user ? res.user.user ? res.user.user : res.user.sub ? res.user.sub : res.user.email ? res.user.email.split('@').shift() : '' : '';
+                this.roles = res.user.role ? res.user.role : [];
                 this.connect();
                 this.queryNotification();
             }
@@ -93,7 +93,7 @@ export class NotioasService {
     }
 
     connect() {
-
+        console.log('connecting ws ...')
         const id_token = localStorage.getItem('id_token');
         const access_token = localStorage.getItem('access_token');
         if (id_token !== null && access_token !== null) {

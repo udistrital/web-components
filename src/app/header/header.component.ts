@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit, OnChanges {
   userHome = '';
   load = true;
   // tslint:disable-next-line: no-input-rename
-  @Input('appname') appname: any;
+  appname = '';
   // tslint:disable-next-line: no-output-rename
   @Output('user') user: EventEmitter<any> = new EventEmitter();
   // tslint:disable-next-line: no-input-rename
@@ -49,12 +49,14 @@ export class HeaderComponent implements OnInit, OnChanges {
         if (this.userHome !== '') {
           this.load = false;
         }
+        this.user.next(data);
       });
   }
 
   ngOnChanges(changes): void {
     if (changes.environment !== undefined) {
       if (changes.environment.currentValue !== undefined) {
+        this.appname = changes.environment.currentValue.appname ? changes.environment.currentValue.appname : '';
         this.utilidadesCoreService.initLib(changes.environment.currentValue);
       }
     }
