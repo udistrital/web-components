@@ -6,7 +6,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 @Component({
   selector: 'ng-uui-notioas',
   templateUrl: './notioas.component.html',
-  styleUrls: ['./notioas.component.css']
+  styleUrls: ['./notioas.component.scss']
 })
 export class NotioasComponent implements OnInit {
   searchTerm$ = new Subject<string>();

@@ -12,6 +12,7 @@ import { ConfiguracionService } from './services/configuracion.service';
 import { NotioasService } from './services/notioas.service';
 import { ImplicitAutenticationService } from './services/implicit_autentication.service';
 import { MenuAplicacionesService } from './services/menuAplicaciones.service';
+import { MenuService } from './services/menu.service'
 
 // local Components
 
@@ -20,15 +21,25 @@ import { FooterComponent } from './footer/footer.component';
 import { MenuAplicacionesComponent } from './menu-aplicaciones/menu-aplicaciones.component';
 import { NotioasComponent } from './notioas/notioas.component';
 import { LoadComponent } from './load/load.component';
+import { MenuComponent } from './menu/menu.component';
+import { AppComponent } from './app.component';
+
+
+// material modules
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
 
 // end material modules
 @NgModule({
   declarations: [
+    AppComponent,
     HeaderComponent,
     FooterComponent,
     MenuAplicacionesComponent,
     NotioasComponent,
-    LoadComponent
+    LoadComponent,
+    MenuComponent
   ],
   imports: [
     HttpClientModule,
@@ -36,6 +47,10 @@ import { LoadComponent } from './load/load.component';
     ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
+    //material modules
+    MatSidenavModule,
+    MatListModule,
+    MatIconModule,
     // end material modules
   ],
   entryComponents: [],
@@ -44,9 +59,10 @@ import { LoadComponent } from './load/load.component';
     NotioasService,
     ImplicitAutenticationService,
     MenuAplicacionesService,
+    MenuService,
   ],
   exports: [],
-  bootstrap: []
+  bootstrap: [AppComponent]
 })
 export class AppModule {
   constructor(
@@ -59,6 +75,5 @@ export class AppModule {
     const footer = createCustomElement(FooterComponent, { injector });
     customElements.define('ng-uui-footer', footer);
   }
-  // tslint:disable-next-line: typedef
   ngDoBootstrap() { }
 }

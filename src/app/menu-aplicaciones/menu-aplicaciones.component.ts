@@ -6,7 +6,7 @@ import { NotioasService } from '../services/notioas.service';
 @Component({
   selector: 'ng-uui-menu-aplicaciones',
   templateUrl: './menu-aplicaciones.component.html',
-  styleUrls: ['./menu-aplicaciones.component.css']
+  styleUrls: ['./menu-aplicaciones.component.scss']
 })
 export class MenuAplicacionesComponent implements OnInit {
 

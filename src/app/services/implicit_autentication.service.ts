@@ -15,6 +15,7 @@ export class ImplicitAutenticationService {
     logoutUrl: any;
     params: any;
     payload: any;
+    timeActiveAlert: 6000;
     private user: any;
     private timeLogoutBefore = 5000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
@@ -162,7 +163,6 @@ export class ImplicitAutenticationService {
     }
 
     public clearUrl() {
-        debugger;
         const clean_uri = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, clean_uri);
     }
@@ -210,7 +210,6 @@ export class ImplicitAutenticationService {
 
     autologout(expires): void {
         if (expires) {
-            debugger;
             const expiresIn = ((new Date(expires)).getTime() - (new Date()).getTime());
             const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : 10;
             console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
@@ -219,7 +218,7 @@ export class ImplicitAutenticationService {
                 this.clearStorage();
             });
             if (this.timeAlert < timerDelay) {
-                console.log('timerDelay', timerDelay );
+                console.log('timerDelay', timerDelay);
                 console.log('timerAlert', this.timeAlert);
                 console.log('alert in', timerDelay - this.timeAlert);
                 of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {
@@ -228,7 +227,7 @@ export class ImplicitAutenticationService {
                         icon: 'info',
                         title: `Su sesión se cerrará en ${this.timeAlert / 60000} minutos`,
                         showConfirmButton: true,
-                        timer: 3000
+                        timer: this.timeActiveAlert
                     });
                 });
             }

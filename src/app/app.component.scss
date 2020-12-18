@@ -1,0 +1,59 @@
+@import url("https://pruebasassets.portaloas.udistrital.edu.co/gaia-style.css");
+
+.example-container {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 77px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    height: calc(-171px + 100vh);
+    width: 100%;
+    z-index: 0;
+}
+
+.example-sidenav {
+    background-color: var(--primary);
+    display: flex;
+    height: 100%;
+    min-width: 300px !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+
+}
+
+
+
+.main-content {
+    display: flex;
+    height: calc(-171px + 100vh);
+}
+
+.mat-drawer-inner-container {
+    width: unset !important;
+    height: unset!important;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: blue orange;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: blue orange;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+    background: orange;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: blue;
+    border-radius: 20px;
+    border: 3px solid orange;
+}

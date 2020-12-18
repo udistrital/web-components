@@ -1,9 +1,10 @@
 <link href="https://pruebasassets.portaloas.udistrital.edu.co/isotipo-header.css" rel="stylesheet">
 <link href="https://pruebasassets.portaloas.udistrital.edu.co/logo-header.css" rel="stylesheet">
 <div class="header-container">
-    <div class="header-logo-container" (click)="sidebarEvent()">
-        <div id="{{appname}}-isotipo" class="isotipo" [ngStyle]="{'display': sidebarClases.containerLogoClase}"></div>
-        <div id="{{appname}}-header" class="logo-header"
+    <div class="header-logo-container" (click)="openSidebar()">
+        <div id="{{appname}}-isotipo" class="isotipo" [ngStyle]="{'display': sidebarClases.containerLogoClase}">
+        </div>
+        <div id="{{appname}}-header" class="logo-header" (click)="openSidebar()"
             [ngStyle]="{'display': sidebarClases.containerLogoCollapsedClase}"> </div>
     </div>
     <div class="header-buttons-container">
@@ -17,7 +18,7 @@
             <span class="material-icons">
                 account_circle
             </span>
-            <p class="user-info">{{userHome}}</p>
+            <p class="user-info">{{userHome$ | async}}</p>
             <div id="header-button-cerrarsesion-container" (click)='logout()'>
                 <p>cerrar sesion</p>
             </div>
@@ -26,4 +27,4 @@
 </div>
 <ng-uui-notioas></ng-uui-notioas>
 <ng-uui-menu-aplicaciones></ng-uui-menu-aplicaciones>
-<ng-uui-load [hidden]="!load"></ng-uui-load>
+<!-- <ng-uui-load [hidden]="!load"></ng-uui-load> -->

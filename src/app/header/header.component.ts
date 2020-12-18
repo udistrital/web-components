@@ -1,17 +1,21 @@
-import { Component, Input, Output, OnChanges, OnInit, ViewEncapsulation, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnChanges, OnInit, ViewEncapsulation, EventEmitter, ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { NavItem } from '../interfaces/nav-item';
 import { ImplicitAutenticationService } from '../services/implicit_autentication.service';
+import { MenuService } from '../services/menu.service';
 import { UtilidadesCoreService } from '../services/utilidades-core.service';
 import { MenuAplicacionesService } from './../services/menuAplicaciones.service';
 import { NotioasService } from './../services/notioas.service';
 @Component({
   selector: 'ng-uui-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
+  styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.Emulated
 })
-export class HeaderComponent implements OnInit, OnChanges {
-  userHome = '';
+export class HeaderComponent implements OnChanges {
+  userHome$:Subject<string> = new BehaviorSubject('');
+
   load = true;
   // tslint:disable-next-line: no-input-rename
   appname = '';
@@ -20,6 +24,8 @@ export class HeaderComponent implements OnInit, OnChanges {
   // tslint:disable-next-line: no-input-rename
   @Input('environment') environment: any;
   constructor(
+    private cdr: ChangeDetectorRef,
+    private menuService: MenuService,
     private notioasService: NotioasService,
     private utilidadesCoreService: UtilidadesCoreService,
     private menuAplicacionesService: MenuAplicacionesService,
@@ -42,16 +48,6 @@ export class HeaderComponent implements OnInit, OnChanges {
     clase: 'notificacion_container'
   };
 
-  ngOnInit(): void {
-    this.autenticacionService.user$
-      .subscribe((data: any) => {
-        this.userHome = data.user ? data.user.sub ? data.user.sub : '' : '';
-        if (this.userHome !== '') {
-          this.load = false;
-        }
-        this.user.next(data);
-      });
-  }
 
   ngOnChanges(changes): void {
     if (changes.environment !== undefined) {
@@ -60,6 +56,14 @@ export class HeaderComponent implements OnInit, OnChanges {
         this.utilidadesCoreService.initLib(changes.environment.currentValue);
       }
     }
+  }
+  ngAfterViewChecked(){
+    this.autenticacionService.user$
+    .subscribe((data: any) => {
+      this.userHome$.next(data.user ? data.user.sub ? data.user.sub : '' : '');
+      this.user.next(data);
+    });
+    this.cdr.detectChanges();
   }
 
   logout(): void {
@@ -83,8 +87,8 @@ export class HeaderComponent implements OnInit, OnChanges {
     this.notioasService.toogleMenuNotify();
   }
 
-  sidebarEvent(): void {
+  openSidebar(): void {
+    this.menuService.openNav();
   }
-
 
 }
