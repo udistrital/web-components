@@ -358,6 +358,10 @@ export class AppComponent implements AfterViewInit{
     this.menuService.sidebar = this.sidebar;
   }
 
+  userFunction(event) {
+    console.log(event);
+  }
+  
   autoclose(event){
     console.log(event);
     this.menuService.closeNav();

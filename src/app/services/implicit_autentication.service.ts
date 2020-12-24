@@ -19,6 +19,7 @@ export class ImplicitAutenticationService {
     private user: any;
     private timeLogoutBefore = 5000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
+    
     private userSubject = new BehaviorSubject({});
     public user$ = this.userSubject.asObservable();
 

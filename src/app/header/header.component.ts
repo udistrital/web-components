@@ -14,7 +14,9 @@ import { NotioasService } from './../services/notioas.service';
   encapsulation: ViewEncapsulation.Emulated
 })
 export class HeaderComponent implements OnChanges {
-  userHome$:Subject<string> = new BehaviorSubject('');
+
+  private userHomeSubject = new BehaviorSubject('');
+  public userHome$ = this.userHomeSubject.asObservable();
 
   load = true;
   // tslint:disable-next-line: no-input-rename
@@ -60,8 +62,8 @@ export class HeaderComponent implements OnChanges {
   ngAfterViewChecked(){
     this.autenticacionService.user$
     .subscribe((data: any) => {
-      this.userHome$.next(data.user ? data.user.sub ? data.user.sub : '' : '');
-      this.user.next(data);
+      this.userHomeSubject.next(data.user ? data.user.sub ? data.user.sub : '' : '');
+      this.user.emit(data);
     });
     this.cdr.detectChanges();
   }
