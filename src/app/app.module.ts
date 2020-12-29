@@ -25,6 +25,7 @@ import { AppComponent } from './app.component';
 // material modules
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 // end material modules
 @NgModule({
@@ -36,6 +37,7 @@ import { MatIconModule } from '@angular/material/icon';
     NotioasComponent,
     LoadComponent,
     MenuComponent,
+    SidebarComponent
   ],
   imports: [
     HttpClientModule,
