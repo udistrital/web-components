@@ -1,11 +1,9 @@
 <link href="https://pruebasassets.portaloas.udistrital.edu.co/isotipo-header.css" rel="stylesheet">
 <link href="https://pruebasassets.portaloas.udistrital.edu.co/logo-header.css" rel="stylesheet">
 <div class="header-container">
-    <div class="header-logo-container" (click)="openSidebar()">
-        <div id="{{appname}}-isotipo" class="isotipo" [ngStyle]="{'display': sidebarClases.containerLogoClase}">
-        </div>
-        <div id="{{appname}}-header" class="logo-header" (click)="openSidebar()"
-            [ngStyle]="{'display': sidebarClases.containerLogoCollapsedClase}"> </div>
+    <div class="header-logo-container">
+        <div [@iconAnimation]="!sidebar?'visible':'hidden'" id="{{appname}}" class="menu-app" (click)="openSidebar()"></div>
+        <div [@logoAnimation]="sidebar?'visible':'hidden'" id="{{appname}}-header" class="logo-header" (click)="closeSidebar()"></div>
     </div>
     <div class="header-buttons-container">
         <div class="header-button-apps-container" (click)="toogleAplicaciones()">

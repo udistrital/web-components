@@ -4,7 +4,8 @@ export const environment = {
   autenticacion: true,
   notificaciones: false,
   menuApps: true,
-  appname: 'agora',
+  appname: 'core',
+  appMenu: 'CONFIGURACION',
   NUXEO: {
     PATH: 'https://documental.udistrital.edu.co/nuxeo/',
   },

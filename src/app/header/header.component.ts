@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input, Output, OnChanges, OnInit, ViewEncapsulation, EventEmitter, ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -7,17 +8,45 @@ import { MenuService } from '../services/menu.service';
 import { UtilidadesCoreService } from '../services/utilidades-core.service';
 import { MenuAplicacionesService } from './../services/menuAplicaciones.service';
 import { NotioasService } from './../services/notioas.service';
+enum VisibilityState {
+  Visible = 'visible',
+  Hidden = 'hidden'
+}
 @Component({
   selector: 'ng-uui-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.Emulated,
+  animations: [
+    trigger('iconAnimation', [
+      state(
+        VisibilityState.Hidden,
+        style({ transform: 'scaleX(0) translate(-150%)' })
+      ),
+      state(
+        VisibilityState.Visible,
+        style({ transform: 'scaleX(1) translate(0%' })
+      ),
+      transition('* => *', animate('400ms ease-in'))
+    ]),
+    trigger('logoAnimation', [
+      state(
+        VisibilityState.Hidden,
+        style({ transform: 'scaleX(0) translate(-150%)' })
+      ),
+      state(
+        VisibilityState.Visible,
+        style({ transform: 'scaleX(1)  translate(-40%)' })
+      ),
+      transition('* => *', animate('400ms ease-in'))
+    ])
+  ]
 })
 export class HeaderComponent implements OnChanges {
 
   private userHomeSubject = new BehaviorSubject('');
   public userHome$ = this.userHomeSubject.asObservable();
-
+  sidebar = false;
   load = true;
   // tslint:disable-next-line: no-input-rename
   appname = '';
@@ -30,9 +59,11 @@ export class HeaderComponent implements OnChanges {
     private menuService: MenuService,
     private notioasService: NotioasService,
     private utilidadesCoreService: UtilidadesCoreService,
-    private menuAplicacionesService: MenuAplicacionesService,
+    public menuAplicacionesService: MenuAplicacionesService,
     private autenticacionService: ImplicitAutenticationService,
-  ) { }
+  ) {
+    menuService.sidebar$.subscribe((data) => (this.sidebar = data));
+  }
 
   sidebarClases = {
     open: false,
@@ -59,12 +90,12 @@ export class HeaderComponent implements OnChanges {
       }
     }
   }
-  ngAfterViewChecked(){
+  ngAfterViewChecked() {
     this.autenticacionService.user$
-    .subscribe((data: any) => {
-      this.userHomeSubject.next(data.user ? data.user.sub ? data.user.sub : '' : '');
-      this.user.emit(data);
-    });
+      .subscribe((data: any) => {
+        this.userHomeSubject.next(data.user ? data.user.sub ? data.user.sub : '' : '');
+        this.user.emit(data);
+      });
     this.cdr.detectChanges();
   }
 
@@ -91,6 +122,10 @@ export class HeaderComponent implements OnChanges {
 
   openSidebar(): void {
     this.menuService.openNav();
+  }
+
+  closeSidebar(): void {
+    this.menuService.closeNav();
   }
 
 }

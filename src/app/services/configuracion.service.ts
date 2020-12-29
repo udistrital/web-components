@@ -36,6 +36,26 @@ export class ConfiguracionService {
       ));
   }
 
+  getMenu(roles, aplication, endpoint) {
+    this.httpOptions = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      }),
+    }
+    return this.http.get<any>(`${this.path}${endpoint}/${roles}/${aplication}`, this.httpOptions).pipe(
+      map(
+        (res) => {
+          if (res.hasOwnProperty('Body')) {
+            return res['Body'];
+          } else {
+            return res;
+          }
+        },
+      ));
+  }
+
+
   /**
    * Perform a POST http request
    * @param endpoint service's end-point

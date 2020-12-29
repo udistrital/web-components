@@ -1,12 +1,3 @@
 <ng-uui-header [environment]="environment" (user)="userFunction($event)"></ng-uui-header>
-<mat-drawer-container class="example-container" (backdropClick)="autoclose($event)">
-    <div class="main-content">
-        asdf asdf asdf adfs
-    </div>
-    <mat-drawer #sidebar mode="side" class="example-sidenav" (backdropClick)="autoclose($event)">
-        <mat-nav-list>
-            <ng-uui-menu *ngFor="let item of navItems" [item]="item"></ng-uui-menu>
-        </mat-nav-list>
-    </mat-drawer>
-</mat-drawer-container>
+<div><ng-uui-sidebar [navItems]="navItems"></ng-uui-sidebar> </div>
 <ng-uui-footer></ng-uui-footer>

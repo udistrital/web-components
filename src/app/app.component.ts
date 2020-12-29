@@ -2,16 +2,35 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { environment } from './../../src/environments/environment';
 import { NavItem } from './interfaces/nav-item';
 import { MenuService } from './services/menu.service';
+if (!("path" in Event.prototype))
+  Object.defineProperty(Event.prototype, "path", {
+    get: function () {
+      var path = [];
+      var currentElem = this.target;
+      while (currentElem) {
+        path.push(currentElem);
+        currentElem = currentElem.parentElement;
+      }
+      if (path.indexOf(window) === -1 && path.indexOf(document) === -1)
+        path.push(document);
+      if (path.indexOf(window) === -1)
+        path.push(window);
+      return path;
+    }
+  });
 @Component({
   selector: 'ng-uui-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit{
-  @ViewChild('sidebar') sidebar: ElementRef;
-  constructor(    private menuService: MenuService  ){}
+
+export class AppComponent implements AfterViewInit {
+  opened: boolean = false;
+  constructor(private menuService: MenuService) {
+    this.menuService.sidebar$.subscribe((opened) => (this.opened = opened))
+  }
   title = 'app-client';
-  navItems: NavItem[] = [
+  navItems = [
     {
       Nombre: 'DevFestFL',
       Icono: 'recent_actors',
@@ -350,20 +369,14 @@ export class AppComponent implements AfterViewInit{
       ]
     }
   ];
+
   environment = environment;
-  resultado(event) {
-    console.log(event.detail);
-  }
-    ngAfterViewInit() {
-    this.menuService.sidebar = this.sidebar;
+
+  ngAfterViewInit() {
   }
 
   userFunction(event) {
     console.log(event);
   }
-  
-  autoclose(event){
-    console.log(event);
-    this.menuService.closeNav();
-  }
+
 }

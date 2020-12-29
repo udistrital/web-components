@@ -35,15 +35,16 @@ export class MenuAplicacionesService {
                 }
             }
         });
-        const up$ = fromEvent(document, 'mouseup');
-
-        up$.subscribe((data: any) => {
+        fromEvent(document, 'mouseup').subscribe((data: any) => {
             if (this.activo) {
-                if ((
-                    data.path
+                console.log(data)
+                if(data.path){
+                    if ((
+                        data.path
                         .map((info: any) => (info.localName))
-                        .filter((dataFilter: any) => (dataFilter === 'menu-aplicaciones'))).length === 0) {
-                    this.closePanel();
+                        .filter((dataFilter: any) => (dataFilter === 'ng-uui-menu-aplicaciones'))).length === 0 ) {
+                            this.closePanel();
+                    }
                 }
             }
         });
