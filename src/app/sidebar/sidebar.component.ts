@@ -30,7 +30,7 @@ enum VisibilityState {
 })
 export class SidebarComponent implements OnInit {
   sidebarAnimation: VisibilityState;
-  @Input() navItems: NavItem;
+  @Input() navItems: NavItem[];
 
   constructor(
     private menuService: MenuService,
@@ -48,6 +48,12 @@ export class SidebarComponent implements OnInit {
           this.configuracionService.getMenu(role,environment.appMenu, 'menu_opcion_padre/ArbolMenus')
           .subscribe((data)=> {
             this.navItems = data;
+            this.navItems = [...[{
+              Nombre: 'Inicio',
+              Icono: 'home',
+              Url: 'pages',
+              Opciones: []}]
+              ,...this.navItems]
           })
         }
       }
