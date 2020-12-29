@@ -219,9 +219,6 @@ export class ImplicitAutenticationService {
                 this.clearStorage();
             });
             if (this.timeAlert < timerDelay) {
-                console.log('timerDelay', timerDelay);
-                console.log('timerAlert', this.timeAlert);
-                console.log('alert in', timerDelay - this.timeAlert);
                 of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {
                     Swal.fire({
                         position: 'top-end',

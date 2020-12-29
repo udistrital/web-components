@@ -22,7 +22,7 @@ enum VisibilityState {
       ),
       state(
         VisibilityState.Visible,
-        style({ transform: 'scaleX(1)' })
+        style({ transform: 'scaleX(1) translate(-0.1%)' })
       ),
       transition('* => *', animate('400ms ease-in'))
     ])

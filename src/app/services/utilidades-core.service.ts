@@ -29,7 +29,6 @@ export class UtilidadesCoreService {
             .subscribe((response: any) => {
                 if (JSON.stringify(response) !== '{}') {
                     const accessToken = localStorage.getItem('access_token');
-                    console.log('usuario', response);
                     if (accessToken !== null && typeof response.user !== 'undefined') {
                         if (notificaciones) {
                             this.notioasService.init(NOTIFICACION_SERVICE);

@@ -37,7 +37,6 @@ export class MenuAplicacionesService {
         });
         fromEvent(document, 'mouseup').subscribe((data: any) => {
             if (this.activo) {
-                console.log(data)
                 if(data.path){
                     if ((
                         data.path
