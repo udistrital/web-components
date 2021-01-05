@@ -1,4 +1,6 @@
-<!-- <ng-uui-login></ng-uui-login> -->
+<ng-uui-login *ngIf="isLogin"></ng-uui-login>
 <ng-uui-header [environment]="environment"></ng-uui-header>
-<div><ng-uui-sidebar [navItems]="navItems"></ng-uui-sidebar> </div>
-<ng-uui-footer></ng-uui-footer>
+<div *ngIf="!isLogin">
+    <ng-uui-sidebar  [navItems]="navItems"></ng-uui-sidebar>
+</div>
+<ng-uui-footer *ngIf="!isLogin"></ng-uui-footer>

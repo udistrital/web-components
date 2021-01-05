@@ -1,9 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input, OnInit } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { NavItem } from '../interfaces/nav-item';
-import { ConfiguracionService } from '../services/configuracion.service';
-import { ImplicitAutenticationService } from '../services/implicit_autentication.service';
 import { MenuService } from '../services/menu.service';
 enum VisibilityState {
   Visible = 'visible',
@@ -33,30 +30,16 @@ export class SidebarComponent implements OnInit {
   @Input() navItems: NavItem[];
 
   constructor(
-    private menuService: MenuService,
-    private configuracionService: ConfiguracionService,
-    private userService: ImplicitAutenticationService
-      ){
+    public menuService: MenuService,
+  ) {
 
   }
   ngOnInit(): void {
-    this.menuService.sidebar$.subscribe((opened)=>(this.sidebarAnimation = opened?VisibilityState.Visible:VisibilityState.Hidden));
-    this.userService.user$.subscribe((user: any)=>{ 
-      if(user) {
-        const role = user.user?user.user.role?user.user.role.filter((menu)=>(menu!== 'Internal/everyone')).join(','):"":"";
-        if(role !== '') {
-          this.configuracionService.getMenu(role,environment.appMenu, 'menu_opcion_padre/ArbolMenus')
-          .subscribe((data)=> {
-            this.navItems = data;
-            this.navItems = [...[{
-              Nombre: 'Inicio',
-              Icono: 'home',
-              Url: 'pages',
-              Opciones: []}]
-              ,...this.navItems]
-          })
-        }
-      }
+    this.menuService.sidebar$.subscribe((opened) =>
+      (this.sidebarAnimation = opened ? VisibilityState.Visible : VisibilityState.Hidden));
+    this.menuService.getMenu();
+    this.menuService.menu$.subscribe((data: NavItem[]) => {
+      this.navItems = data;
     })
   }
 

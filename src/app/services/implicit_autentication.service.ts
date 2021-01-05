@@ -155,14 +155,6 @@ export class ImplicitAutenticationService {
         }
     }
 
-    public live() {
-        if (this.login(true)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public clearUrl() {
         const clean_uri = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, clean_uri);
@@ -241,6 +233,7 @@ export class ImplicitAutenticationService {
         window.localStorage.removeItem('expires_in');
         window.localStorage.removeItem('state');
         window.localStorage.removeItem('expires_at');
+        window.localStorage.removeItem('menu');
 
     }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { ImplicitAutenticationService } from '../services/implicit_autentication.service';
 import { MenuService } from '../services/menu.service';
 
 @Component({
@@ -9,7 +10,10 @@ import { MenuService } from '../services/menu.service';
 })
 export class OasComponent {
   opened: boolean = false;
-  constructor(private menuService: MenuService) {
+  isLogin = false;
+  constructor(private menuService: MenuService,
+    private autenticacionService: ImplicitAutenticationService,
+    ) {
     this.menuService.sidebar$.subscribe((opened) => (this.opened = opened))
   }
   title = 'app-client';
@@ -356,6 +360,23 @@ export class OasComponent {
   environment = environment;
 
   ngAfterViewInit() {
+  }
+
+  ngOnInit(){
+    this.autenticacionService.user$.subscribe((data: any) => {
+      if (JSON.stringify(data) !== '{}') {
+        if (data.user) {
+          console.log(data.user);
+          this.isLogin = false;
+        } else {
+          console.log(data);
+          this.isLogin = true;
+        }
+      } else {
+        this.isLogin = true;
+      }
+
+    })
   }
 
 }

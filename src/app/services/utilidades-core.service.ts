@@ -20,9 +20,7 @@ export class UtilidadesCoreService {
         this.confService.setPath(CONFIGURACION_SERVICE);
         if (autenticacion) {
             this.autenticacionService.init(TOKEN);
-            if (this.autenticacionService.login(false)) {
-                this.autenticacionService.live();
-            }
+            this.autenticacionService.login(true);
         }
 
         this.autenticacionService.user$
