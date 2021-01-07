@@ -27,6 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { LoginComponent } from './login/login.component';
 import { OasComponent } from './oas/oas.component';
+import { TercerosFormComponent } from './terceros-form/terceros-form.component';
 
 // end material modules
 @NgModule({
@@ -39,7 +40,8 @@ import { OasComponent } from './oas/oas.component';
         MenuComponent,
         SidebarComponent,
         LoginComponent,
-        OasComponent
+        OasComponent,
+        TercerosFormComponent
     ],
     imports: [
         HttpClientModule,
@@ -76,6 +78,9 @@ export class AppModule {
 
         const footer = createCustomElement(FooterComponent, { injector });
         customElements.define('ng-uui-footer', footer);
+
+        const terceros = createCustomElement(TercerosFormComponent, { injector });
+        customElements.define('ng-uui-terceros-form', terceros);
     }
     ngDoBootstrap() { }
 }

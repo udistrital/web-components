@@ -90,6 +90,7 @@ export class HeaderComponent implements OnChanges {
       }
     }
   }
+
   ngAfterViewChecked() {
     this.autenticacionService.user$
       .subscribe((data: any) => {
