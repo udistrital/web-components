@@ -39,7 +39,9 @@ export class SidebarComponent implements OnInit {
       (this.sidebarAnimation = opened ? VisibilityState.Visible : VisibilityState.Hidden));
     this.menuService.getMenu();
     this.menuService.menu$.subscribe((data: NavItem[]) => {
-      this.navItems = data;
+      if (JSON.stringify(data) !== '{}') {
+        this.navItems = data;
+      }
     })
   }
 

@@ -16,17 +16,16 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.autenticacionService.user$.subscribe((data: any) => {
+      console.log(data)
       if (JSON.stringify(data) !== '{}') {
         if (data.user) {
-          console.log('asdf')
           this.isloading = true;
         } else {
-          console.log('asdfasdfasdf')
           this.isloading = false;
         }
       } else {
-        console.log('ayyy')
-        this.isloading = false;
+        this.isloading = true;
+        setTimeout(()=>{this.isloading?this.isloading = false: this.isloading=true }, 2000)
       }
     })
   }

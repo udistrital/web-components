@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { ImplicitAutenticationService } from '../services/implicit_autentication.service';
 import { MenuService } from '../services/menu.service';
@@ -6,6 +6,7 @@ import { MenuService } from '../services/menu.service';
 @Component({
   selector: 'ng-uui-oas',
   templateUrl: './oas.component.html',
+  encapsulation: ViewEncapsulation.Emulated,
   styleUrls: ['./oas.component.scss']
 })
 export class OasComponent {

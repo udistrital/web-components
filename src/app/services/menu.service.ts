@@ -35,7 +35,6 @@ export class MenuService {
     getMenu() {
         const menuInfo = localStorage.getItem('menu');
         if (menuInfo) {
-            console.log(atob(menuInfo));
             this.menuSubject.next(JSON.parse(atob(menuInfo)));
         } else {
             this.userService.user$.subscribe((user: any) => {
@@ -68,7 +67,6 @@ export class MenuService {
     public updateMenu(menu) {
         localStorage.setItem('menu', btoa(JSON.stringify(menu)));
         this.menuSubject.next(menu);
-
     }
 
 
