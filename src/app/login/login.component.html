@@ -1,7 +1,7 @@
 
 <div class="login-container">
     <div class="login">
-        <!-- <img className="logo-login" src="img/LogoCevBlanco.svg"></img> -->
+        <div id="{{appname}}-header" class="logo-header"></div>      
         <button *ngIf="!isloading" class="button" (click)="login()">Iniciar Sesión </button>
         <ng-uui-load *ngIf="isloading"></ng-uui-load>
     </div>

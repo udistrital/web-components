@@ -1,5 +1,9 @@
-<ng-uui-login *ngIf="isLogin"></ng-uui-login>
-<ng-uui-header [environment]="environment"></ng-uui-header>
+<ng-uui-login 
+*ngIf="isLogin"
+[appname]="appname"
+[isloading]="isloading"
+(loginEvent)="loginEvent()"></ng-uui-login>
+<ng-uui-header [appname]="appname" [username]="username" (logoutEvent)="logoutEvent()"></ng-uui-header>
 <div *ngIf="!isLogin">
     <ng-uui-sidebar [navItems]="navItems"></ng-uui-sidebar>
 </div>

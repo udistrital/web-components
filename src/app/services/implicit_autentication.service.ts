@@ -31,6 +31,7 @@ export class ImplicitAutenticationService {
         this.environment = entorno;
         const id_token = window.localStorage.getItem('id_token');
         if (window.localStorage.getItem('id_token') === null) {
+
             var params = {}, queryString = location.hash.substring(1), regex = /([^&=]+)=([^&]*)/g;
             let m;
             while (m = regex.exec(queryString)) {
@@ -50,8 +51,7 @@ export class ImplicitAutenticationService {
                 window.localStorage.setItem('state', params['state']);
                 window.localStorage.setItem('id_token', params['id_token']);
                 this.userSubject.next({ user: payload });
-
-                if (typeof payload.role === 'undefined') {
+                if (typeof payload.role !== 'undefined') {
                     this.httpOptions = {
                         headers: new HttpHeaders({
                             'Accept': 'application/json',
@@ -112,7 +112,6 @@ export class ImplicitAutenticationService {
             this.logoutUrl += '&post_logout_redirect_uri=' + this.environment.SIGN_OUT_REDIRECT_URL;
             this.logoutUrl += '&state=' + state;
             this.clearStorage();
-            console.log(this.logoutUrl);
             window.location.replace(this.logoutUrl);
         }
     }
@@ -179,7 +178,6 @@ export class ImplicitAutenticationService {
             url += '&nonce=' + encodeURIComponent(this.params.nonce);
         }
         url += '&state=' + encodeURIComponent(this.params.state);
-        console.log(url);
         window.location.replace(url);
         return url;
     }
@@ -205,21 +203,23 @@ export class ImplicitAutenticationService {
         if (expires) {
             const expiresIn = ((new Date(expires)).getTime() - (new Date()).getTime());
             const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : 10;
-            console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
-            of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
-                this.logout();
-                this.clearStorage();
-            });
-            if (this.timeAlert < timerDelay) {
-                of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'info',
-                        title: `Su sesión se cerrará en ${this.timeAlert / 60000} minutos`,
-                        showConfirmButton: true,
-                        timer: this.timeActiveAlert
-                    });
+            if(!isNaN(expiresIn)) {
+                console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
+                of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
+                    this.logout();
+                    this.clearStorage();
                 });
+                if (this.timeAlert < timerDelay) {
+                    of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'info',
+                            title: `Su sesión se cerrará en ${this.timeAlert / 60000} minutos`,
+                            showConfirmButton: true,
+                            timer: this.timeActiveAlert
+                        });
+                    });
+                }
             }
         }
     }

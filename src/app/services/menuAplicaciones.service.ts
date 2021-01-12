@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConfiguracionService } from './configuracion.service';
-import { ImplicitAutenticationService } from './implicit_autentication.service'
 import { BehaviorSubject, fromEvent } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -22,27 +20,16 @@ export class MenuAplicacionesService {
 
     constructor(
         private configuracionService: ConfiguracionService,
-        private implicitAutenticationService: ImplicitAutenticationService
     ) {
-        this.implicitAutenticationService.user$.subscribe((res: any) => {
-            if (JSON.stringify(res) !== '{}') {
-                this.userInfo = res;
-                if (typeof this.userInfo.user.role !== 'undefined') {
-                    const roles = [...res.user.role];
-                    this.isLogin = true;
-                    this.roles = roles.map((element) => ({ Nombre: element }));
-                    this.getAplication();
-                }
-            }
-        });
+       
         fromEvent(document, 'mouseup').subscribe((data: any) => {
             if (this.activo) {
-                if(data.path){
+                if (data.path) {
                     if ((
                         data.path
-                        .map((info: any) => (info.localName))
-                        .filter((dataFilter: any) => (dataFilter === 'ng-uui-menu-aplicaciones'))).length === 0 ) {
-                            this.closePanel();
+                            .map((info: any) => (info.localName))
+                            .filter((dataFilter: any) => (dataFilter === 'ng-uui-menu-aplicaciones'))).length === 0) {
+                        this.closePanel();
                     }
                 }
             }
@@ -60,10 +47,15 @@ export class MenuAplicacionesService {
         this.activo.next(data);
     }
 
-    init(categorias: any): void {
-        console.log('...Init lib menu', categorias);
+    init(categorias: any, userData): void {
+        this.userInfo = userData;
+        if (typeof this.userInfo.user.role !== 'undefined') {
+            const roles = [...userData.user.role];
+            this.isLogin = true;
+            this.roles = roles.map((element) => ({ Nombre: element }));
+            this.getAplication();
+        }
         this.categorias = categorias;
-        this.dataFilterSubject.next(this.categorias);
     }
 
     public getAplication(): any {

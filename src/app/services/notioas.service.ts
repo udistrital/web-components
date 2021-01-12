@@ -4,7 +4,6 @@ import { from, interval, BehaviorSubject, Subject } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
 import { map } from 'rxjs/operators';
 import { fromEvent } from 'rxjs';
-import { ImplicitAutenticationService } from './implicit_autentication.service';
 
 @Injectable({
     providedIn: 'root',
@@ -34,7 +33,6 @@ export class NotioasService {
 
     constructor(
         private confService: ConfiguracionService,
-        private autenticacionService: ImplicitAutenticationService
     ) {
         this.listMessage = [];
         this.notificacion_estado_usuario = []
@@ -65,17 +63,15 @@ export class NotioasService {
         this.activo.next({ activo: this.menuActivo });
     }
 
-    init(pathNotificacion: string) {
+    init(pathNotificacion: string, userData) {
         console.info('...Init lib notificaciones');
         this.NOTIFICACION_SERVICE = pathNotificacion;
-        this.autenticacionService.user$.subscribe((res: any) => {
-            if (typeof res.user !== 'undefined') {
-                this.user = res.user ? res.user.user ? res.user.user : res.user.sub ? res.user.sub : res.user.email ? res.user.email.split('@').shift() : '' : '';
-                this.roles = res.user.role ? res.user.role : [];
+            if (typeof userData.user !== 'undefined') {
+                this.user = userData.user ? userData.user.user ? userData.user.user : userData.user.sub ? userData.user.sub : userData.user.email ? userData.user.email.split('@').shift() : '' : '';
+                this.roles = userData.user.role ? userData.user.role : [];
                 this.connect();
                 this.queryNotification();
             }
-        })
     }
 
     getNotificaciones() {

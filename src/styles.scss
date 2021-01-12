@@ -45,3 +45,8 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+.swal2-icon.swal2-info {
+  border-color: var(--color200) !important;
+  color: var(--primary)!important;
+}

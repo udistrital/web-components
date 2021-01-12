@@ -30,7 +30,7 @@ export class MenuComponent{
 
   onItemSelected(item: NavItem) {
     if (!item.Opciones || !item.Opciones.length) {
-      console.log(item);
+      this.navService.updateOption(item);
       this.navService.closeNav();
     }
     if (item.Opciones && item.Opciones.length) {

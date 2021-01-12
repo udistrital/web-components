@@ -1,13 +1,9 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Input, Output, OnChanges, OnInit, ViewEncapsulation, EventEmitter, ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { NavItem } from '../interfaces/nav-item';
-import { ImplicitAutenticationService } from '../services/implicit_autentication.service';
+import { Component, Input, ViewEncapsulation, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { MenuService } from '../services/menu.service';
-import { UtilidadesCoreService } from '../services/utilidades-core.service';
 import { MenuAplicacionesService } from './../services/menuAplicaciones.service';
 import { NotioasService } from './../services/notioas.service';
+
 enum VisibilityState {
   Visible = 'visible',
   Hidden = 'hidden'
@@ -42,27 +38,23 @@ enum VisibilityState {
     ])
   ]
 })
-export class HeaderComponent implements OnChanges {
-
-  private userHomeSubject = new BehaviorSubject('');
-  public userHome$ = this.userHomeSubject.asObservable();
+export class HeaderComponent {
   sidebar = false;
   load = true;
-  // tslint:disable-next-line: no-input-rename
-  appname = '';
-  // tslint:disable-next-line: no-output-rename
-  @Output('user') user: EventEmitter<any> = new EventEmitter();
-  // tslint:disable-next-line: no-input-rename
-  @Input('environment') environment: any;
+  @Input('appname') appname: any;
+  @Input('username') username: any;
+  @Output('logoutEvent') logoutEvent: EventEmitter<any> = new EventEmitter();
+
   constructor(
     private cdr: ChangeDetectorRef,
     private menuService: MenuService,
     private notioasService: NotioasService,
-    private utilidadesCoreService: UtilidadesCoreService,
     public menuAplicacionesService: MenuAplicacionesService,
-    private autenticacionService: ImplicitAutenticationService,
   ) {
     menuService.sidebar$.subscribe((data) => (this.sidebar = data));
+  }
+
+  ngOnInit() {
   }
 
   sidebarClases = {
@@ -81,27 +73,8 @@ export class HeaderComponent implements OnChanges {
     clase: 'notificacion_container'
   };
 
-
-  ngOnChanges(changes): void {
-    if (changes.environment !== undefined) {
-      if (changes.environment.currentValue !== undefined) {
-        this.appname = changes.environment.currentValue.appname ? changes.environment.currentValue.appname : '';
-        this.utilidadesCoreService.initLib(changes.environment.currentValue);
-      }
-    }
-  }
-
-  ngAfterViewChecked() {
-    this.autenticacionService.user$
-      .subscribe((data: any) => {
-        this.userHomeSubject.next(data.user ? data.user.sub ? data.user.sub : '' : '');
-        this.user.emit(data);
-      });
-    this.cdr.detectChanges();
-  }
-
   logout(): void {
-    this.utilidadesCoreService.logout();
+    this.logoutEvent.next('clicked')
   }
 
   toogleCerrarSesion(): void {

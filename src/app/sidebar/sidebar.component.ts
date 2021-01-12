@@ -26,7 +26,7 @@ enum VisibilityState {
   ]
 })
 export class SidebarComponent implements OnInit {
-  sidebarAnimation: VisibilityState;
+  sidebarAnimation: VisibilityState = VisibilityState.Hidden;
   @Input() navItems: NavItem[];
 
   constructor(
@@ -40,7 +40,9 @@ export class SidebarComponent implements OnInit {
     this.menuService.getMenu();
     this.menuService.menu$.subscribe((data: NavItem[]) => {
       if (JSON.stringify(data) !== '{}') {
-        this.navItems = data;
+        if(!this.navItems){
+          this.navItems = data;
+        }
       }
     })
   }

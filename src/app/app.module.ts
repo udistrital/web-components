@@ -9,7 +9,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // services
 import { ConfiguracionService } from './services/configuracion.service';
 import { NotioasService } from './services/notioas.service';
-import { ImplicitAutenticationService } from './services/implicit_autentication.service';
 import { MenuAplicacionesService } from './services/menuAplicaciones.service';
 import { MenuService } from './services/menu.service'
 
@@ -60,7 +59,6 @@ import { TercerosFormComponent } from './terceros-form/terceros-form.component';
   providers: [
     ConfiguracionService,
     NotioasService,
-    ImplicitAutenticationService,
     MenuAplicacionesService,
     MenuService,
   ],

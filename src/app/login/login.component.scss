@@ -7,22 +7,22 @@
 }
 
 .button {
-    background: var(--color100);
+    background: var(--primary);
     border: 0;
     border-radius: 32px;
     box-shadow: 0 3px 6px rgba(#000, 0.2);
-    color: var(--primary);
+    color: var(--color100);
     font-family: inherit;
     font-size: 32px;
     line-height: 1;
-    margin: 8px 0 32px;
+    margin: 120px 0 32px;
     padding: 12px 40px;
     cursor: pointer;
 
     &:active,
     &:focus,
     &:hover {
-        color: var(--primary);
+        color: var(--color100);
         background: var(--color300);
         outline: 0;
         transition: background 0.3s ease-in-out;
@@ -36,7 +36,7 @@
     position: absolute;
     top: 0;
     z-index: 50;
-    background: var(--primary);
+    background: var(--color200);
 }
 
 .loading-panel {

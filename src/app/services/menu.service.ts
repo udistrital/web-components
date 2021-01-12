@@ -10,6 +10,9 @@ import { ImplicitAutenticationService } from './implicit_autentication.service';
 export class MenuService {
     public sidebar: boolean = false;
 
+    private optionSubject = new BehaviorSubject(false);
+    public option$ = this.optionSubject.asObservable();
+
     private sidebarSubject = new BehaviorSubject(false);
     public sidebar$ = this.sidebarSubject.asObservable();
 
@@ -57,6 +60,10 @@ export class MenuService {
                 }
             })
         }
+    }
+
+    public updateOption(option) {
+        this.optionSubject.next(option);
     }
 
     public closeNav() {
