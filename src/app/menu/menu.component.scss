@@ -39,3 +39,9 @@
     width: 34ex;
     padding-left: 15px ;
 }
+
+@media screen and (max-width: 425px) {
+    .mat-list-item .display-name {
+        width: 75vw;
+    }
+}

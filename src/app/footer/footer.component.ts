@@ -19,12 +19,12 @@ export class FooterComponent {
       list: [{
         title: 'Horario',
         class: 'access_time',
-        link: '',
+        link: '#',
         value: ['Lunes a viernes', '8am a 5pm']
       }, {
         title: 'Nombre',
         class: 'language',
-        link: '',
+        link: '#',
         value: ['Sistema Integrado de informática y  Telecomunicaciones '],
       }, {
         title: 'Phone',

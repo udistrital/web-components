@@ -70,7 +70,7 @@ export class OasComponent implements OnChanges {
             if (this.menuApps) {
               this.menuAppService.init(catalogo[this.entorno], data);
             }
-            this.username = data.user ? data.user.sub ? data.user.sub : '' : '';
+            this.username = data.user ? data.user.email ? (data.user.email.split('@')).shift(): '' : '';
             this.isLogin = false;
             this.isloading = true;
           } else {
@@ -115,14 +115,6 @@ export class OasComponent implements OnChanges {
 
   logoutEvent() {
     this.autenticacionService.logout();
-  }
-
-  ngAfterViewChecked() {
-    this.autenticacionService.user$
-      .subscribe((data: any) => {
-        this.user.emit(data);
-      });
-    this.cdr.detectChanges();
   }
 
   ngOnInit() {

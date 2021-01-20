@@ -28,7 +28,6 @@ export class AppComponent implements AfterViewInit {
       this.userData.userService = userService;
       console.log(this.userData);
     }
-
   }
 
   optionEvent(event) {
@@ -36,7 +35,6 @@ export class AppComponent implements AfterViewInit {
     if(Url) {
       console.log(Url);
     }
-
   }
 
 }

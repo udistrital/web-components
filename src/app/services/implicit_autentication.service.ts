@@ -15,11 +15,11 @@ export class ImplicitAutenticationService {
     logoutUrl: any;
     params: any;
     payload: any;
-    timeActiveAlert: 6000;
+    timeActiveAlert: 5000;
     private user: any;
     private timeLogoutBefore = 5000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
-    
+
     private userSubject = new BehaviorSubject({});
     public user$ = this.userSubject.asObservable();
 
@@ -31,7 +31,6 @@ export class ImplicitAutenticationService {
         this.environment = entorno;
         const id_token = window.localStorage.getItem('id_token');
         if (window.localStorage.getItem('id_token') === null) {
-
             var params = {}, queryString = location.hash.substring(1), regex = /([^&=]+)=([^&]*)/g;
             let m;
             while (m = regex.exec(queryString)) {
@@ -50,22 +49,22 @@ export class ImplicitAutenticationService {
                 window.localStorage.setItem('expires_in', params['expires_in']);
                 window.localStorage.setItem('state', params['state']);
                 window.localStorage.setItem('id_token', params['id_token']);
-                this.userSubject.next({ user: payload });
-                if (typeof payload.role !== 'undefined') {
-                    this.httpOptions = {
-                        headers: new HttpHeaders({
-                            'Accept': 'application/json',
-                            'Authorization': `Bearer ${params['access_token']}`,
-                        }),
-                    };
-                    this.user = { user: (payload.email.split('@'))[0] };
-                    this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
-                        user: (payload.email.split('@'))[0]
-                    }, this.httpOptions)
-                        .subscribe((res: any) => {
-                            this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
-                        });
-                }
+                // this.userSubject.next({ user: payload });
+                this.httpOptions = {
+                    headers: new HttpHeaders({
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${params['access_token']}`,
+                    }),
+                };
+                const userTemp = (payload.email.split('@')).shift();
+                this.user = { user: userTemp };
+                this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
+                    user: userTemp
+                }, this.httpOptions)
+                    .subscribe((res: any) => {
+                        console.log(res)
+                        this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
+                    });
             } else {
                 this.clearStorage();
             }
@@ -89,7 +88,8 @@ export class ImplicitAutenticationService {
                     'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
                 }),
             };
-            this.user = { user: (payload.email.split('@'))[0] };
+            const userTemp = (payload.email.split('@')).shift();
+            this.user = { user: userTemp };
             this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
                 user: (payload.email.split('@'))[0]
             }, this.httpOptions)
@@ -203,7 +203,7 @@ export class ImplicitAutenticationService {
         if (expires) {
             const expiresIn = ((new Date(expires)).getTime() - (new Date()).getTime());
             const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : 10;
-            if(!isNaN(expiresIn)) {
+            if (!isNaN(expiresIn)) {
                 console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
                 of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
                     this.logout();
@@ -215,7 +215,7 @@ export class ImplicitAutenticationService {
                             position: 'top-end',
                             icon: 'info',
                             title: `Su sesión se cerrará en ${this.timeAlert / 60000} minutos`,
-                            showConfirmButton: true,
+                            showConfirmButton: false,
                             timer: this.timeActiveAlert
                         });
                     });
