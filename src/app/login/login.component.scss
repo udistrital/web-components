@@ -5,6 +5,9 @@
     flex-grow: 1;
     justify-content: center;
 }
+.logotipo {
+    width: 25%;
+}
 
 .button {
     background: var(--primary);
@@ -22,10 +25,10 @@
     &:active,
     &:focus,
     &:hover {
-        color: var(--color100);
-        background: var(--color300);
+        // color: var(--primary);
+        background: var(--color700);
         outline: 0;
-        transition: background 0.3s ease-in-out;
+        transition: background 0.2s ease-in-out;
     }
 }
 
@@ -53,3 +56,16 @@
     width: 30%;
     margin-bottom: 3rem;
 }
+
+@media screen and (max-width: 855px) {
+    .logotipo {
+        width: 40%;
+    }
+}
+
+@media screen and (max-width: 425px) {
+    .logotipo {
+        width: 60%;
+    }
+}
+

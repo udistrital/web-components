@@ -32,7 +32,7 @@ enum VisibilityState {
       ),
       state(
         VisibilityState.Visible,
-        style({ transform: 'scaleX(1)  translate(-40%)' })
+        style({ transform: 'scaleX(1)  translate(-28%)' })
       ),
       transition('* => *', animate('400ms ease-in'))
     ])
@@ -41,6 +41,7 @@ enum VisibilityState {
 export class HeaderComponent {
   sidebar = false;
   load = true;
+  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/'
   @Input('appname') appname: any;
   @Input('username') username: any;
   @Output('logoutEvent') logoutEvent: EventEmitter<any> = new EventEmitter();

@@ -11,6 +11,8 @@ import { NotioasService } from '../services/notioas.service';
 export class MenuAplicacionesComponent implements OnInit {
 
   activo: any;
+  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/'
+
   constructor( public menuService: MenuAplicacionesService, public notioasService: NotioasService) {
 
   }

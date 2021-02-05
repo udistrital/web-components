@@ -1,5 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input, OnInit } from '@angular/core';
+import { distinct, distinctUntilChanged } from 'rxjs/operators';
 import { NavItem } from '../interfaces/nav-item';
 import { MenuService } from '../services/menu.service';
 enum VisibilityState {
@@ -28,6 +29,7 @@ enum VisibilityState {
 export class SidebarComponent implements OnInit {
   sidebarAnimation: VisibilityState = VisibilityState.Hidden;
   @Input() navItems: NavItem[];
+  @Input() appMenu: 'string';
 
   constructor(
     public menuService: MenuService,
@@ -35,16 +37,32 @@ export class SidebarComponent implements OnInit {
 
   }
   ngOnInit(): void {
+    this.menuService.menu$
+      .pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev[0]) === JSON.stringify(curr[0])))
+      .subscribe((data: NavItem[]) => {
+        if (JSON.stringify(data) !== '{}') {
+          if (!this.navItems) {
+            console.log(data)
+            this.navItems = data;
+          }
+        }
+      })
     this.menuService.sidebar$.subscribe((opened) =>
       (this.sidebarAnimation = opened ? VisibilityState.Visible : VisibilityState.Hidden));
-    this.menuService.getMenu();
-    this.menuService.menu$.subscribe((data: NavItem[]) => {
-      if (JSON.stringify(data) !== '{}') {
-        if(!this.navItems){
-          this.navItems = data;
+  }
+
+  ngOnChanges(changes): void {
+
+    if (changes.appMenu !== undefined) {
+      if (changes.appMenu.currentValue !== undefined) {
+        if (!changes.appMenu.nextValue) {
+          if (!this.navItems) {
+            this.menuService.getMenu(this.appMenu);
+          }
         }
       }
-    })
+    }
+
   }
 
 }

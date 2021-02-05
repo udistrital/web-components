@@ -15,7 +15,7 @@ export class ImplicitAutenticationService {
     logoutUrl: any;
     params: any;
     payload: any;
-    timeActiveAlert: 5000;
+    timeActiveAlert: number = 4000;
     private user: any;
     private timeLogoutBefore = 5000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
