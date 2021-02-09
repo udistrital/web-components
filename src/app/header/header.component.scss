@@ -25,14 +25,12 @@ i {
 
 .header-container {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    flex: 2 0 45%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+    grid-auto-rows: minmax(100px, auto);
     z-index: 1;
     background-color: white;
-    flex-shrink: 0;
-    justify-content: space-between;
-    margin-top: 0px;
     padding-left: 10px;
     box-shadow: 0 0.5rem 1rem 0 rgba(44, 51, 73, 0.1);
     position: fixed;
@@ -42,15 +40,16 @@ i {
 }
 
 .header-logo-container {
-    padding: 5px 0 5px 0;
+    padding: 0 0 5px 0;
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
 }
 
 .header-buttons-container {
     display: flex;
     justify-content: flex-end;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     margin: 0 20px;
 }

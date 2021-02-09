@@ -1,10 +1,10 @@
 <div class="header-container">
     <div class="header-logo-container">
         <img [@iconAnimation]="!sidebar?'visible':'hidden'" (click)="openSidebar()"
-         src="{{appname?basePathAssets + 'isotipos_aplicativos_svg/' + appname + '.svg':''}}" 
+         src="{{basePathAssets + 'isotipos_aplicativos_svg/' + appname + '.svg'}}" 
          alt="{{'isotipo aplicación ' + appname}}" class="logotipo"/>
         <img [@logoAnimation]="sidebar?'visible':'hidden'"  (click)="closeSidebar()" 
-        src="{{appname?basePathAssets + 'logotipos_aplicativos_svg/' + appname + '.svg':''}}"
+        src="{{basePathAssets + 'logotipos_aplicativos_svg/' + appname + '.svg'}}"
         alt="{{'logotipo aplicación ' + appname}}" class="logotipo"/>
     </div>
     <div class="header-buttons-container">
@@ -25,7 +25,6 @@
         </div>
     </div>
 </div>
-<meta name="Header" content="Contiene componente de notificaciones y aplicaciones">
 <ng-uui-notioas></ng-uui-notioas>
 <ng-uui-menu-aplicaciones></ng-uui-menu-aplicaciones>
 <!-- <ng-uui-load [hidden]="!load"></ng-uui-load> -->

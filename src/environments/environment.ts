@@ -4,7 +4,7 @@ export const environment = {
   autenticacion: true,
   notificaciones: false,
   menuApps: true,
-  appname: 'arka',
+  appname: 'core',
   appMenu: 'CONFIGURACION',
   assets: 'https://pruebasassets.portaloas.udistrital.edu.co/',
   NUXEO: {

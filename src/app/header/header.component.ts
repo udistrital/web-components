@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Input, ViewEncapsulation, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectorRef, Output, EventEmitter, OnChanges } from '@angular/core';
 import { MenuService } from '../services/menu.service';
 import { MenuAplicacionesService } from './../services/menuAplicaciones.service';
 import { NotioasService } from './../services/notioas.service';
@@ -38,7 +38,7 @@ enum VisibilityState {
     ])
   ]
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnChanges {
   sidebar = false;
   load = true;
   basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/'
@@ -53,6 +53,7 @@ export class HeaderComponent {
     public menuAplicacionesService: MenuAplicacionesService,
   ) {
     menuService.sidebar$.subscribe((data) => (this.sidebar = data));
+    console.log('se construyó header')
   }
 
   ngOnInit() {
@@ -78,6 +79,14 @@ export class HeaderComponent {
     this.logoutEvent.next('clicked')
   }
 
+  ngOnChanges(changes): void {
+    if (changes.appname !== undefined) {
+      if (changes.appname.currentValue !== undefined) {
+        this.appname = changes.appname.currentValue;
+        console.log(this.appname)
+      }
+    }
+  }
   toogleCerrarSesion(): void {
     const buttonCerrarSesion = document.getElementById('header-button-cerrarsesion-container');
     if (buttonCerrarSesion.style.display === 'none' || buttonCerrarSesion.style.display === '') {
