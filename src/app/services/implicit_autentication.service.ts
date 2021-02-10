@@ -62,7 +62,7 @@ export class ImplicitAutenticationService {
                     user: userTemp
                 }, this.httpOptions)
                     .subscribe((res: any) => {
-                        console.log(res)
+                        this.clearUrl();
                         this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
                     });
             } else {
@@ -94,6 +94,7 @@ export class ImplicitAutenticationService {
                 user: (payload.email.split('@'))[0]
             }, this.httpOptions)
                 .subscribe((res: any) => {
+                    this.clearUrl();
                     this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
                 });
         }
@@ -202,7 +203,7 @@ export class ImplicitAutenticationService {
     autologout(expires): void {
         if (expires) {
             const expiresIn = ((new Date(expires)).getTime() - (new Date()).getTime());
-            const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : 10;
+            const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : this.timeLogoutBefore;
             if (!isNaN(expiresIn)) {
                 console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
                 of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
