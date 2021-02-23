@@ -23,6 +23,9 @@ export class ImplicitAutenticationService {
     private userSubject = new BehaviorSubject({});
     public user$ = this.userSubject.asObservable();
 
+    private menuSubject = new BehaviorSubject({});
+    public menu$ = this.menuSubject.asObservable();
+
     httpOptions: { headers: HttpHeaders; };
     constructor(private httpClient: HttpClient) {
 
@@ -56,15 +59,7 @@ export class ImplicitAutenticationService {
                         'Authorization': `Bearer ${params['access_token']}`,
                     }),
                 };
-                const userTemp = (payload.email.split('@')).shift();
-                this.user = { user: userTemp };
-                this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
-                    user: userTemp
-                }, this.httpOptions)
-                    .subscribe((res: any) => {
-                        this.clearUrl();
-                        this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
-                    });
+                this.updateAuth(payload);
             } else {
                 this.clearStorage();
             }
@@ -82,6 +77,19 @@ export class ImplicitAutenticationService {
         } else {
             const id_token = window.localStorage.getItem('id_token').split('.');
             const payload = JSON.parse(atob(id_token[1]));
+            this.updateAuth(payload);
+        }
+        const expires = this.setExpiresAt();
+        this.autologout(expires);
+        this.clearUrl();
+    }
+
+
+    updateAuth(payload) {
+        const user = localStorage.getItem('user');
+        if (user) {
+            this.userSubject.next(JSON.parse(atob(user)));
+        } else {
             this.httpOptions = {
                 headers: new HttpHeaders({
                     'Accept': 'application/json',
@@ -95,14 +103,17 @@ export class ImplicitAutenticationService {
             }, this.httpOptions)
                 .subscribe((res: any) => {
                     this.clearUrl();
+                    localStorage.setItem('user', btoa(JSON.stringify({ ...{ user: payload }, ...{ userService: res } })));
                     this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
                 });
+            this.httpOptions = {
+                headers: new HttpHeaders({
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                }),
+            };
         }
-        const expires = this.setExpiresAt();
-        this.autologout(expires);
-        this.clearUrl();
     }
-
 
     public logout(): void {
         const state = localStorage.getItem('state');
@@ -235,6 +246,8 @@ export class ImplicitAutenticationService {
         window.localStorage.removeItem('state');
         window.localStorage.removeItem('expires_at');
         window.localStorage.removeItem('menu');
+        window.localStorage.removeItem('user');
+        window.localStorage.removeItem('apps_menu');
 
     }
 }

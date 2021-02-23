@@ -56,7 +56,6 @@ export class MenuService {
                                     Opciones: []
                                 }]
                                     , ...navItems];
-                                console.log("Menú", data)
                                 this.updateMenu(navItems);
                             })
                     }

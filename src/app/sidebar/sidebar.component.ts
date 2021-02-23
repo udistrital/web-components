@@ -42,7 +42,6 @@ export class SidebarComponent implements OnInit {
       .subscribe((data: NavItem[]) => {
         if (JSON.stringify(data) !== '{}') {
           if (!this.navItems) {
-            console.log(data)
             this.navItems = data;
           }
         }

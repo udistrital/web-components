@@ -97,7 +97,6 @@ export class OasComponent implements OnChanges {
   ngOnChanges(changes): void {
     if (changes.environment !== undefined) {
       if (changes.environment.currentValue !== undefined) {
-        console.log(changes.environment.currentValue)
         const { CONFIGURACION_SERVICE, NOTIFICACION_SERVICE, entorno, notificaciones, menuApps, appMenu, navItems, appname, autenticacion, TOKEN } = changes.environment.currentValue;
         this.appMenu = appMenu;
         this.navItems = navItems;

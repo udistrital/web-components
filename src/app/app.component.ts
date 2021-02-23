@@ -24,14 +24,12 @@ export class AppComponent implements AfterViewInit {
     if(userService && user && !this.userData.user && !this.userData.userService){
       this.userData.user = user;
       this.userData.userService = userService;
-      console.log(this.userData);
     }
   }
 
   optionEvent(event) {
     const {Url} = event;
     if(Url) {
-      console.log(Url);
     }
   }
 

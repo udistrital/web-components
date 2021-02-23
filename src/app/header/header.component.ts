@@ -53,7 +53,6 @@ export class HeaderComponent implements OnChanges {
     public menuAplicacionesService: MenuAplicacionesService,
   ) {
     menuService.sidebar$.subscribe((data) => (this.sidebar = data));
-    console.log('se construyó header')
   }
 
   ngOnInit() {
@@ -83,7 +82,6 @@ export class HeaderComponent implements OnChanges {
     if (changes.appname !== undefined) {
       if (changes.appname.currentValue !== undefined) {
         this.appname = changes.appname.currentValue;
-        console.log(this.appname)
       }
     }
   }
