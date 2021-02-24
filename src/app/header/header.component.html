@@ -1,10 +1,10 @@
 <div class="header-container">
     <div class="header-logo-container">
         <img [@iconAnimation]="!sidebar?'visible':'hidden'" (click)="openSidebar()"
-         src="{{basePathAssets + 'isotipos_aplicativos_svg/' + appname + '.svg'}}" 
+         src="{{appname?basePathAssets + 'isotipos_aplicativos_svg/' + appname + '.svg':''}}" 
          alt="{{'isotipo aplicación ' + appname}}" class="logotipo"/>
         <img [@logoAnimation]="sidebar?'visible':'hidden'"  (click)="closeSidebar()" 
-        src="{{basePathAssets + 'logotipos_aplicativos_svg/' + appname + '.svg'}}"
+        src="{{appname?basePathAssets + 'logotipos_aplicativos_svg/' + appname + '.svg':''}}"
         alt="{{'logotipo aplicación ' + appname}}" class="logotipo"/>
     </div>
     <div class="header-buttons-container">

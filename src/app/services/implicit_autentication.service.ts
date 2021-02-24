@@ -17,7 +17,7 @@ export class ImplicitAutenticationService {
     payload: any;
     timeActiveAlert: number = 4000;
     private user: any;
-    private timeLogoutBefore = 5000; // logout before in miliseconds
+    private timeLogoutBefore = 2000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
 
     private userSubject = new BehaviorSubject({});
@@ -218,6 +218,7 @@ export class ImplicitAutenticationService {
             if (!isNaN(expiresIn)) {
                 console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
                 of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
+                    // pending solve only clearStorage
                     this.logout();
                     this.clearStorage();
                 });
