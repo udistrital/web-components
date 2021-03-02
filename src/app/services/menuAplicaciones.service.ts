@@ -21,7 +21,6 @@ export class MenuAplicacionesService {
     constructor(
         private configuracionService: ConfiguracionService,
     ) {
-       
         fromEvent(document, 'mouseup').subscribe((data: any) => {
             if (this.activo) {
                 if (data.path) {

@@ -5,19 +5,20 @@ import { Md5 } from 'ts-md5';
 import { BehaviorSubject, of } from 'rxjs';
 import Swal from 'sweetalert2';
 import { delay } from 'rxjs/operators';
+import { HostListener } from '@angular/core';
+
 @Injectable({
     providedIn: 'root',
 })
 
 export class ImplicitAutenticationService {
-
     environment: any;
     logoutUrl: any;
     params: any;
     payload: any;
     timeActiveAlert: number = 4000;
     private user: any;
-    private timeLogoutBefore = 2000; // logout before in miliseconds
+    private timeLogoutBefore = 1000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
 
     private userSubject = new BehaviorSubject({});
@@ -28,7 +29,12 @@ export class ImplicitAutenticationService {
 
     httpOptions: { headers: HttpHeaders; };
     constructor(private httpClient: HttpClient) {
-
+        document.addEventListener("visibilitychange", () => {
+            if(document.visibilityState === 'visible') {
+                const expires = this.setExpiresAt();
+                this.autologout(expires);
+            }
+        });
     }
     init(entorno): any {
         this.environment = entorno;
@@ -214,24 +220,27 @@ export class ImplicitAutenticationService {
     autologout(expires): void {
         if (expires) {
             const expiresIn = ((new Date(expires)).getTime() - (new Date()).getTime());
-            const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : this.timeLogoutBefore;
-            if (!isNaN(expiresIn)) {
-                console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
-                of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
-                    // pending solve only clearStorage
-                    this.logout();
-                    this.clearStorage();
-                });
-                if (this.timeAlert < timerDelay) {
-                    of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'info',
-                            title: `Su sesión se cerrará en ${this.timeAlert / 60000} minutos`,
-                            showConfirmButton: false,
-                            timer: this.timeActiveAlert
-                        });
+            if (expiresIn < this.timeLogoutBefore) {
+                this.clearStorage();
+                location.reload();
+            } else {
+                const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : this.timeLogoutBefore;
+                if (!isNaN(expiresIn)) {
+                    console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
+                    of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
+                        this.logout();
                     });
+                    if (this.timeAlert < timerDelay) {
+                        of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'info',
+                                title: `Su sesión se cerrará en ${this.timeAlert / 60000} minutos`,
+                                showConfirmButton: false,
+                                timer: this.timeActiveAlert
+                            });
+                        });
+                    }
                 }
             }
         }
