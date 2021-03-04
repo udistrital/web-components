@@ -13,6 +13,7 @@ export class FooterComponent {
   final: any;
   copyright: any;
   social: any;
+  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
 
   constructor() {
     this.social = {

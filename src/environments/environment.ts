@@ -4,8 +4,8 @@ export const environment = {
   autenticacion: true,
   notificaciones: false,
   menuApps: true,
-  appname: 'core',
-  appMenu: 'CONFIGURACION',
+  appname: 'alternancia',
+  appMenu: 'alternancia',
   assets: 'https://pruebasassets.portaloas.udistrital.edu.co/',
   NUXEO: {
     PATH: 'https://documental.udistrital.edu.co/nuxeo/',
