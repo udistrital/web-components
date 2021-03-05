@@ -44,20 +44,18 @@
     position: absolute;
     top: 0;
     z-index: 50;
-    background: var(--color200);
+    background: #FFFFFE;
 }
 
 .login-header {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-
 }
 
 .credit {
-    margin-left: 1rem;
-    padding-left: 1rem;
-    border-left: 1px solid #000;
+    width: 200px;
+    font-size:12px ;
 }
 
 .loading-panel {
@@ -75,6 +73,11 @@
     margin-bottom: 3rem;
 }
 
+.footer-login {
+    display: flex;
+    justify-content: flex-end;
+}
+
 @media screen and (max-width: 855px) {
     .logotipo {
         width: 40%;
@@ -82,6 +85,16 @@
     .header-login{
         width: 40%;
     }
+    .login-header {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .footer-login {
+        justify-content: center;
+        text-align: center
+    }
+
 }
 
 @media screen and (max-width: 425px) {
@@ -90,6 +103,13 @@
     }
     .header-login{
         width: 60%;
+    }
+    .login-header {
+        justify-content: center;
+    }
+
+    .footer-login {
+        justify-content: center;
     }
 }
 
