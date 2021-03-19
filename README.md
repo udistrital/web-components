@@ -1,27 +1,65 @@
-# Webcomponents
+# webcomponent
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.4.
+Cliente de generación de web-component ng-uui-oas
 
-## Development server
+## Especificaciones Técnicas
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+### Tecnologías Implementadas y Versiones
+* [Angular 11.2.1](https://angular.io/)
 
-## Code scaffolding
+### Variables de Entorno
+```shell
+# En Pipeline
+SLACK_AND_WEBHOOK: WEBHOOK ..
+AWS_ACCESS_KEY_ID: llave de acceso ID Usuario AWS
+AWS_SECRET_ACCESS_KEY: Secreto de Usuario AWS
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Ejecución del Proyecto
 
-## Build
+Clonar el proyecto del repositorio de git
+```bash
+# clone the project
+git clone https://github.com/udistrital/web-components.git
+# enter the project directory
+cd web-components
+```
+Iniciar el servidor en local
+```bash
+# install dependency
+npx npm install
+or
+npm install
+# start server
+npm start 
+# Whenever you want to change the port just run
+npx ng dev --port = 9528
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Construcción del web-component
+```bash
+# task build
+npm run build
 
-## Running unit tests
+# genera lo siguiente
+dist
+ - web-component(folder)
+ - web-component.js
+```
+## Estado CI
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+| Develop | Relese 0.0.1 | Master |
+| -- | -- | -- |
+| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/alternancia_cliente/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/alternancia_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/alternancia_cliente/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/alternancia_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/alternancia_cliente/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/alternancia_cliente) |
 
-## Running end-to-end tests
+## Licencia
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+[This file is part of sga_cliente.](LICENSE)
 
-## Further help
+alternancia_cliente is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (atSara Sampaio your option) any later version.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+alternancia_cliente is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with alternancia_cliente. If not, see https://www.gnu.org/licenses/.
+
+

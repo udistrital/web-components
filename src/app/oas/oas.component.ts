@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, ViewEncapsulation } from '@angular/core';
 import { ConfiguracionService } from '../services/configuracion.service';
 import { ImplicitAutenticationService } from '../services/implicit_autentication.service';
 import { MenuService } from '../services/menu.service';
@@ -33,13 +33,15 @@ if (!("path" in Event.prototype))
 export class OasComponent implements OnChanges {
   @Output('user') user: EventEmitter<any> = new EventEmitter();
   @Output('option') option: EventEmitter<any> = new EventEmitter();
+  @Output('logout') logout: EventEmitter<any> = new EventEmitter();
   // tslint:disable-next-line: no-input-rename
   @Input('environment') environment: any;
   opened: boolean = false;
   isLogin = false;
   userInfo = null;
-  userInfoService  = null;
+  userInfoService = null;
   appname: null;
+  appMenu: string;
   username: '';
   isloading: boolean;
   notificaciones: false;
@@ -47,6 +49,7 @@ export class OasComponent implements OnChanges {
   CONFIGURACION_SERVICE: any;
   NOTIFICACION_SERVICE: any;
   entorno: any;
+  navItems: any;
   constructor(
     private confService: ConfiguracionService,
     private notioasService: NotioasService,
@@ -56,7 +59,14 @@ export class OasComponent implements OnChanges {
     private autenticacionService: ImplicitAutenticationService,
   ) {
     this.menuService.sidebar$.subscribe((opened) => (this.opened = opened));
-    this.menuService.option$.subscribe((op) => (this.option.emit(op)));
+    this.menuService.option$.subscribe((op) => {
+      setTimeout(() => (this.option.emit(op)), 100)
+    });
+    this.autenticacionService.logout$.subscribe((logoutEvent: any) => {
+      if(logoutEvent) {
+        this.logout.emit(logoutEvent);
+      }
+    })
     this.autenticacionService.user$.subscribe((data: any) => {
       if (JSON.stringify(data) !== '{}' && this.username !== '') {
         setTimeout(() => {
@@ -70,12 +80,12 @@ export class OasComponent implements OnChanges {
             if (this.menuApps) {
               this.menuAppService.init(catalogo[this.entorno], data);
             }
-            this.username = data.user ? data.user.sub ? data.user.sub : '' : '';
+            this.username = data.user ? data.user.email ? (data.user.email.split('@')).shift() : '' : '';
             this.isLogin = false;
             this.isloading = true;
           } else {
             this.isLogin = true;
-            setTimeout(() => { this.isloading ? this.isloading = false : this.isloading = true }, 2500)
+            // setTimeout(() => { this.isloading ? this.isloading = false : this.isloading = true }, 2500)
           }
         }
           , 100)
@@ -93,8 +103,10 @@ export class OasComponent implements OnChanges {
   ngOnChanges(changes): void {
     if (changes.environment !== undefined) {
       if (changes.environment.currentValue !== undefined) {
-        this.appname = changes.environment.currentValue.appname ? changes.environment.currentValue.appname : '';
-        const { CONFIGURACION_SERVICE, NOTIFICACION_SERVICE, entorno, notificaciones, menuApps, autenticacion, TOKEN } = changes.environment.currentValue;
+        const { CONFIGURACION_SERVICE, NOTIFICACION_SERVICE, entorno, notificaciones, menuApps, appMenu, navItems, appname, autenticacion, TOKEN } = changes.environment.currentValue;
+        this.appMenu = appMenu;
+        this.navItems = navItems;
+        this.appname = appname;
         this.notificaciones = notificaciones;
         this.menuApps = menuApps;
         this.entorno = entorno;
@@ -114,15 +126,7 @@ export class OasComponent implements OnChanges {
   }
 
   logoutEvent() {
-    this.autenticacionService.logout();
-  }
-
-  ngAfterViewChecked() {
-    this.autenticacionService.user$
-      .subscribe((data: any) => {
-        this.user.emit(data);
-      });
-    this.cdr.detectChanges();
+    this.autenticacionService.logout('action-event');
   }
 
   ngOnInit() {

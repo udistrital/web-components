@@ -1,5 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Input, ViewEncapsulation, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectorRef, Output, EventEmitter, OnChanges } from '@angular/core';
+import { fromEvent } from 'rxjs';
 import { MenuService } from '../services/menu.service';
 import { MenuAplicacionesService } from './../services/menuAplicaciones.service';
 import { NotioasService } from './../services/notioas.service';
@@ -32,18 +33,22 @@ enum VisibilityState {
       ),
       state(
         VisibilityState.Visible,
-        style({ transform: 'scaleX(1)  translate(-40%)' })
+        style({ transform: 'scaleX(1)  translate(-28%)' })
       ),
       transition('* => *', animate('400ms ease-in'))
     ])
   ]
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnChanges {
   sidebar = false;
   load = true;
+  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/'
   @Input('appname') appname: any;
   @Input('username') username: any;
+  @Input('notificaciones') notificaciones: any;
+  @Input('menuApps') menuApps: any;
   @Output('logoutEvent') logoutEvent: EventEmitter<any> = new EventEmitter();
+  cerrarSesion: boolean = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -55,6 +60,16 @@ export class HeaderComponent {
   }
 
   ngOnInit() {
+    const up$ = fromEvent(document, 'mouseup');
+    up$.subscribe((data: any) => {
+        if (this.cerrarSesion) {
+            if (((data.path
+                .map((info: any) => { return (info.localName) }))
+                .filter((data: any) => (data === 'header-button-cerrarsesion-container'))).length === 0) {
+                this.toogleCerrarSesion();
+            }
+        }
+    });
   }
 
   sidebarClases = {
@@ -77,11 +92,20 @@ export class HeaderComponent {
     this.logoutEvent.next('clicked')
   }
 
+  ngOnChanges(changes): void {
+    if (changes.appname !== undefined) {
+      if (changes.appname.currentValue !== undefined) {
+        this.appname = changes.appname.currentValue;
+      }
+    }
+  }
   toogleCerrarSesion(): void {
     const buttonCerrarSesion = document.getElementById('header-button-cerrarsesion-container');
     if (buttonCerrarSesion.style.display === 'none' || buttonCerrarSesion.style.display === '') {
+      this.cerrarSesion = true;
       buttonCerrarSesion.style.display = 'block';
     } else {
+      this.cerrarSesion = false;
       buttonCerrarSesion.style.display = 'none';
     }
   }

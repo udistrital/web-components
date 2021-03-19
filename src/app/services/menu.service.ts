@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, fromEvent } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { ConfiguracionService } from './configuracion.service';
 import { ImplicitAutenticationService } from './implicit_autentication.service';
 
@@ -35,16 +34,19 @@ export class MenuService {
         });
     }
 
-    getMenu() {
+    getMenu(appMenu) {
         const menuInfo = localStorage.getItem('menu');
         if (menuInfo) {
             this.menuSubject.next(JSON.parse(atob(menuInfo)));
         } else {
-            this.userService.user$.subscribe((user: any) => {
-                if (user) {
-                    const role = user.user ? user.user.role ? user.user.role.filter((menu) => (menu !== 'Internal/everyone')).join(',') : "" : "";
-                    if (role !== '') {
-                        this.configuracionService.getMenu(role, environment.appMenu, 'menu_opcion_padre/ArbolMenus')
+            this.userService.user$.subscribe((userResponse: any) => {
+                const { user, userService } = userResponse;
+                if (user && userService) {
+                    const role1 = user ? user.role ? user.role.filter((menu) => (menu !== 'Internal/everyone')) : [] : [];
+                    const role2 = userService ? userService.role ? userService.role.filter((menu) => (menu !== 'Internal/everyone')) : [] : [];
+                    const roles = [...role1, ...role2].length > 0 ? ([...role1, ...role2]).join(',') : '';
+                    if (roles !== '') {
+                        this.configuracionService.getMenu(roles, appMenu, 'menu_opcion_padre/ArbolMenus')
                             .subscribe((data) => {
                                 let navItems = data;
                                 navItems = [...[{

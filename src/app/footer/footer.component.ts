@@ -13,18 +13,19 @@ export class FooterComponent {
   final: any;
   copyright: any;
   social: any;
+  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
 
   constructor() {
     this.social = {
       list: [{
         title: 'Horario',
         class: 'access_time',
-        link: '',
+        link: '#',
         value: ['Lunes a viernes', '8am a 5pm']
       }, {
         title: 'Nombre',
         class: 'language',
-        link: '',
+        link: '#',
         value: ['Sistema Integrado de informática y  Telecomunicaciones '],
       }, {
         title: 'Phone',

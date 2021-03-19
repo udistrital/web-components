@@ -67,15 +67,8 @@ export class AppModule {
     constructor(
         private injector: Injector
     ) {
-
         const oas = createCustomElement(OasComponent, { injector });
         customElements.define('ng-uui-oas', oas);
-
-        const footer = createCustomElement(FooterComponent, { injector });
-        customElements.define('ng-uui-footer', footer);
-
-        const terceros = createCustomElement(TercerosFormComponent, { injector });
-        customElements.define('ng-uui-terceros-form', terceros);
     }
     ngDoBootstrap() { }
 }

@@ -1,6 +1,5 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { environment } from './../../src/environments/environment';
-import { NavItem } from './interfaces/nav-item';
 import { MenuService } from './services/menu.service';
 
 @Component({
@@ -12,11 +11,10 @@ import { MenuService } from './services/menu.service';
 export class AppComponent implements AfterViewInit {
   opened: boolean = false;
   userData = {user: null, userService: null}
+  environment = environment;
   constructor(private menuService: MenuService) {
     this.menuService.sidebar$.subscribe((opened) => (this.opened = opened))
   }
-
-  environment = environment;
 
   ngAfterViewInit() {
   }
@@ -26,17 +24,13 @@ export class AppComponent implements AfterViewInit {
     if(userService && user && !this.userData.user && !this.userData.userService){
       this.userData.user = user;
       this.userData.userService = userService;
-      console.log(this.userData);
     }
-
   }
 
   optionEvent(event) {
     const {Url} = event;
     if(Url) {
-      console.log(Url);
     }
-
   }
 
 }

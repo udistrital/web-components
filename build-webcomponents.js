@@ -9,6 +9,6 @@ build = async () =>{
         // './dist/angular-web-components/scripts.js',
         './dist/webcomponents/main.js'
       ];
-      await concat(files, 'web-components.js');
+      await concat(files, './dist/web-components.js');
 }
 build();

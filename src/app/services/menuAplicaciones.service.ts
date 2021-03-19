@@ -21,7 +21,6 @@ export class MenuAplicacionesService {
     constructor(
         private configuracionService: ConfiguracionService,
     ) {
-       
         fromEvent(document, 'mouseup').subscribe((data: any) => {
             if (this.activo) {
                 if (data.path) {
@@ -61,20 +60,27 @@ export class MenuAplicacionesService {
     public getAplication(): any {
         const idToken = localStorage.getItem('id_token');
         const accessToken = localStorage.getItem('access_token');
-        if (idToken !== null && accessToken !== null) {
-            this.configuracionService.post('aplicacion_rol/aplicacion_rol', this.roles)
-                .subscribe((data: any) => {
-                    let nuevasAplicaciones = this.categorias.map((categoria: any) => {
-                        categoria.aplicaciones = categoria.aplicaciones.filter((aplicacion: any) => (this.existe(aplicacion.nombre, data)));
-                        categoria.aplicaciones = categoria.aplicaciones.map((app: any) => {
-                            return { ...app, ...{ estilo_logo: app.estilo.split('-')[0] } };
+        const appsMenu = localStorage.getItem('apps_menu');
+        if (appsMenu) {
+            this.dataFilterSubject.next(JSON.parse(atob(appsMenu)));
+        } else {
+            if (idToken !== null && accessToken !== null) {
+                this.configuracionService.post('aplicacion_rol/aplicacion_rol', this.roles)
+                    .subscribe((data: any) => {
+                        let nuevasAplicaciones = this.categorias.map((categoria: any) => {
+                            categoria.aplicaciones = categoria.aplicaciones.filter((aplicacion: any) => (this.existe(aplicacion.nombre, data)));
+                            categoria.aplicaciones = categoria.aplicaciones.map((app: any) => {
+                                return { ...app, ...{ estilo_logo: app.estilo.split('-')[0] } };
+                            });
+                            return categoria;
                         });
-                        return categoria;
+                        nuevasAplicaciones = nuevasAplicaciones.filter((categoria) => (categoria.aplicaciones.length > 0));
+                        this.dataFilterSubject.next(nuevasAplicaciones);
+                        localStorage.setItem('apps_menu', btoa(JSON.stringify(nuevasAplicaciones)));
+
                     });
-                    nuevasAplicaciones = nuevasAplicaciones.filter((categoria) => (categoria.aplicaciones.length > 0));
-                    this.dataFilterSubject.next(nuevasAplicaciones);
-                });
-            return this.eventFilter$;
+                return this.eventFilter$;
+            }
         }
     }
 

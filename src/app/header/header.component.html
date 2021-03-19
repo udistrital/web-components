@@ -1,15 +1,17 @@
-<link href="https://pruebasassets.portaloas.udistrital.edu.co/isotipo-header.css" rel="stylesheet">
-<link href="https://pruebasassets.portaloas.udistrital.edu.co/logo-header.css" rel="stylesheet">
 <div class="header-container">
     <div class="header-logo-container">
-        <div [@iconAnimation]="!sidebar?'visible':'hidden'" id="{{appname}}" class="menu-app" (click)="openSidebar()"></div>
-        <div [@logoAnimation]="sidebar?'visible':'hidden'" id="{{appname}}-header" class="logo-header" (click)="closeSidebar()"></div>
+        <img [@iconAnimation]="!sidebar?'visible':'hidden'" (click)="openSidebar()"
+         src="{{appname?basePathAssets + 'isotipos_aplicativos_svg/' + appname + '.svg':''}}" 
+         alt="{{'isotipo aplicación ' + appname}}" class="logotipo"/>
+        <img [@logoAnimation]="sidebar?'visible':'hidden'"  (click)="closeSidebar()" 
+        src="{{appname?basePathAssets + 'logotipos_aplicativos_svg/' + appname + '.svg':''}}"
+        alt="{{'logotipo aplicación ' + appname}}" class="logotipo"/>
     </div>
     <div class="header-buttons-container">
-        <div class="header-button-apps-container" (click)="toogleAplicaciones()">
+        <div class="header-button-apps-container" *ngIf="menuApps" (click)="toogleAplicaciones()">
             <span class="material-icons"> apps </span>
         </div>
-        <div class="header-button-notification" (click)="togglenotify()">
+        <div class="header-button-notification"  *ngIf="notificaciones" (click)="togglenotify()">
             <span class="material-icons">notifications</span>
         </div>
         <div class="header-button-user-container" (click)="toogleCerrarSesion()">

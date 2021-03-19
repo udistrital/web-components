@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "serve": "http-server --port 5000",
     "start": "ng serve",
-    "build": "ng build --prod --output-hashing=none && node build-webcomponents.js",
+    "build": "ng build  --prod --output-hashing=none && node build-webcomponents.js",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

@@ -67,7 +67,7 @@ export class NotioasService {
         console.info('...Init lib notificaciones');
         this.NOTIFICACION_SERVICE = pathNotificacion;
             if (typeof userData.user !== 'undefined') {
-                this.user = userData.user ? userData.user.user ? userData.user.user : userData.user.sub ? userData.user.sub : userData.user.email ? userData.user.email.split('@').shift() : '' : '';
+                this.user = userData.user ? userData.user.email ? userData.user.email.split('@').shift() : '' : '' ;
                 this.roles = userData.user.role ? userData.user.role : [];
                 this.connect();
                 this.queryNotification();

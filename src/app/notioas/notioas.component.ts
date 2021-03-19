@@ -11,6 +11,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 export class NotioasComponent implements OnInit {
   searchTerm$ = new Subject<string>();
   notificaciones: any;
+  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
   // tslint:disable-next-line: ban-types
   activo: Boolean = false;
 

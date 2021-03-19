@@ -5,33 +5,44 @@ import { Md5 } from 'ts-md5';
 import { BehaviorSubject, of } from 'rxjs';
 import Swal from 'sweetalert2';
 import { delay } from 'rxjs/operators';
+import { HostListener } from '@angular/core';
+
 @Injectable({
     providedIn: 'root',
 })
 
 export class ImplicitAutenticationService {
-
     environment: any;
     logoutUrl: any;
     params: any;
     payload: any;
-    timeActiveAlert: 6000;
+    timeActiveAlert: number = 4000;
     private user: any;
-    private timeLogoutBefore = 5000; // logout before in miliseconds
+    private timeLogoutBefore = 1000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
-    
+
     private userSubject = new BehaviorSubject({});
     public user$ = this.userSubject.asObservable();
 
+    private menuSubject = new BehaviorSubject({});
+    public menu$ = this.menuSubject.asObservable();
+
+    private logoutSubject = new BehaviorSubject('');
+    public logout$ = this.logoutSubject.asObservable();
+
     httpOptions: { headers: HttpHeaders; };
     constructor(private httpClient: HttpClient) {
-
+        document.addEventListener("visibilitychange", () => {
+            if(document.visibilityState === 'visible') {
+                const expires = this.setExpiresAt();
+                this.autologout(expires);
+            }
+        });
     }
     init(entorno): any {
         this.environment = entorno;
         const id_token = window.localStorage.getItem('id_token');
         if (window.localStorage.getItem('id_token') === null) {
-
             var params = {}, queryString = location.hash.substring(1), regex = /([^&=]+)=([^&]*)/g;
             let m;
             while (m = regex.exec(queryString)) {
@@ -50,22 +61,14 @@ export class ImplicitAutenticationService {
                 window.localStorage.setItem('expires_in', params['expires_in']);
                 window.localStorage.setItem('state', params['state']);
                 window.localStorage.setItem('id_token', params['id_token']);
-                this.userSubject.next({ user: payload });
-                if (typeof payload.role !== 'undefined') {
-                    this.httpOptions = {
-                        headers: new HttpHeaders({
-                            'Accept': 'application/json',
-                            'Authorization': `Bearer ${params['access_token']}`,
-                        }),
-                    };
-                    this.user = { user: (payload.email.split('@'))[0] };
-                    this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
-                        user: (payload.email.split('@'))[0]
-                    }, this.httpOptions)
-                        .subscribe((res: any) => {
-                            this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
-                        });
-                }
+                // this.userSubject.next({ user: payload });
+                this.httpOptions = {
+                    headers: new HttpHeaders({
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${params['access_token']}`,
+                    }),
+                };
+                this.updateAuth(payload);
             } else {
                 this.clearStorage();
             }
@@ -83,19 +86,7 @@ export class ImplicitAutenticationService {
         } else {
             const id_token = window.localStorage.getItem('id_token').split('.');
             const payload = JSON.parse(atob(id_token[1]));
-            this.httpOptions = {
-                headers: new HttpHeaders({
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                }),
-            };
-            this.user = { user: (payload.email.split('@'))[0] };
-            this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
-                user: (payload.email.split('@'))[0]
-            }, this.httpOptions)
-                .subscribe((res: any) => {
-                    this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
-                });
+            this.updateAuth(payload);
         }
         const expires = this.setExpiresAt();
         this.autologout(expires);
@@ -103,7 +94,37 @@ export class ImplicitAutenticationService {
     }
 
 
-    public logout(): void {
+    updateAuth(payload) {
+        const user = localStorage.getItem('user');
+        if (user) {
+            this.userSubject.next(JSON.parse(atob(user)));
+        } else {
+            this.httpOptions = {
+                headers: new HttpHeaders({
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                }),
+            };
+            const userTemp = (payload.email.split('@')).shift();
+            this.user = { user: userTemp };
+            this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
+                user: (payload.email.split('@'))[0]
+            }, this.httpOptions)
+                .subscribe((res: any) => {
+                    this.clearUrl();
+                    localStorage.setItem('user', btoa(JSON.stringify({ ...{ user: payload }, ...{ userService: res } })));
+                    this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
+                });
+            this.httpOptions = {
+                headers: new HttpHeaders({
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                }),
+            };
+        }
+    }
+
+    public logout(action): void {
         const state = localStorage.getItem('state');
         const idToken = localStorage.getItem('id_token');
         if (!!state && !!idToken) {
@@ -112,6 +133,7 @@ export class ImplicitAutenticationService {
             this.logoutUrl += '&post_logout_redirect_uri=' + this.environment.SIGN_OUT_REDIRECT_URL;
             this.logoutUrl += '&state=' + state;
             this.clearStorage();
+            this.logoutSubject.next(action);
             window.location.replace(this.logoutUrl);
         }
     }
@@ -202,23 +224,28 @@ export class ImplicitAutenticationService {
     autologout(expires): void {
         if (expires) {
             const expiresIn = ((new Date(expires)).getTime() - (new Date()).getTime());
-            const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : 10;
-            if(!isNaN(expiresIn)) {
-                console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
-                of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
-                    this.logout();
-                    this.clearStorage();
-                });
-                if (this.timeAlert < timerDelay) {
-                    of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'info',
-                            title: `Su sesión se cerrará en ${this.timeAlert / 60000} minutos`,
-                            showConfirmButton: true,
-                            timer: this.timeActiveAlert
-                        });
+            if (expiresIn < this.timeLogoutBefore) {
+                this.clearStorage();
+                this.logoutSubject.next('logout-auto-only-localstorage');
+                location.reload();
+            } else {
+                const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : this.timeLogoutBefore;
+                if (!isNaN(expiresIn)) {
+                    console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
+                    of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
+                        this.logout('logout-auto');
                     });
+                    if (this.timeAlert < timerDelay) {
+                        of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'info',
+                                title: `Su sesión se cerrará en ${this.timeAlert / 60000} minutos`,
+                                showConfirmButton: false,
+                                timer: this.timeActiveAlert
+                            });
+                        });
+                    }
                 }
             }
         }
@@ -234,6 +261,8 @@ export class ImplicitAutenticationService {
         window.localStorage.removeItem('state');
         window.localStorage.removeItem('expires_at');
         window.localStorage.removeItem('menu');
+        window.localStorage.removeItem('user');
+        window.localStorage.removeItem('apps_menu');
 
     }
 }

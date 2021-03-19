@@ -8,6 +8,8 @@
 .footer-div{
     background-color: white;
     color: var(--primary);
+    max-height: 74px;
+    min-height: 72px;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -17,6 +19,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
+    z-index: 1;
 }
 
 .container-footer {
@@ -91,116 +94,38 @@
     font-family: "Open Sans";
 }
 
-@media screen and (max-width: 1400px) {
-    .social {
-        width: 15%;
-    }
 
-    .text-container > p  {
-        display: none;
-    }
 
-    .footer-logos {
-        width: 50%;
-    }
-}
-
-@media screen and (max-width: 1132px) {
-    .social {
-        width: 15%;
-    }
-
-    .text-container > p  {
-        display: none;
-    }
-
-    .footer-logos {
-        width: 50%;
-    }
-}
-
-@media screen and (max-width: 930px) {
+@media screen and (max-width: 1440px) {
     .social {
         width: 10%;
     }
 
     .footer-logos {
-        width: 60%;
+        width: 50%;
     }
 
     .text-container > p  {
         display: none;
+    }
+}
+@media screen and (max-width: 1024px) {
+
+    .footer-logos {
+        width: 45%;
     }
 }
 
 @media screen and (max-width: 768px) {
-    .social {
-        width: 10%;
-    }
-
-    .footer-logos {
-        width: 70%;
-    }
-
-    .text-container > p  {
+    .imageContainer {
         display: none;
-    }
-}
-
-@media screen and (max-width: 620px) {
-    .social {
-        width: 20%;
     }
 
     .footer-column {
-        width: 40%;
-    }
-
-    .text-container > p  {
         display: none;
     }
 
     .footer-logos {
-        width: 80%;
-    }
-}
-
-@media screen and (max-width: 425px) {
-    .social {
-        width: 20%;
-    }
-
-    .footer-column {
-        width: 25%;
-    }
-
-    .text-container {
-        display: none;
-    }
-
-    .text-container:hover {
-        display: contents;
-    }
-}
-
-@media screen and (max-width: 330px) {
-    .social {
-        width: 20%;
-    }
-
-    .footer-column {
-        width: 0%;
-    }
-
-    .text-container {
-        display: none;
-    }
-
-    .text-container:hover {
-        display: contents;
-    }
-
-    .footer-title {
-        display: none;
+        width: 100%;
     }
 }
