@@ -8,10 +8,10 @@
         alt="{{'logotipo aplicación ' + appname}}" class="logotipo"/>
     </div>
     <div class="header-buttons-container">
-        <div class="header-button-apps-container" (click)="toogleAplicaciones()">
+        <div class="header-button-apps-container" *ngIf="menuApps" (click)="toogleAplicaciones()">
             <span class="material-icons"> apps </span>
         </div>
-        <div class="header-button-notification" (click)="togglenotify()">
+        <div class="header-button-notification"  *ngIf="notificaciones" (click)="togglenotify()">
             <span class="material-icons">notifications</span>
         </div>
         <div class="header-button-user-container" (click)="toogleCerrarSesion()">
