@@ -27,6 +27,9 @@ export class ImplicitAutenticationService {
     private menuSubject = new BehaviorSubject({});
     public menu$ = this.menuSubject.asObservable();
 
+    private logoutSubject = new BehaviorSubject('');
+    public logout$ = this.logoutSubject.asObservable();
+
     httpOptions: { headers: HttpHeaders; };
     constructor(private httpClient: HttpClient) {
         document.addEventListener("visibilitychange", () => {
@@ -121,7 +124,7 @@ export class ImplicitAutenticationService {
         }
     }
 
-    public logout(): void {
+    public logout(action): void {
         const state = localStorage.getItem('state');
         const idToken = localStorage.getItem('id_token');
         if (!!state && !!idToken) {
@@ -130,6 +133,7 @@ export class ImplicitAutenticationService {
             this.logoutUrl += '&post_logout_redirect_uri=' + this.environment.SIGN_OUT_REDIRECT_URL;
             this.logoutUrl += '&state=' + state;
             this.clearStorage();
+            this.logoutSubject.next(action);
             window.location.replace(this.logoutUrl);
         }
     }
@@ -222,13 +226,14 @@ export class ImplicitAutenticationService {
             const expiresIn = ((new Date(expires)).getTime() - (new Date()).getTime());
             if (expiresIn < this.timeLogoutBefore) {
                 this.clearStorage();
+                this.logoutSubject.next('logout-auto-only-localstorage');
                 location.reload();
             } else {
                 const timerDelay = expiresIn > this.timeLogoutBefore ? expiresIn - this.timeLogoutBefore : this.timeLogoutBefore;
                 if (!isNaN(expiresIn)) {
                     console.log(`%cFecha expiración: %c${new Date(expires)}`, 'color: blue', 'color: green');
                     of(null).pipe(delay(timerDelay - this.timeLogoutBefore)).subscribe((data) => {
-                        this.logout();
+                        this.logout('logout-auto');
                     });
                     if (this.timeAlert < timerDelay) {
                         of(null).pipe(delay(timerDelay - this.timeAlert)).subscribe((data) => {

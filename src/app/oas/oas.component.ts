@@ -33,6 +33,7 @@ if (!("path" in Event.prototype))
 export class OasComponent implements OnChanges {
   @Output('user') user: EventEmitter<any> = new EventEmitter();
   @Output('option') option: EventEmitter<any> = new EventEmitter();
+  @Output('logout') logout: EventEmitter<any> = new EventEmitter();
   // tslint:disable-next-line: no-input-rename
   @Input('environment') environment: any;
   opened: boolean = false;
@@ -61,6 +62,11 @@ export class OasComponent implements OnChanges {
     this.menuService.option$.subscribe((op) => {
       setTimeout(() => (this.option.emit(op)), 100)
     });
+    this.autenticacionService.logout$.subscribe((logoutEvent: any) => {
+      if(logoutEvent) {
+        this.logout.emit(logoutEvent);
+      }
+    })
     this.autenticacionService.user$.subscribe((data: any) => {
       if (JSON.stringify(data) !== '{}' && this.username !== '') {
         setTimeout(() => {
@@ -120,7 +126,7 @@ export class OasComponent implements OnChanges {
   }
 
   logoutEvent() {
-    this.autenticacionService.logout();
+    this.autenticacionService.logout('action-event');
   }
 
   ngOnInit() {
