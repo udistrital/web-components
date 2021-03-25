@@ -24,7 +24,7 @@ enum VisibilityState {
         VisibilityState.Visible,
         style({ transform: 'scaleX(1) translate(0%' })
       ),
-      transition('* => *', animate('400ms ease-in'))
+      transition('* => *', animate('300ms ease-in'))
     ]),
     trigger('logoAnimation', [
       state(
@@ -35,8 +35,19 @@ enum VisibilityState {
         VisibilityState.Visible,
         style({ transform: 'scaleX(1)  translate(-28%)' })
       ),
-      transition('* => *', animate('400ms ease-in'))
-    ])
+      transition('* => *', animate('300ms ease-in'))
+    ]),
+    trigger('iconMenu', [
+      state(
+        VisibilityState.Hidden,
+        style({ transform: 'translate(3em, 0)' })
+      ),
+      state(
+        VisibilityState.Visible,
+        style({ transform: 'translate(0em, 0)' })
+      ),
+      transition('* => *', animate('300ms ease-in'))
+    ]),
   ]
 })
 export class HeaderComponent implements OnChanges {
