@@ -1,21 +1,13 @@
-# webcomponent
+# WebComponent base para construcción de aplicaciones Oficina Asesora de Sistemas Universidad Distrital
 
-Cliente de generación de web-component ng-uui-oas
-
+  Construye header, menu sidebar, footer, autenticación vía wso2
+  
 ## Especificaciones Técnicas
 
-### Tecnologías Implementadas y Versiones
+## Tecnologías Implementadas y Versiones
 * [Angular 11.2.1](https://angular.io/)
 
-### Variables de Entorno
-```shell
-# En Pipeline
-SLACK_AND_WEBHOOK: WEBHOOK ..
-AWS_ACCESS_KEY_ID: llave de acceso ID Usuario AWS
-AWS_SECRET_ACCESS_KEY: Secreto de Usuario AWS
-```
-
-### Ejecución del Proyecto
+## Ejecución del Proyecto
 
 Clonar el proyecto del repositorio de git
 ```bash
@@ -46,6 +38,16 @@ dist
  - web-component(folder)
  - web-component.js
 ```
+
+## AL instalarla debe quedar
+  Login
+  ![image](https://user-images.githubusercontent.com/8224759/114635914-73ac7000-9c8b-11eb-991d-62c424d9038a.png)
+  header footer
+  ![image](https://user-images.githubusercontent.com/8224759/114635508-7fe3fd80-9c8a-11eb-9210-6914f1f39bcc.png)
+  sidebar
+  ![image](https://user-images.githubusercontent.com/8224759/114635580-9ee28f80-9c8a-11eb-9eb1-38f90681b2da.png)
+
+  
 ## Estado CI
 
 | Develop | Relese 0.0.1 | Master |
