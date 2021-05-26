@@ -105,10 +105,10 @@ export class ImplicitAutenticationService {
                     'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
                 }),
             };
-            const userTemp = (payload.email.split('@')).shift();
+            const userTemp = payload.email;
             this.user = { user: userTemp };
             this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
-                user: (payload.email.split('@'))[0]
+                user: (payload.email)
             }, this.httpOptions)
                 .subscribe((res: any) => {
                     this.clearUrl();
