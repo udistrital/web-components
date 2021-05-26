@@ -80,7 +80,7 @@ export class OasComponent implements OnChanges {
             if (this.menuApps) {
               this.menuAppService.init(catalogo[this.entorno], data);
             }
-            this.username = data.user ? data.user.email ? (data.user.email : '' : '';
+            this.username = data.user ? data.user.email ? data.user.email : '' : '';
             this.isLogin = false;
             this.isloading = true;
           } else {
