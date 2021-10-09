@@ -128,5 +128,8 @@
       }
     }
   },
-  "defaultProject": "webcomponents"
+  "defaultProject": "webcomponents",
+  "cli": {
+    "analytics": "f45d2df8-6bd0-4f0f-a3c2-9b9cf6d30a37"
+  }
 }
