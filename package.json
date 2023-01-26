@@ -5,52 +5,66 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build  --prod --output-hashing=none && node build-webcomponents.js",
-    "test": "ng test",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "~11.0.1",
-    "@angular/cdk": "^11.0.0",
-    "@angular/common": "~11.0.1",
-    "@angular/compiler": "~11.0.1",
-    "@angular/core": "~11.0.1",
-    "@angular/elements": "^11.0.1",
-    "@angular/forms": "~11.0.1",
-    "@angular/material": "^11.0.0",
-    "@angular/platform-browser": "~11.0.1",
-    "@angular/platform-browser-dynamic": "~11.0.1",
-    "@angular/router": "~11.0.1",
-    "document-register-element": "^1.7.2",
+    "@angular/animations": "~11.2.14",
+    "@angular/cdk": "^11.2.13",
+    "@angular/common": "~11.2.14",
+    "@angular/compiler": "~11.2.14",
+    "@angular/core": "~11.2.14",
+    "@angular/elements": "^11.2.14",
+    "@angular/forms": "~11.2.14",
+    "@angular/material": "^11.2.13",
+    "@angular/platform-browser": "~11.2.14",
+    "@angular/platform-browser-dynamic": "~11.2.14",
+    "@angular/router": "~11.2.14",
+    "document-register-element": "^1.14.10",
     "ngx-moment": "^5.0.0",
     "rxjs": "~6.5.5",
-    "sweetalert2": "^10.12.0",
-    "ts-md5": "^1.2.7",
-    "tslib": "^2.0.0",
-    "zone.js": "~0.10.3"
+    "sweetalert2": "^11.6.16",
+    "ts-md5": "^1.3.1",
+    "tslib": "^2.4.1",
+    "zone.js": "~0.12.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.1100.2",
-    "@angular/cli": "~11.0.2",
-    "@angular/compiler-cli": "~11.0.1",
-    "@types/jasmine": "~3.6.0",
-    "@types/jasminewd2": "~2.0.3",
-    "@types/node": "^12.11.1",
-    "codelyzer": "^6.0.0",
+    "@angular-devkit/build-angular": "~0.1102.19",
+    "@angular/cli": "~11.2.19",
+    "@angular/compiler-cli": "~11.2.14",
+    "@types/jest": "^29.2.4",
+    "@types/node": "^16.11.7",
+    "codelyzer": "^6.0.2",
     "concat": "^1.0.3",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^11.1.0",
     "http-server": "^0.12.3",
-    "jasmine-core": "~3.6.0",
-    "jasmine-spec-reporter": "~5.0.0",
-    "karma": "~5.1.1",
-    "karma-chrome-launcher": "~3.1.0",
-    "karma-coverage-istanbul-reporter": "~3.0.2",
-    "karma-jasmine": "~4.0.0",
-    "karma-jasmine-html-reporter": "^1.5.0",
-    "protractor": "~7.0.0",
-    "ts-node": "~8.3.0",
-    "tslint": "~6.1.0",
-    "typescript": "~4.0.5"
+    "jest": "^29.3.1",
+    "jest-preset-angular": "^12.2.3",
+    "ts-node": "~10.9.1",
+    "tslint": "~6.1.3",
+    "typescript": "~4.1.6"
+  },
+  "jest": {
+    "preset": "jest-preset-angular",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupJest.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/dist/",
+      "<rootDir>/src/test.ts"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$'": "<rootDir>/src/$1"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "<rootDir>/src/tsconfig.spec.json",
+        "stringifyContentPathRegex": "\\.html$"
+      }
+    }
   }
 }
