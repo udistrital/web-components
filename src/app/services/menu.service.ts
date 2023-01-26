@@ -42,8 +42,8 @@ export class MenuService {
             this.userService.user$.subscribe((userResponse: any) => {
                 const { user, userService } = userResponse;
                 if (user && userService) {
-                    const role1 = user ? user.role ? user.role.filter((menu) => (menu !== 'Internal/everyone')) : [] : [];
-                    const role2 = userService ? userService.role ? userService.role.filter((menu) => (menu !== 'Internal/everyone')) : [] : [];
+                    const role1 = user ? user.role ? user.role.filter((menu) => (menu.indexOf("/") === -1)) : [] : [];
+                    const role2 = userService ? userService.role ? userService.role.filter((menu) => (menu.indexOf("/") === -1)) : [] : [];
                     const roles = [...role1, ...role2].length > 0 ? ([...role1, ...role2]).join(',') : '';
                     if (roles !== '') {
                         this.configuracionService.getMenu(roles, appMenu, 'menu_opcion_padre/ArbolMenus')
