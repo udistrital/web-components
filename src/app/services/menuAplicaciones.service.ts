@@ -16,7 +16,7 @@ export class MenuAplicacionesService {
     isLogin = false;
     roles: any;
     userInfo: any;
-    public menuActivo: Boolean = false;
+    public menuActivo = false;
 
     constructor(
         private configuracionService: ConfiguracionService,
