@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { Injector, NgModule } from '@angular/core';
-import { createCustomElement } from '@angular/elements';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -27,7 +26,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { LoginComponent } from './login/login.component';
 import { OasComponent } from './oas/oas.component';
-import { TercerosFormComponent } from './terceros-form/terceros-form.component';
 
 // end material modules
 @NgModule({
@@ -42,7 +40,6 @@ import { TercerosFormComponent } from './terceros-form/terceros-form.component';
     SidebarComponent,
     LoginComponent,
     OasComponent,
-    TercerosFormComponent
   ],
   imports: [
     HttpClientModule,

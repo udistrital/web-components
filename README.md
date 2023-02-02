@@ -1,13 +1,21 @@
 # WebComponent base para construcción de aplicaciones Oficina Asesora de Sistemas Universidad Distrital
 
-  Construye header, menu sidebar, footer, autenticación vía wso2
+Contiene el header, menu sidebar, footer, pagina principal y autenticación vía wso2
   
 ## Especificaciones Técnicas
 
-## Tecnologías Implementadas y Versiones
-* [Angular 11.2.1](https://angular.io/)
+### Tecnologías Implementadas y Versiones
+* [Angular 11.2.14](https://angular.io/)
 
-## Ejecución del Proyecto
+### Variables de Entorno
+```shell
+# En Pipeline
+SLACK_AND_WEBHOOK: WEBHOOK ..
+AWS_ACCESS_KEY_ID: llave de acceso ID Usuario AWS
+AWS_SECRET_ACCESS_KEY: Secreto de Usuario AWS
+```
+
+### Ejecución del Proyecto
 
 Clonar el proyecto del repositorio de git
 ```bash
@@ -23,7 +31,7 @@ npx npm install
 or
 npm install
 # start server
-npm start 
+npm run start 
 # Whenever you want to change the port just run
 npx ng dev --port = 9528
 ```
@@ -35,11 +43,17 @@ npm run build
 
 # genera lo siguiente
 dist
- - web-component(folder)
  - web-component.js
 ```
 
-## AL instalarla debe quedar
+Servir el webcomponent localmente
+```bash
+# run http-server
+npm run webcomponent
+
+```
+
+## Al instalarla debe quedar
   Login
   ![image](https://user-images.githubusercontent.com/8224759/114635914-73ac7000-9c8b-11eb-991d-62c424d9038a.png)
   header footer
@@ -50,9 +64,9 @@ dist
   
 ## Estado CI
 
-| Develop | Relese 0.0.1 | Master |
-| -- | -- | -- |
-| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/alternancia_cliente/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/alternancia_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/alternancia_cliente/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/alternancia_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/alternancia_cliente/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/alternancia_cliente) |
+| Develop | Relese 0.0.1 | Master | Sonar |
+| -- | -- | -- | -- |
+| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/web-components/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/web-components) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/web-components/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/web-components) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/web-components/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/web-components) | [![Quality Gate Status](https://sonarqube.portaloas.udistrital.edu.co/api/project_badges/measure?project=udistrital%3Aweb-components&metric=alert_status)](https://sonarqube.portaloas.udistrital.edu.co/dashboard?id=udistrital%3Aweb-components) |
 
 ## Licencia
 
