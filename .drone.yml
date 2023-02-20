@@ -47,21 +47,6 @@ steps:
     event:
     - push
 
-- name: run_sonar_scanner
-  image: aosapps/drone-sonar-plugin
-  settings:
-    sonar_host:
-      from_secret: SONAR_HOST
-    sonar_token:
-      from_secret: SONAR_TOKEN
-  when:
-    branch:
-    - develop
-    - feature/*
-    - release/*
-    event:
-    - push
-
 - name: nodejs_build
   image: node:16.19.0
   commands:
@@ -75,6 +60,21 @@ steps:
     - release/*
     - dependabot/**
     - master
+    event:
+    - push
+
+- name: run_sonar_scanner
+  image: aosapps/drone-sonar-plugin
+  settings:
+    sonar_host:
+      from_secret: SONAR_HOST
+    sonar_token:
+      from_secret: SONAR_TOKEN
+  when:
+    branch:
+    - develop
+    - feature/*
+    - release/*
     event:
     - push
 

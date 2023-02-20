@@ -4,6 +4,7 @@ import { from, interval, BehaviorSubject, Subject } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
 import { map } from 'rxjs/operators';
 import { fromEvent } from 'rxjs';
+import { Respuesta } from '../interfaces/respuesta';
 
 @Injectable({
     providedIn: 'root',
@@ -28,6 +29,8 @@ export class NotioasService {
     timerPing$ = interval(this.TIME_PING);
     roles: any;
     user: any;
+    topic: string;
+    cola: string;
     public menuActivo: Boolean = false;
 
 
@@ -63,13 +66,46 @@ export class NotioasService {
         this.activo.next({ activo: this.menuActivo });
     }
 
-    init(pathNotificacion: string, userData) {
+    /**
+     * Inicialización del sistema de notificaciones
+     * @param pathNotificacion variable de entorno de Notificaciones
+     * @param userData Datos del usuario, incluye lso roles en el campo userData.user.role
+     * @param appName Nombre de la aplicación
+     */
+    init(pathNotificacion: string, userData: any, appName: string) {
         console.info('...Init lib notificaciones');
         this.NOTIFICACION_SERVICE = pathNotificacion;
+        this.confService.setPath(this.NOTIFICACION_SERVICE)
+        this.confService.get('notificaciones/topic').subscribe({
+            next: (response: Respuesta) => {
+                if (response.Success) {
+                    this.topic = (response.Data as any[]).filter((arn: string) => arn.includes(appName))[0];
+                    this.cola = this.topic.replace('sns', 'sqs');
+                    const sub = {
+                        ArnTopic: this.topic,
+                        Endpoint: this.cola
+                    };
+                    this.confService.post(
+                        'notificaciones/suscripcion', sub
+                    ).subscribe({
+                        next: (response: Respuesta) => {
+                            /// TODO
+                            // Verificar subscripción a topic, si no está suscrito, suscribir, si ya lo estaba, obtener mensajes
+                        }
+                    })
+
+                } else {
+                    console.info('Notificaciones no disponibles');
+                }
+            }, error: () => {
+                console.info('Notificaciones no disponibles');
+            }
+        });
+
             if (typeof userData.user !== 'undefined') {
                 this.user = userData.user ? userData.user.email ? userData.user.email.split('@').shift() : '' : '' ;
                 this.roles = userData.user.role ? userData.user.role : [];
-                this.connect();
+                this.connect(appName);
                 this.queryNotification();
             }
     }
@@ -88,7 +124,11 @@ export class NotioasService {
         this.timerPing$.subscribe(() => (this.messagesSubject.next('ping')));
     }
 
-    connect() {
+    /**
+     * Función para suscribirse al sistema de notificaciones cuando el sistema no está suscrito
+     * @param app nombre de la aplicación recibido en la función init()
+     */
+    connect(app: string) {
         console.log('connecting ws ...')
         const id_token = localStorage.getItem('id_token');
         const access_token = localStorage.getItem('access_token');
@@ -136,6 +176,9 @@ export class NotioasService {
         this.arrayMessagesSubject.next(this.listMessage);
     }
 
+    /**
+     * Marcar una notificación como ya vista
+     */
     changeStateNoView() {
         if (this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada').length >= 1) {
             this.confService.post('notificacion_estado_usuario/changeStateNoView/' + this.user, {})
@@ -146,6 +189,11 @@ export class NotioasService {
         }
     }
 
+    /**
+     * Marcar una notificación como ya leída
+     * @param id 
+     * @param estado 
+     */
     changeStateToView(id, estado) {
         if (estado === 'noleida') {
             const notificacion = this.getNotificacionEstadoUsuario(id);
@@ -157,6 +205,10 @@ export class NotioasService {
         }
     }
 
+    /**
+     * Cargar las notificaciones del sistema y filtrar por DestinatarioId usando el rol del usuario
+     * y por dependencia usando los atributos del mensaje
+     */
     queryNotification() {
         const id_token = localStorage.getItem('id_token');
         const access_token = localStorage.getItem('access_token');
