@@ -13,17 +13,17 @@ export class ConfiguracionService {
   constructor(private http: HttpClient) {
   }
 
-  setPath(path) {
+  setPath(path: any): void {
     this.path = path;
   }
 
   get(endpoint) {
     this.httpOptions = {
       headers: new HttpHeaders({
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
       }),
-    }
+    };
     return this.http.get<any>(`${this.path}${endpoint}`, this.httpOptions).pipe(
       map(
         (res) => {
@@ -39,10 +39,10 @@ export class ConfiguracionService {
   getMenu(roles, aplication, endpoint) {
     this.httpOptions = {
       headers: new HttpHeaders({
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
       }),
-    }
+    };
     return this.http.get<any>(`${this.path}${endpoint}/${roles}/${aplication}`, this.httpOptions).pipe(
       map(
         (res) => {
@@ -65,10 +65,10 @@ export class ConfiguracionService {
   post(endpoint, element) {
     this.httpOptions = {
       headers: new HttpHeaders({
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
       }),
-    }
+    };
     return this.http.post<any>(`${this.path}${endpoint}`, element, this.httpOptions);
   }
 
@@ -81,10 +81,10 @@ export class ConfiguracionService {
   put(endpoint, element) {
     this.httpOptions = {
       headers: new HttpHeaders({
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
       }),
-    }
+    };
     return this.http.put<any>(`${this.path}${endpoint}/${element.Id}`, element, this.httpOptions);
   }
 
@@ -97,10 +97,10 @@ export class ConfiguracionService {
   delete(endpoint, id) {
     this.httpOptions = {
       headers: new HttpHeaders({
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
       }),
-    }
+    };
     return this.http.delete<any>(`${this.path}${endpoint}/${id}`, this.httpOptions);
   }
 }

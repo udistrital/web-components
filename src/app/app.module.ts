@@ -10,7 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfiguracionService } from './services/configuracion.service';
 import { NotioasService } from './services/notioas.service';
 import { MenuAplicacionesService } from './services/menuAplicaciones.service';
-import { MenuService } from './services/menu.service'
+import { MenuService } from './services/menu.service';
 
 // local Components
 import { HeaderComponent } from './header/header.component';
@@ -50,7 +50,7 @@ import { TercerosFormComponent } from './terceros-form/terceros-form.component';
     ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
-    //material modules
+    // material modules
     MatListModule,
     MatIconModule,
     // end material modules
@@ -70,5 +70,5 @@ export class AppModule {
     private injector: Injector
   ) {
   }
-  ngDoBootstrap() { }
+  ngDoBootstrap(): void { }
 }

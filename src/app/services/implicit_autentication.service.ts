@@ -16,7 +16,7 @@ export class ImplicitAutenticationService {
     logoutUrl: any;
     params: any;
     payload: any;
-    timeActiveAlert: number = 4000;
+    timeActiveAlert = 4000;
     private user: any;
     private timeLogoutBefore = 1000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
@@ -32,8 +32,8 @@ export class ImplicitAutenticationService {
 
     httpOptions: { headers: HttpHeaders; };
     constructor(private httpClient: HttpClient) {
-        document.addEventListener("visibilitychange", () => {
-            if(document.visibilityState === 'visible') {
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
                 const expires = this.setExpiresAt();
                 this.autologout(expires);
             }
@@ -41,9 +41,11 @@ export class ImplicitAutenticationService {
     }
     init(entorno): any {
         this.environment = entorno;
-        const id_token = window.localStorage.getItem('id_token');
-        if (window.localStorage.getItem('id_token') === null) {
-            var params = {}, queryString = location.hash.substring(1), regex = /([^&=]+)=([^&]*)/g;
+        const idToken = window.localStorage.getItem('id_token');
+        if (idToken === null) {
+            const params: any = {};
+            const queryString = location.hash.substring(1);
+            const regex = /([^&=]+)=([^&]*)/g;
             let m;
             while (m = regex.exec(queryString)) {
                 params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
@@ -53,19 +55,19 @@ export class ImplicitAutenticationService {
             // consider using POST so query isn't logged
             const query = 'https://' + window.location.host + '?' + queryString;
             req.open('GET', query, true);
-            if (!!params['id_token']) {
-                //if token setear
-                const id_token_array = (params['id_token']).split('.');
+            if (!!params.id_token) {
+                // if token setear
+                const id_token_array = (params.id_token).split('.');
                 const payload = JSON.parse(atob(id_token_array[1]));
-                window.localStorage.setItem('access_token', params['access_token']);
-                window.localStorage.setItem('expires_in', params['expires_in']);
-                window.localStorage.setItem('state', params['state']);
-                window.localStorage.setItem('id_token', params['id_token']);
+                window.localStorage.setItem('access_token', params.access_token);
+                window.localStorage.setItem('expires_in', params.expires_in);
+                window.localStorage.setItem('state', params.state);
+                window.localStorage.setItem('id_token', params.id_token);
                 // this.userSubject.next({ user: payload });
                 this.httpOptions = {
                     headers: new HttpHeaders({
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${params['access_token']}`,
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${params.access_token}`,
                     }),
                 };
                 this.updateAuth(payload);
@@ -94,15 +96,15 @@ export class ImplicitAutenticationService {
     }
 
 
-    updateAuth(payload) {
+    updateAuth(payload): void {
         const user = localStorage.getItem('user');
         if (user) {
             this.userSubject.next(JSON.parse(atob(user)));
         } else {
             this.httpOptions = {
                 headers: new HttpHeaders({
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('access_token')}`,
                 }),
             };
             const userTemp = payload.email;
@@ -117,8 +119,8 @@ export class ImplicitAutenticationService {
                 });
             this.httpOptions = {
                 headers: new HttpHeaders({
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('access_token')}`,
                 }),
             };
         }
@@ -144,13 +146,12 @@ export class ImplicitAutenticationService {
         return payload;
     }
 
-
-    public logoutValid() {
-        var state;
-        var valid = true;
-        var queryString = location.search.substring(1);
-        var regex = /([^&=]+)=([^&]*)/g;
-        var m;
+    public logoutValid(): boolean {
+        let state;
+        let valid = true;
+        const queryString = location.search.substring(1);
+        const regex = /([^&=]+)=([^&]*)/g;
+        let m;
         while (!!(m = regex.exec(queryString))) {
             state = decodeURIComponent(m[2]);
         }
@@ -176,12 +177,12 @@ export class ImplicitAutenticationService {
         }
     }
 
-    public clearUrl() {
+    public clearUrl(): void {
         const clean_uri = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, clean_uri);
     }
 
-    public getAuthorizationUrl() {
+    public getAuthorizationUrl(): string {
         this.params = this.environment;
         if (!this.params.hasOwnProperty('nonce')) {
             const nonceData = this.generateState();
@@ -250,11 +251,11 @@ export class ImplicitAutenticationService {
             }
         }
     }
-    public expired() {
+    public expired(): boolean {
         return (new Date(window.localStorage.getItem('expires_at')) < new Date());
     }
 
-    public clearStorage() {
+    public clearStorage(): void {
         window.localStorage.removeItem('access_token');
         window.localStorage.removeItem('id_token');
         window.localStorage.removeItem('expires_in');
@@ -263,6 +264,5 @@ export class ImplicitAutenticationService {
         window.localStorage.removeItem('menu');
         window.localStorage.removeItem('user');
         window.localStorage.removeItem('apps_menu');
-
     }
 }

@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { distinct, distinctUntilChanged } from 'rxjs/operators';
 import { NavItem } from '../interfaces/nav-item';
 import { MenuService } from '../services/menu.service';
@@ -26,7 +26,7 @@ enum VisibilityState {
     ])
   ]
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnChanges {
   sidebarAnimation: VisibilityState = VisibilityState.Hidden;
   @Input() navItems: NavItem[];
   @Input() appMenu: 'string';
@@ -45,7 +45,7 @@ export class SidebarComponent implements OnInit {
             this.navItems = data;
           }
         }
-      })
+      });
     this.menuService.sidebar$.subscribe((opened) =>
       (this.sidebarAnimation = opened ? VisibilityState.Visible : VisibilityState.Hidden));
   }
