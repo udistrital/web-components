@@ -34,7 +34,7 @@ export class MenuService {
         });
     }
 
-    getMenu(appMenu) {
+    getMenu(appMenu: string) {
         const menuInfo = localStorage.getItem('menu');
         if (menuInfo) {
             this.menuSubject.next(JSON.parse(atob(menuInfo)));

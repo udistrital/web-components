@@ -29,7 +29,7 @@ enum VisibilityState {
 export class SidebarComponent implements OnInit, OnChanges {
   sidebarAnimation: VisibilityState = VisibilityState.Hidden;
   @Input() navItems: NavItem[];
-  @Input() appMenu: 'string';
+  @Input() appMenu: string;
 
   constructor(
     public menuService: MenuService,
@@ -42,7 +42,7 @@ export class SidebarComponent implements OnInit, OnChanges {
       .subscribe((data: NavItem[]) => {
         if (JSON.stringify(data) !== '{}') {
           if (!this.navItems) {
-            this.navItems = data;
+            this.navItems = data.filter(entry => entry.TipoOpcion === 'Menú');
           }
         }
       });

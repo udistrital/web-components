@@ -36,7 +36,7 @@ export class ConfiguracionService {
       ));
   }
 
-  getMenu(roles, aplication, endpoint) {
+  getMenu(roles: string, aplication: string, endpoint) {
     this.httpOptions = {
       headers: new HttpHeaders({
         Accept: 'application/json',
