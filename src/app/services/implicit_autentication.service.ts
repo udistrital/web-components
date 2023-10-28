@@ -4,7 +4,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Md5 } from 'ts-md5';
 import { BehaviorSubject, of } from 'rxjs';
 import Swal from 'sweetalert2';
-import { delay } from 'rxjs/operators';
+import { delay, retry } from 'rxjs/operators';
 import { HostListener } from '@angular/core';
 
 @Injectable({
@@ -112,11 +112,13 @@ export class ImplicitAutenticationService {
             this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
                 user: (payload.email)
             }, this.httpOptions)
+                .pipe(retry(3))
                 .subscribe((res: any) => {
                     this.clearUrl();
                     localStorage.setItem('user', btoa(JSON.stringify({ ...{ user: payload }, ...{ userService: res } })));
                     this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
-                });
+                },(error) => (console.log(error))
+                );
             this.httpOptions = {
                 headers: new HttpHeaders({
                     Accept: 'application/json',

@@ -1,9 +1,9 @@
 @import url("https://pruebasassets.portaloas.udistrital.edu.co/font-style.css");
 .menu-icon {
-    display: -webkit-flex;
+    display: flex;
     flex-wrap: nowrap;
     align-items: center;
-    span { 
+    span {
         background-color: var(--color900);
         padding: 10px;
         border-radius: 30px;
@@ -57,7 +57,7 @@ i {
     display: -webkit-flex;
     flex-wrap: nowrap;
     justify-content: center;
-    
+
 }
 
 .header-buttons-container {
@@ -148,6 +148,10 @@ i {
     .button-header {
         font-size: 20px;
     }
+    .header-logo-container {
+        max-width: 250px;
+    }
+
     .header-buttons-container {
         margin:5px
     }
