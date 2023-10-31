@@ -14,7 +14,7 @@ export class NotioasService {
     public messagesSubject: Subject<any>;
 
     public listMessage: any;
-    private notificacion_estado_usuario: any
+    private notificacionEstadoUsuario: any;
 
     private noNotifySubject = new Subject();
     public noNotify$ = this.noNotifySubject.asObservable();
@@ -28,19 +28,18 @@ export class NotioasService {
     timerPing$ = interval(this.TIME_PING);
     roles: any;
     user: any;
-    public menuActivo: Boolean = false;
-
+    public menuActivo = false;
 
     constructor(
         private confService: ConfiguracionService,
     ) {
         this.listMessage = [];
-        this.notificacion_estado_usuario = []
+        this.notificacionEstadoUsuario = [];
         const up$ = fromEvent(document, 'mouseup');
         up$.subscribe((data: any) => {
             if (this.activo) {
                 if (((data.path
-                    .map((info: any) => { return (info.localName) }))
+                    .map((info: any) => info.localName))
                     .filter((data: any) => (data === 'ng-uui-notioas'))).length === 0) {
                     this.closePanel();
                 }
@@ -49,7 +48,7 @@ export class NotioasService {
 
     }
 
-    toogleMenuNotify() {
+    toogleMenuNotify(): void {
         this.menuActivo = !this.menuActivo;
         const data = { activo: this.menuActivo };
         this.activo.next(data);
@@ -58,44 +57,44 @@ export class NotioasService {
         }
     }
 
-    closePanel() {
+    closePanel(): void {
         this.menuActivo = false;
         this.activo.next({ activo: this.menuActivo });
     }
 
-    init(pathNotificacion: string, userData) {
+    init(pathNotificacion: string, userData): void {
         console.info('...Init lib notificaciones');
         this.NOTIFICACION_SERVICE = pathNotificacion;
-            if (typeof userData.user !== 'undefined') {
-                this.user = userData.user ? userData.user.email ? userData.user.email.split('@').shift() : '' : '' ;
-                this.roles = userData.user.role ? userData.user.role : [];
-                this.connect();
-                this.queryNotification();
-            }
+        if (typeof userData.user !== 'undefined') {
+            this.user = userData.user ? userData.user.email ? userData.user.email.split('@').shift() : '' : '';
+            this.roles = userData.user.role ? userData.user.role : [];
+            this.connect();
+            this.queryNotification();
+        }
     }
 
-    getNotificaciones() {
-        this.noNotifySubject.next((this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada')).length)
+    getNotificaciones(): void {
+        this.noNotifySubject.next((this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada')).length);
         this.arrayMessagesSubject.next(this.listMessage);
     }
 
     getNotificacionEstadoUsuario(id) {
-        return (this.notificacion_estado_usuario.filter(data => data.Id === id))[0];
+        return (this.notificacionEstadoUsuario.filter(data => data.Id === id))[0];
     }
 
-    send_ping() {
+    send_ping(): void {
         // sending ping every 30 seconds
         this.timerPing$.subscribe(() => (this.messagesSubject.next('ping')));
     }
 
-    connect() {
-        console.log('connecting ws ...')
-        const id_token = localStorage.getItem('id_token');
-        const access_token = localStorage.getItem('access_token');
-        if (id_token !== null && access_token !== null) {
+    connect(): void {
+        console.log('connecting ws ...');
+        const idToken = localStorage.getItem('id_token');
+        const accessToken = localStorage.getItem('access_token');
+        if (idToken !== null && accessToken !== null) {
             if (this.roles.length > 0) {
                 // const connWs = `${this.NOTIFICACION_SERVICE}/join?id=${this.user}&profiles=${this.roles}`;
-                const connWs = `${this.NOTIFICACION_SERVICE}/join?id=${access_token}`;
+                const connWs = `${this.NOTIFICACION_SERVICE}/join?id=${accessToken}`;
                 this.messagesSubject = webSocket({
                     url: connWs,
                     openObserver: {
@@ -110,7 +109,7 @@ export class NotioasService {
                             this.listMessage = [...[msn], ...this.listMessage];
                             this.noNotifySubject.next((this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada')).length);
                             this.arrayMessagesSubject.next(this.listMessage);
-                            return msn
+                            return msn;
                         }),
                     )
                     .subscribe(
@@ -126,17 +125,17 @@ export class NotioasService {
 
     }
 
-    close() {
+    close(): void {
         this.messagesSubject.unsubscribe();
     }
 
-    addMessage(message: any) {
+    addMessage(message: any): void {
         this.listMessage = [...[message], ...this.listMessage];
         this.noNotifySubject.next((this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada')).length);
         this.arrayMessagesSubject.next(this.listMessage);
     }
 
-    changeStateNoView() {
+    changeStateNoView(): void {
         if (this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada').length >= 1) {
             this.confService.post('notificacion_estado_usuario/changeStateNoView/' + this.user, {})
                 .subscribe(res => {
@@ -146,7 +145,7 @@ export class NotioasService {
         }
     }
 
-    changeStateToView(id, estado) {
+    changeStateToView(id, estado): void {
         if (estado === 'noleida') {
             const notificacion = this.getNotificacionEstadoUsuario(id);
             this.confService.get('notificacion_estado_usuario/changeStateToView/' + notificacion.Id)
@@ -157,14 +156,14 @@ export class NotioasService {
         }
     }
 
-    queryNotification() {
-        const id_token = localStorage.getItem('id_token');
-        const access_token = localStorage.getItem('access_token');
-        if (id_token !== null && access_token !== null) {
+    queryNotification(): void {
+        const idToken = localStorage.getItem('id_token');
+        const accessToken = localStorage.getItem('access_token');
+        if (idToken !== null && accessToken !== null) {
             this.confService.get('notificacion_estado_usuario?query=Usuario:' + this.user + ',Activo:true&sortby=notificacion&order=asc&limit=-1')
                 .subscribe((resp: any) => {
                     if (resp !== null) {
-                        this.notificacion_estado_usuario = resp
+                        this.notificacionEstadoUsuario = resp;
                         from(resp)
                             .subscribe((notify: any) => {
                                 if (typeof notify.Notificacion !== 'undefined') {
