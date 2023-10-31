@@ -34,7 +34,7 @@ export class MenuService {
         });
     }
 
-    getMenu(appMenu: string) {
+    getMenu(appMenu: string): void {
         const menuInfo = localStorage.getItem('menu');
         if (menuInfo) {
             this.menuSubject.next(JSON.parse(atob(menuInfo)));
@@ -42,11 +42,11 @@ export class MenuService {
             this.userService.user$.subscribe((userResponse: any) => {
                 const { user, userService } = userResponse;
                 if (user && userService) {
-                    const role1 = user ? user.role ? user.role.filter((menu) => (menu.indexOf("/") === -1)) : [] : [];
-                    const role2 = userService ? userService.role ? userService.role.filter((menu) => (menu.indexOf("/") === -1)) : [] : [];
-                    const roles = [...role1, ...role2].length > 0 ? ([...role1, ...role2]).join(',') : '';
-                    if (roles !== '') {
-                        this.configuracionService.getMenu(roles, appMenu, 'menu_opcion_padre/ArbolMenus')
+                    const role1: Set<string> = user.role ? new Set<string>(user.role) : new Set();
+                    const role2: Set<string> = userService.role ? new Set<string>(userService.role) : new Set();
+                    const roles = Array.from(new Set<string>([...role1, ...role2])).join(',');
+                    if (roles) {
+                        this.configuracionService.getMenu(roles, appMenu, 'menu_opcion_padre/permisos_roles')
                             .subscribe((data) => {
                                 let navItems = data;
                                 navItems = [...[{

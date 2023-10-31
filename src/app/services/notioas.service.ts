@@ -14,7 +14,7 @@ export class NotioasService {
     public messagesSubject: Subject<any>;
 
     public listMessage: any;
-    private notificacion_estado_usuario: any;
+    private notificacionEstadoUsuario: any;
 
     private noNotifySubject = new Subject();
     public noNotify$ = this.noNotifySubject.asObservable();
@@ -34,7 +34,7 @@ export class NotioasService {
         private confService: ConfiguracionService,
     ) {
         this.listMessage = [];
-        this.notificacion_estado_usuario = [];
+        this.notificacionEstadoUsuario = [];
         const up$ = fromEvent(document, 'mouseup');
         up$.subscribe((data: any) => {
             if (this.activo) {
@@ -79,7 +79,7 @@ export class NotioasService {
     }
 
     getNotificacionEstadoUsuario(id) {
-        return (this.notificacion_estado_usuario.filter(data => data.Id === id))[0];
+        return (this.notificacionEstadoUsuario.filter(data => data.Id === id))[0];
     }
 
     send_ping(): void {
@@ -89,12 +89,12 @@ export class NotioasService {
 
     connect(): void {
         console.log('connecting ws ...');
-        const id_token = localStorage.getItem('id_token');
-        const access_token = localStorage.getItem('access_token');
-        if (id_token !== null && access_token !== null) {
+        const idToken = localStorage.getItem('id_token');
+        const accessToken = localStorage.getItem('access_token');
+        if (idToken !== null && accessToken !== null) {
             if (this.roles.length > 0) {
                 // const connWs = `${this.NOTIFICACION_SERVICE}/join?id=${this.user}&profiles=${this.roles}`;
-                const connWs = `${this.NOTIFICACION_SERVICE}/join?id=${access_token}`;
+                const connWs = `${this.NOTIFICACION_SERVICE}/join?id=${accessToken}`;
                 this.messagesSubject = webSocket({
                     url: connWs,
                     openObserver: {
@@ -157,13 +157,13 @@ export class NotioasService {
     }
 
     queryNotification(): void {
-        const id_token = localStorage.getItem('id_token');
-        const access_token = localStorage.getItem('access_token');
-        if (id_token !== null && access_token !== null) {
+        const idToken = localStorage.getItem('id_token');
+        const accessToken = localStorage.getItem('access_token');
+        if (idToken !== null && accessToken !== null) {
             this.confService.get('notificacion_estado_usuario?query=Usuario:' + this.user + ',Activo:true&sortby=notificacion&order=asc&limit=-1')
                 .subscribe((resp: any) => {
                     if (resp !== null) {
-                        this.notificacion_estado_usuario = resp;
+                        this.notificacionEstadoUsuario = resp;
                         from(resp)
                             .subscribe((notify: any) => {
                                 if (typeof notify.Notificacion !== 'undefined') {

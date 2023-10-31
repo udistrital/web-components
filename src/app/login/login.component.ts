@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit {
   @Input() isloading = false;
   @Output() loginEvent: EventEmitter<any> = new EventEmitter();
 
-  login() {
+  login(): void {
     this.isloading = true;
     this.loginEvent.next('clicked');
   }

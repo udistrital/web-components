@@ -27,8 +27,8 @@ export class ConfiguracionService {
     return this.http.get<any>(`${this.path}${endpoint}`, this.httpOptions).pipe(
       map(
         (res) => {
-          if (res.hasOwnProperty('Body')) {
-            return res['Body'];
+          if (res && res.hasOwnProperty('Body')) {
+            return res.Body;
           } else {
             return res;
           }
@@ -36,18 +36,18 @@ export class ConfiguracionService {
       ));
   }
 
-  getMenu(roles: string, aplication: string, endpoint) {
+  getMenu(roles: string, aplication: string, endpoint: string) {
     this.httpOptions = {
       headers: new HttpHeaders({
         Accept: 'application/json',
         Authorization: `Bearer ${localStorage.getItem('access_token')}`,
       }),
     };
-    return this.http.get<any>(`${this.path}${endpoint}/${roles}/${aplication}`, this.httpOptions).pipe(
+    return this.http.get<any>(`${this.path}${endpoint}?app=${aplication}&roles=${roles}`, this.httpOptions).pipe(
       map(
         (res) => {
-          if (res.hasOwnProperty('Body')) {
-            return res['Body'];
+          if (res && res.hasOwnProperty('Body')) {
+            return res.Body;
           } else {
             return res;
           }

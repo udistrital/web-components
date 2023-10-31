@@ -57,8 +57,8 @@ export class ImplicitAutenticationService {
             req.open('GET', query, true);
             if (!!params.id_token) {
                 // if token setear
-                const id_token_array = (params.id_token).split('.');
-                const payload = JSON.parse(atob(id_token_array[1]));
+                const idTokenArray = (params.id_token).split('.');
+                const payload = JSON.parse(atob(idTokenArray[1]));
                 window.localStorage.setItem('access_token', params.access_token);
                 window.localStorage.setItem('expires_in', params.expires_in);
                 window.localStorage.setItem('state', params.state);
@@ -86,8 +86,8 @@ export class ImplicitAutenticationService {
                 }
             };
         } else {
-            const id_token = window.localStorage.getItem('id_token').split('.');
-            const payload = JSON.parse(atob(id_token[1]));
+            const idToken = window.localStorage.getItem('id_token').split('.');
+            const payload = JSON.parse(atob(idToken[1]));
             this.updateAuth(payload);
         }
         const expires = this.setExpiresAt();
@@ -117,7 +117,7 @@ export class ImplicitAutenticationService {
                     this.clearUrl();
                     localStorage.setItem('user', btoa(JSON.stringify({ ...{ user: payload }, ...{ userService: res } })));
                     this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
-                },(error) => (console.log(error))
+                }, (error) => (console.log(error))
                 );
             this.httpOptions = {
                 headers: new HttpHeaders({
@@ -180,8 +180,8 @@ export class ImplicitAutenticationService {
     }
 
     public clearUrl(): void {
-        const clean_uri = window.location.origin + window.location.pathname;
-        window.history.replaceState({}, document.title, clean_uri);
+        const cleanURI = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanURI);
     }
 
     public getAuthorizationUrl(): string {

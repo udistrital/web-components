@@ -1,11 +1,11 @@
 # WebComponent base para construcción de aplicaciones Oficina Asesora de Tecnologías e Información Universidad Distrital
 
-Construye header, menu sidebar, footer, autenticación vía wso2
+Construye header, footer, se autentica wso2 y construye el menú.,
 
 ## Especificaciones Técnicas
 
 ## Tecnologías Implementadas y Versiones
-* [Angular 11.2.1](https://angular.io/)
+* [Angular 11.2.9](https://angular.io/)
 
 ## Ejecución del Proyecto
 
