@@ -37,6 +37,7 @@ export class OasComponent implements OnChanges {
   @Output() user: EventEmitter<any> = new EventEmitter();
   @Output() option: EventEmitter<any> = new EventEmitter();
   @Output() logout: EventEmitter<any> = new EventEmitter();
+  @Output() menu: EventEmitter<any> = new EventEmitter();
   @Input() environment: any;
 
   opened = false;
@@ -64,6 +65,9 @@ export class OasComponent implements OnChanges {
     this.menuService.sidebar$.subscribe((opened) => (this.opened = opened));
     this.menuService.option$.subscribe((op) => {
       setTimeout(() => (this.option.emit(op)), 100);
+    });
+    this.menuService.menu$.subscribe((menu) => {
+      setTimeout(() => (this.menu.emit(menu)), 100);
     });
     this.autenticacionService.logout$.subscribe((logoutEvent: any) => {
       if (logoutEvent) {
