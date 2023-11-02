@@ -8,14 +8,14 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class LoginComponent implements OnInit {
 
   constructor() { }
-  @Input('appname') appname: any;
-  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/'
-  @Input('isloading') isloading: boolean = false;
-  @Output('loginEvent') loginEvent: EventEmitter<any> = new EventEmitter();
+  @Input() appname: any;
+  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
+  @Input() isloading = false;
+  @Output() loginEvent: EventEmitter<any> = new EventEmitter();
 
-  login() {
+  login(): void {
     this.isloading = true;
-    this.loginEvent.next('clicked')
+    this.loginEvent.next('clicked');
   }
   ngOnInit(): void {
   }

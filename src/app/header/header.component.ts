@@ -24,7 +24,7 @@ enum VisibilityState {
         VisibilityState.Visible,
         style({ transform: 'scaleX(1) translate(0%' })
       ),
-      transition('* => *', animate('400ms ease-in'))
+      transition('* => *', animate('300ms ease-in'))
     ]),
     trigger('logoAnimation', [
       state(
@@ -35,20 +35,31 @@ enum VisibilityState {
         VisibilityState.Visible,
         style({ transform: 'scaleX(1)  translate(-28%)' })
       ),
-      transition('* => *', animate('400ms ease-in'))
-    ])
+      transition('* => *', animate('300ms ease-in'))
+    ]),
+    trigger('iconMenu', [
+      state(
+        VisibilityState.Hidden,
+        style({ transform: 'translate(3em, 0)' })
+      ),
+      state(
+        VisibilityState.Visible,
+        style({ transform: 'translate(0em, 0)' })
+      ),
+      transition('* => *', animate('300ms ease-in'))
+    ]),
   ]
 })
 export class HeaderComponent implements OnChanges {
   sidebar = false;
   load = true;
-  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/'
-  @Input('appname') appname: any;
-  @Input('username') username: any;
-  @Input('notificaciones') notificaciones: any;
-  @Input('menuApps') menuApps: any;
-  @Output('logoutEvent') logoutEvent: EventEmitter<any> = new EventEmitter();
-  cerrarSesion: boolean = false;
+  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
+  @Input() appname: any;
+  @Input() username: any;
+  @Input() notificaciones: any;
+  @Input() menuApps: any;
+  @Output() logoutEvent: EventEmitter<any> = new EventEmitter();
+  cerrarSesion = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -62,13 +73,13 @@ export class HeaderComponent implements OnChanges {
   ngOnInit() {
     const up$ = fromEvent(document, 'mouseup');
     up$.subscribe((data: any) => {
-        if (this.cerrarSesion) {
-            if (((data.path
-                .map((info: any) => { return (info.localName) }))
-                .filter((data: any) => (data === 'header-button-cerrarsesion-container'))).length === 0) {
-                this.toogleCerrarSesion();
-            }
+      if (this.cerrarSesion) {
+        if (((data.path
+          .map((info: any) => info.localName))
+          .filter((data: any) => (data === 'header-button-cerrarsesion-container'))).length === 0) {
+          this.toogleCerrarSesion();
         }
+      }
     });
   }
 
@@ -89,7 +100,7 @@ export class HeaderComponent implements OnChanges {
   };
 
   logout(): void {
-    this.logoutEvent.next('clicked')
+    this.logoutEvent.next('clicked');
   }
 
   ngOnChanges(changes): void {

@@ -11,13 +11,13 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
       state('collapsed', style({transform: 'rotate(0deg)'})),
       state('expanded', style({transform: 'rotate(180deg)'})),
       transition('expanded <=> collapsed',
-        animate('225ms cubic-bezier(0.4,0.0,0.2,1)')
+        animate('125ms cubic-bezier(0.4,0.0,0.2,1)')
       ),
     ])
   ]
 })
 export class MenuComponent{
-  expanded: boolean = false;
+  expanded = false;
   @HostBinding('attr.aria-expanded') ariaExpanded = this.expanded;
   @Input() item: NavItem;
   @Input() depth: number;
@@ -28,7 +28,7 @@ export class MenuComponent{
     }
   }
 
-  onItemSelected(item: NavItem) {
+  onItemSelected(item: NavItem): void {
     if (!item.Opciones || !item.Opciones.length) {
       this.navService.updateOption(item);
       this.navService.closeNav();

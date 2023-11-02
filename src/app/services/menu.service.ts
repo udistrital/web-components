@@ -7,7 +7,7 @@ import { ImplicitAutenticationService } from './implicit_autentication.service';
     providedIn: 'root',
 })
 export class MenuService {
-    public sidebar: boolean = false;
+    public sidebar = false;
 
     private optionSubject = new BehaviorSubject(false);
     public option$ = this.optionSubject.asObservable();
@@ -34,7 +34,7 @@ export class MenuService {
         });
     }
 
-    getMenu(appMenu) {
+    getMenu(appMenu: string): void {
         const menuInfo = localStorage.getItem('menu');
         if (menuInfo) {
             this.menuSubject.next(JSON.parse(atob(menuInfo)));
@@ -42,11 +42,11 @@ export class MenuService {
             this.userService.user$.subscribe((userResponse: any) => {
                 const { user, userService } = userResponse;
                 if (user && userService) {
-                    const role1 = user ? user.role ? user.role.filter((menu) => (menu !== 'Internal/everyone')) : [] : [];
-                    const role2 = userService ? userService.role ? userService.role.filter((menu) => (menu !== 'Internal/everyone')) : [] : [];
-                    const roles = [...role1, ...role2].length > 0 ? ([...role1, ...role2]).join(',') : '';
-                    if (roles !== '') {
-                        this.configuracionService.getMenu(roles, appMenu, 'menu_opcion_padre/ArbolMenus')
+                    const role1: Set<string> = user.role ? new Set<string>(user.role) : new Set();
+                    const role2: Set<string> = userService.role ? new Set<string>(userService.role) : new Set();
+                    const roles = Array.from(new Set<string>([...role1, ...role2])).join(',');
+                    if (roles) {
+                        this.configuracionService.getMenu(roles, appMenu, 'menu_opcion_padre/permisos_roles')
                             .subscribe((data) => {
                                 let navItems = data;
                                 navItems = [...[{
@@ -57,34 +57,34 @@ export class MenuService {
                                 }]
                                     , ...navItems];
                                 this.updateMenu(navItems);
-                            })
+                            });
                     }
                 }
-            })
+            });
         }
     }
 
-    public updateOption(option) {
+    public updateOption(option): void {
         this.optionSubject.next(option);
     }
 
-    public closeNav() {
+    public closeNav(): void {
         this.sidebar = false;
         this.sidebarSubject.next(this.sidebar);
     }
 
-    public updateMenu(menu) {
+    public updateMenu(menu): void {
         localStorage.setItem('menu', btoa(JSON.stringify(menu)));
         this.menuSubject.next(menu);
     }
 
 
-    public openNav() {
+    public openNav(): void {
         this.sidebar = true;
         this.sidebarSubject.next(this.sidebar);
     }
 
-    public toogle() {
+    public toogle(): void {
         this.sidebar = !this.sidebar;
         this.sidebarSubject.next(this.sidebar);
     }

@@ -1,5 +1,18 @@
 @import url("https://pruebasassets.portaloas.udistrital.edu.co/font-style.css");
-
+.menu-icon {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    span {
+        background-color: var(--color900);
+        padding: 10px;
+        border-radius: 30px;
+        cursor: pointer;
+        width: 25px;
+        height: 25px;
+        color: #fff;
+    }
+}
 p {
     display: block;
     margin-block-start: 0;
@@ -26,7 +39,7 @@ i {
 .header-container {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-gap: 10px;
     grid-auto-rows: minmax(100px, auto);
     z-index: 1;
@@ -41,13 +54,14 @@ i {
 
 .header-logo-container {
     padding: 0 0 5px 0;
-    display: flex;
+    display: -webkit-flex;
     flex-wrap: nowrap;
-    align-items: center;
+    justify-content: center;
+
 }
 
 .header-buttons-container {
-    display: flex;
+    display: -webkit-flex;
     justify-content: flex-end;
     flex-wrap: nowrap;
     align-items: center;
@@ -57,7 +71,7 @@ i {
 .header-button-notification,
 .header-button-apps-container,
 .header-button-user-container {
-    display: flex;
+    display: -webkit-flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -94,8 +108,8 @@ i {
 }
 
 .logotipo {
-    max-height: 85px;
-    cursor: pointer;
+    max-height: 100px;
+    max-width: 180px;
 }
 
 .header-badge {
@@ -119,11 +133,11 @@ i {
     .button-header {
         font-size: 20px;
     }
+}
 
-    .header-logo-container {
-        display: flex;
-        align-items: left;
-        justify-content: left;
+@media screen and (max-width: 570px) {
+    .header-logo-container{
+        display:none;
     }
 }
 
@@ -135,7 +149,6 @@ i {
         font-size: 20px;
     }
     .header-logo-container {
-        display: flex;
         max-width: 250px;
     }
 
