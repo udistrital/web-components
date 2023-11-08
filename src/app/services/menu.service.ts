@@ -50,10 +50,11 @@ export class MenuService {
                             .subscribe((data) => {
                                 let navItems = data;
                                 navItems = [...[{
-                                    Nombre: 'Inicio',
                                     Icono: 'home',
+                                    Nombre: 'Inicio',
+                                    Opciones: [],
+                                    TipoOpcion: 'Menú',
                                     Url: 'pages',
-                                    Opciones: []
                                 }]
                                     , ...navItems];
                                 this.updateMenu(navItems);
