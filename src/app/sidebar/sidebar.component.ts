@@ -42,12 +42,21 @@ export class SidebarComponent implements OnInit, OnChanges {
       .subscribe((data: NavItem[]) => {
         if (JSON.stringify(data) !== '{}') {
           if (!this.navItems) {
-            this.navItems = data.filter(entry => entry.TipoOpcion === 'Menú');
+            this.navItems = this.filterOpciones(data);
           }
         }
       });
     this.menuService.sidebar$.subscribe((opened) =>
       (this.sidebarAnimation = opened ? VisibilityState.Visible : VisibilityState.Hidden));
+  }
+
+  private filterOpciones(permisos: NavItem[]): any {
+    return permisos.filter(opt => {
+      if (opt.Opciones) {
+        opt.Opciones = this.filterOpciones(opt.Opciones)
+      }
+      return opt?.TipoOpcion === 'Menú';
+    });
   }
 
   ngOnChanges(changes): void {
