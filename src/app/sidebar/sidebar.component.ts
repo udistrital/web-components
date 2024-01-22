@@ -33,16 +33,25 @@ export class SidebarComponent implements OnInit, OnChanges {
 
   constructor(
     public menuService: MenuService,
-  ) {
+  ) { }
 
-  }
   ngOnInit(): void {
     this.menuService.menu$
       .pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev[0]) === JSON.stringify(curr[0])))
       .subscribe((data: NavItem[]) => {
         if (JSON.stringify(data) !== '{}') {
           if (!this.navItems) {
-            this.navItems = this.filterOpciones(data);
+            const home = <NavItem>{
+              Icono: 'home',
+              Nombre: 'Inicio',
+              Opciones: [],
+              TipoOpcion: 'Menú',
+              Url: 'pages',
+            };
+
+            const permisos = [home];
+            data.forEach(val => permisos.push(Object.assign({}, val)));
+            this.navItems = this.filterOpciones(permisos);
           }
         }
       });
