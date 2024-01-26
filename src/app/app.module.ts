@@ -50,7 +50,6 @@ import { OasComponent } from './oas/oas.component';
     MatIconModule,
     // end material modules
   ],
-  entryComponents: [],
   providers: [
     ConfiguracionService,
     NotioasService,
