@@ -10,6 +10,7 @@ import { fromEvent } from 'rxjs';
 })
 export class NotioasService {
     NOTIFICACION_SERVICE = '';
+    TIME_PING = 30000;
     public messagesSubject: Subject<any>;
 
     public listMessage: any;
@@ -24,6 +25,7 @@ export class NotioasService {
     private activo = new BehaviorSubject({});
     public activo$ = this.activo.asObservable();
 
+    timerPing$ = interval(this.TIME_PING);
     roles: any;
     user: any;
     public menuActivo = false;
@@ -63,10 +65,10 @@ export class NotioasService {
     init(pathNotificacion: string, userData): void {
         console.info('...Init lib notificaciones');
         this.NOTIFICACION_SERVICE = pathNotificacion;
-        this.confService.setPath(this.NOTIFICACION_SERVICE);
-        if (typeof userData.userService !== 'undefined') {
-            this.user = userData.userService;
-            this.roles = userData.userService.role ? userData.userService.role : [];
+        if (typeof userData.user !== 'undefined') {
+            this.user = userData.user ? userData.user.email ? userData.user.email.split('@').shift() : '' : '';
+            this.roles = userData.user.role ? userData.user.role : [];
+            this.connect();
             this.queryNotification();
         }
     }
@@ -80,6 +82,49 @@ export class NotioasService {
         return (this.notificacionEstadoUsuario.filter(data => data.Id === id))[0];
     }
 
+    send_ping(): void {
+        // sending ping every 30 seconds
+        this.timerPing$.subscribe(() => (this.messagesSubject.next('ping')));
+    }
+
+    connect(): void {
+        console.log('connecting ws ...');
+        const idToken = localStorage.getItem('id_token');
+        const accessToken = localStorage.getItem('access_token');
+        if (idToken !== null && accessToken !== null) {
+            if (this.roles.length > 0) {
+                // const connWs = `${this.NOTIFICACION_SERVICE}/join?id=${this.user}&profiles=${this.roles}`;
+                const connWs = `${this.NOTIFICACION_SERVICE}/join?id=${accessToken}`;
+                this.messagesSubject = webSocket({
+                    url: connWs,
+                    openObserver: {
+                        next: () => {
+                            this.send_ping();
+                        },
+                    },
+                });
+                this.messagesSubject
+                    .pipe(
+                        map((msn) => {
+                            this.listMessage = [...[msn], ...this.listMessage];
+                            this.noNotifySubject.next((this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada')).length);
+                            this.arrayMessagesSubject.next(this.listMessage);
+                            return msn;
+                        }),
+                    )
+                    .subscribe(
+                        (msg: any) => { },
+                        err => {
+                            console.info('websocketError:', err);
+                        },
+                        () => console.info('complete'),
+                    );
+            }
+
+        }
+
+    }
+
     close(): void {
         this.messagesSubject.unsubscribe();
     }
@@ -91,13 +136,13 @@ export class NotioasService {
     }
 
     changeStateNoView(): void {
-        // if (this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada').length >= 1) {
-        //     this.confService.post('notificacion_estado_usuario/changeStateNoView/' + this.user, {})
-        //         .subscribe(res => {
-        //             this.listMessage = [];
-        //             this.queryNotification();
-        //         });
-        // }
+        if (this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada').length >= 1) {
+            this.confService.post('notificacion_estado_usuario/changeStateNoView/' + this.user, {})
+                .subscribe(res => {
+                    this.listMessage = [];
+                    this.queryNotification();
+                });
+        }
     }
 
     changeStateToView(id, estado): void {
@@ -112,11 +157,9 @@ export class NotioasService {
     }
 
     queryNotification(): void {
-        console.log("URL", this.confService.path);
-        
-        if (this.user.document == "") {
-            console.log("trayendo las notificaciones");
-            
+        const idToken = localStorage.getItem('id_token');
+        const accessToken = localStorage.getItem('access_token');
+        if (idToken !== null && accessToken !== null) {
             this.confService.get('notificacion_estado_usuario?query=Usuario:' + this.user + ',Activo:true&sortby=notificacion&order=asc&limit=-1')
                 .subscribe((resp: any) => {
                     if (resp !== null) {
