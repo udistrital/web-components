@@ -29,11 +29,11 @@ export class NotioasService {
     user: any;
     public menuActivo = false;
 
-    constructor(
-        private confService: ConfiguracionService,
-    ) {
+    constructor(private confService: ConfiguracionService) {
         this.listMessage = [];
         this.notificacionEstadoUsuario = [];
+
+        //Cerrar el panel de notificaciones al hacer clic por fuera de el
         const up$ = fromEvent(document, 'mouseup');
         up$.subscribe((data: any) => {
             if (this.activo) {
@@ -44,7 +44,6 @@ export class NotioasService {
                 }
             }
         });
-
     }
 
     toogleMenuNotify(): void {
@@ -118,17 +117,83 @@ export class NotioasService {
         console.log("trayendo las notificaciones");
         // if (this.user.document == "") {
         this.confService.get(`colas/mensajes/espera?nombre=${"colaWebComponent.fifo"}&tiempoEspera=1&filtro=IdUsuarios:${"usuario1"}`)
-            .subscribe((res: any) => {
-                if (res !== null && res.Data !== null) {
-                    let listaNotificaciones = res.Data
+        .subscribe(
+            (data: any) => {
+                if (data !== null && data.Data !== null) {
+                    let listaNotificaciones = data.Data
                     for (let i = 0; i < listaNotificaciones.length; i++) {
+                        //Guardar la notificación en una lista del componente
                         let notificacion = listaNotificaciones[i].Body;
-                        // notificacion.estado = "sinVer"
+                        notificacion.Estado = Math.random() >= 0.5 ? "leida" : "noLeida";
                         this.addMessage(notificacion);
+
+                        //Eliminar las notificaciones de las colas
+                        let colas = this.processsColas(notificacion.MessageAttributes.Destinatario.Value)
+                        this.removeNotification(colas, notificacion.MessageId)
                     }
+                    
                 }
                 this.loading.next({ loading: false })
-            });
+            }, (error: any) => {
+                console.error('Error al consultar notificaciones', error);
+            }
+        );
         // }
+    }
+
+    processsColas(valor) {
+        const array = JSON.parse(valor);
+        if (Array.isArray(array)) {
+            return array;
+        }
+        return [valor.replace(/^"|"$/g, '')];
+    }
+
+    removeNotification(colas: string[], idNotificacion: string): void {        
+        for (let i = 0; i < colas.length; i++) {
+            let nombreCola = colas[i].substring(2) + ".fifo"
+            this.confService.get(`colas/mensajes?nombre=${nombreCola}&numMax=10`)
+            .subscribe(
+                (data1: any) => {
+                    if (data1.Data != null) {
+                        const notificacionBorrar = data1.Data.filter(
+                            (notificacion: any) => notificacion.Body.MessageId === idNotificacion  
+                        );
+                        this.confService.post(`colas/mensajes/${nombreCola}`, notificacionBorrar[0])
+                        .subscribe(
+                            (data2: any) => {},
+                            (error: any) => {
+                                console.error('Error al eliminar notificacion con id: ' + notificacionBorrar[0].MessageId);
+                            }
+                        );
+                    }
+                },
+                (error: any) => {
+                    console.error('Error al obtener notificaciones de cola: ' + nombreCola);
+                }
+            );
+        }
+    }
+
+    createNotificacion(notification: any): void {
+        const datos = {
+            ArnTopic: notification.TopicArn,
+            Asunto: notification.Subject,
+            Atributos: {
+                IdUsuario: notification.MessageAttributes.IdUsuario.Value,
+                Estado: notification.Estado
+            },
+            DestinatarioId: this.processsColas(notification.MessageAttributes.Destinatario.Value),
+            IdDeduplicacion: new Date().getTime().toString(),
+            IdGrupoMensaje: notification.MessageAttributes.IdUsuario,
+            Mensaje: notification.Message,
+            RemitenteId: notification.MessageAttributes.Remitente.Value,
+        };
+        this.confService.post(`notificaciones/enviar`, datos).subscribe(
+            (data: any) => {},
+            (error: any) => {
+                console.error('Error en la creación de notificacion: ', notification.MessageId);
+            }
+        );
     }
 }

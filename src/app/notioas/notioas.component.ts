@@ -26,8 +26,6 @@ export class NotioasComponent implements OnInit {
       .subscribe((isLoading: any) => {
         const { loading } = isLoading;
         this.loading = loading;
-        console.log(loading);
-        
       });
   }
 
@@ -37,24 +35,7 @@ export class NotioasComponent implements OnInit {
       .subscribe((notification: any) => {
         this.notificaciones = notification;
       });
-    this.searchTerm$
-      .pipe(
-        debounceTime(700),
-        distinctUntilChanged(),
-        switchMap(query => this.searchEntries(query)),
-      ).subscribe(response => {
-        this.notificaciones = response;
-      });
     this.notificacionService.getNotificaciones();
-  }
-
-
-  // tslint:disable-next-line: typedef
-  searchEntries(term) {
-    const array = [];
-    array.push(this.notificacionService.listMessage.filter(
-      (notify: any) => notify.Content.Message.Message.indexOf(term) !== -1 || notify.User.indexOf(term) !== -1));
-    return array;
   }
 
   // tslint:disable-next-line: typedef
