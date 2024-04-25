@@ -2,31 +2,16 @@
     <div class="title-notifications">
         <p>Notificaciones</p>
     </div>
-    <div class="row">
-        <div class="input-group">
-            <input type="text" class="form-control" (keyup)="searchTerm$.next($event.target.value)"
-                placeholder="Search ...">
-            <span class="input-group-append">
-            </span>
-        </div>
-    </div>
-    <br>
     <div class="notifications-container">
-        <div *ngFor="let notificacion of notificaciones" (click)="redirect(notificacion)" [id]="notificacion.Estado"
-            class="notification-item">
-            <div class="notifications-image-container">
-                <img src="{{notificacion.EstiloIcono?basePathAssets + 'isotipos_aplicativos_svg/' + notificacion.EstiloIcono + '.svg':''}}" 
-                alt="{{'logotipo aplicación ' + notificacion.EstiloIcono}}" class="isotipo"/>
-            </div>
-            <div class="notifications-text-container">
-                <p> {{notificacion.Alias}} </p>
-                <p>
-                    {{notificacion.Content.Message.Message}}
-                </p>
-                <p>
-                    {{notificacion.FechaCreacion | amLocale:'es' | amTimeAgo:true}}
-                </p>
-            </div>
+        <div *ngIf="loading; else loadedContent" class="loading-indicator">
+            <ng-uui-load></ng-uui-load> 
         </div>
+        <ng-template #loadedContent>
+            <div *ngFor="let notificacion of notificaciones" (click)="redirect(notificacion)" class="notification-item">
+                <div class="notifications-text-container">
+                    <p>{{notificacion.Message}}</p>
+                </div>
+            </div>
+        </ng-template>
     </div>
 </div>

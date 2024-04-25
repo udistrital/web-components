@@ -14,6 +14,7 @@ export class NotioasComponent implements OnInit {
   basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
   // tslint:disable-next-line: ban-types
   activo: Boolean = false;
+  loading: boolean = false;
 
   ngOnInit(): void {
     this.notificacionService.activo$
@@ -21,7 +22,15 @@ export class NotioasComponent implements OnInit {
         const { activo } = isActive;
         this.activo = activo;
       });
+    this.notificacionService.loading$
+      .subscribe((isLoading: any) => {
+        const { loading } = isLoading;
+        this.loading = loading;
+        console.log(loading);
+        
+      });
   }
+
   constructor(public notificacionService: NotioasService) {
     this.notificaciones = [];
     this.notificacionService.arrayMessages$

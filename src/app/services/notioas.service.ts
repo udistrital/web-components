@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConfiguracionService } from './configuracion.service';
-import { from, interval, BehaviorSubject, Subject } from 'rxjs';
-import { webSocket } from 'rxjs/webSocket';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { fromEvent } from 'rxjs';
 
 @Injectable({
@@ -23,6 +21,9 @@ export class NotioasService {
 
     private activo = new BehaviorSubject({});
     public activo$ = this.activo.asObservable();
+
+    private loading = new BehaviorSubject({});
+    public loading$ = this.loading.asObservable();
 
     roles: any;
     user: any;
@@ -72,25 +73,24 @@ export class NotioasService {
     }
 
     getNotificaciones(): void {
-        this.noNotifySubject.next((this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada')).length);
-        this.arrayMessagesSubject.next(this.listMessage);
+        console.log("getNotificaciones");
+        // this.noNotifySubject.next((this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada')).length);
+        // this.arrayMessagesSubject.next(this.listMessage);
     }
 
     getNotificacionEstadoUsuario(id) {
-        return (this.notificacionEstadoUsuario.filter(data => data.Id === id))[0];
-    }
-
-    close(): void {
-        this.messagesSubject.unsubscribe();
+        console.log("getNotificacionEstadoUsuario");
+        // return (this.notificacionEstadoUsuario.filter(data => data.Id === id))[0];
     }
 
     addMessage(message: any): void {
         this.listMessage = [...[message], ...this.listMessage];
-        this.noNotifySubject.next((this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada')).length);
+        this.noNotifySubject.next(this.listMessage.length);
         this.arrayMessagesSubject.next(this.listMessage);
     }
 
     changeStateNoView(): void {
+        console.log("changeStateNoView");
         // if (this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada').length >= 1) {
         //     this.confService.post('notificacion_estado_usuario/changeStateNoView/' + this.user, {})
         //         .subscribe(res => {
@@ -101,48 +101,34 @@ export class NotioasService {
     }
 
     changeStateToView(id, estado): void {
-        if (estado === 'noleida') {
-            const notificacion = this.getNotificacionEstadoUsuario(id);
-            this.confService.get('notificacion_estado_usuario/changeStateToView/' + notificacion.Id)
-                .subscribe(res => {
-                    this.listMessage = [];
-                    this.queryNotification();
-                });
-        }
+        console.log("changeStateToView");
+        // if (estado === 'noleida') {
+        //     const notificacion = this.getNotificacionEstadoUsuario(id);
+        //     this.confService.get('notificacion_estado_usuario/changeStateToView/' + notificacion.Id)
+        //         .subscribe(res => {
+        //             this.listMessage = [];
+        //             this.queryNotification();
+        //         });
+        // }
     }
 
     queryNotification(): void {
+        this.loading.next({ loading: true })
         console.log("URL", this.confService.path);
-        
-        if (this.user.document == "") {
-            console.log("trayendo las notificaciones");
-            
-            this.confService.get('notificacion_estado_usuario?query=Usuario:' + this.user + ',Activo:true&sortby=notificacion&order=asc&limit=-1')
-                .subscribe((resp: any) => {
-                    if (resp !== null) {
-                        this.notificacionEstadoUsuario = resp;
-                        from(resp)
-                            .subscribe((notify: any) => {
-                                if (typeof notify.Notificacion !== 'undefined') {
-                                    const message = {
-                                        Id: notify.Id,
-                                        Type: notify.Notificacion.NotificacionConfiguracion.Tipo.Id,
-                                        Content: JSON.parse(notify.Notificacion.CuerpoNotificacion),
-                                        User: notify.Notificacion.NotificacionConfiguracion.Aplicacion.Nombre,
-                                        Alias: notify.Notificacion.NotificacionConfiguracion.Aplicacion.Alias,
-                                        EstiloIcono: notify.Notificacion.NotificacionConfiguracion.Aplicacion.EstiloIcono,
-                                        FechaCreacion: new Date(notify.Notificacion.FechaCreacion),
-                                        FechaEdicion: new Date(notify.Fecha),
-                                        Estado: notify.NotificacionEstado.CodigoAbreviacion,
-                                    };
-                                    this.addMessage(message);
-                                }
-                            });
+        console.log("trayendo las notificaciones");
+        // if (this.user.document == "") {
+        this.confService.get(`colas/mensajes/espera?nombre=${"colaWebComponent.fifo"}&tiempoEspera=1&filtro=IdUsuarios:${"usuario1"}`)
+            .subscribe((res: any) => {
+                if (res !== null && res.Data !== null) {
+                    let listaNotificaciones = res.Data
+                    for (let i = 0; i < listaNotificaciones.length; i++) {
+                        let notificacion = listaNotificaciones[i].Body;
+                        // notificacion.estado = "sinVer"
+                        this.addMessage(notificacion);
                     }
-
-                });
-        }
-
+                }
+                this.loading.next({ loading: false })
+            });
+        // }
     }
-
 }
