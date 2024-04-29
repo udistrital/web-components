@@ -70,7 +70,8 @@ export class NotioasService {
             this.user = userData.userService;
             this.roles = userData.userService.role ? userData.userService.role : [];
             this.nombreCola = "colaWebComponent.fifo" //Definir el nombre de al cola de acuerdo al rol
-            this.removeNotification();
+            // this.removeNotification();
+            this.queryNotification()
         }
         
     }
@@ -115,50 +116,50 @@ export class NotioasService {
         // }
     }
 
-    // queryNotification(): void {
-    //     this.loading.next({ loading: true })
-    //     // if (this.user.document == "") {
-    //     this.confService.get(`colas/mensajes/espera?nombre=${this.nombreCola}&tiempoEspera=1&filtro=IdUsuarios:${"usuario1"}`)
-    //     .subscribe(
-    //         (data: any) => {
-    //             if (data !== null && data.Data !== null) {
-    //                 let listaNotificaciones = data.Data
-    //                 for (let i = 0; i < listaNotificaciones.length; i++) {
-    //                     //Guardar la notificación en una lista del componente
-    //                     let notificacion = listaNotificaciones[i].Body;
-    //                     notificacion.Estado = Math.random() >= 0.5 ? "leida" : "noLeida";
-    //                     this.addMessage(notificacion);
+    queryNotification(): void {
+        this.loading.next({ loading: true })
+        // if (this.user.document == "") {
+        this.confService.get(`colas/mensajes/espera?nombre=${this.nombreCola}&tiempoEspera=1&filtro=IdUsuarios:${"usuario1"}`)
+        .subscribe(
+            (data: any) => {
+                if (data !== null && data.Data !== null) {
+                    let listaNotificaciones = data.Data
+                    for (let i = 0; i < listaNotificaciones.length; i++) {
+                        //Guardar la notificación en una lista del componente
+                        let notificacion = listaNotificaciones[i].Body;
+                        notificacion.Estado = Math.random() >= 0.5 ? "leida" : "noLeida";
+                        this.addMessage(notificacion);
 
-    //                     //Eliminar las notificaciones de las colas
-    //                     console.log("Empieza a eliminar");
-    //                     this.removeNotification()
-    //                     console.log("Termina de eliminar");
-    //                 }
-    //                 console.log("Vuelve a consultar notifiaciones");
-    //                 this.queryNotification()
-    //                 console.log("Termina de consultar notifiaciones");
-    //             }
-    //             this.loading.next({ loading: false })
-    //         }, (error: any) => {
-    //             console.error('Error al consultar notificaciones', error);
-    //         }
-    //     );
-    //     // }
-    // }
-
-    removeNotification() {       
-        return this.confService.get(`colas/mensajes?nombre=${this.nombreCola}&numMax=10`).pipe(
-            concatMap(data1 => {
-                this.addMessage(data1.Data[0].Body)
-                console.log('Datos 1:', data1);
-                return this.confService.post(`colas/mensajes/${this.nombreCola}`, data1.Data[0]);
-            })
-        ).subscribe(
-            datos => {console.log("ya se elimino todo", datos)}, 
-            error => {console.log("Error:", error);
+                        //Eliminar las notificaciones de las colas
+                        // console.log("Empieza a eliminar");
+                        // this.removeNotification()
+                        // console.log("Termina de eliminar");
+                    }
+                    // console.log("Vuelve a consultar notifiaciones");
+                    // this.queryNotification()
+                    // console.log("Termina de consultar notifiaciones");
+                }
+                this.loading.next({ loading: false })
+            }, (error: any) => {
+                console.error('Error al consultar notificaciones', error);
             }
-        )
+        );
+        // }
     }
+
+    // removeNotification() {       
+    //     return this.confService.get(`colas/mensajes?nombre=${this.nombreCola}&numMax=10`).pipe(
+    //         concatMap(data1 => {
+    //             this.addMessage(data1.Data[0].Body)
+    //             console.log('Datos 1:', data1);
+    //             return this.confService.post(`colas/mensajes/${this.nombreCola}`, data1.Data[0]);
+    //         })
+    //     ).subscribe(
+    //         datos => {console.log("ya se elimino todo", datos)}, 
+    //         error => {console.log("Error:", error);
+    //         }
+    //     )
+    // }
 
     createNotificacion(notification: any) {
         const datos = {
