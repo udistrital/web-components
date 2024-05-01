@@ -3,7 +3,7 @@ import { Component, Input, ViewEncapsulation, ChangeDetectorRef, Output, EventEm
 import { fromEvent } from 'rxjs';
 import { MenuService } from '../services/menu.service';
 import { MenuAplicacionesService } from './../services/menuAplicaciones.service';
-import { NotioasService } from './../services/notioas.service';
+import { NotificacionesService } from '../services/notioas.service';
 
 enum VisibilityState {
   Visible = 'visible',
@@ -54,6 +54,10 @@ export class HeaderComponent implements OnChanges {
   sidebar = false;
   load = true;
   basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
+
+  noleidas: number;
+  activo: boolean;
+  
   @Input() appname: any;
   @Input() username: any;
   @Input() notificaciones: any;
@@ -64,7 +68,7 @@ export class HeaderComponent implements OnChanges {
   constructor(
     private cdr: ChangeDetectorRef,
     private menuService: MenuService,
-    private notioasService: NotioasService,
+    private notificacionesService: NotificacionesService,
     public menuAplicacionesService: MenuAplicacionesService,
   ) {
     menuService.sidebar$.subscribe((data) => (this.sidebar = data));
@@ -81,6 +85,16 @@ export class HeaderComponent implements OnChanges {
         }
       }
     });
+    this.notificacionesService.menuActivo$
+      .subscribe((isActive: any) => {        
+        const { activo } = isActive;
+        this.activo = activo;
+      });
+    this.notificacionesService.noleidas$
+      .subscribe((noleidas: any) => {        
+        const { noLeidas } = noleidas;
+        this.noleidas = noLeidas;
+      });
   }
 
   sidebarClases = {
@@ -126,7 +140,7 @@ export class HeaderComponent implements OnChanges {
   }
 
   togglenotify(): void {
-    this.notioasService.toogleMenuNotify();
+    this.notificacionesService.toogleMenuNotifications();
   }
 
   openSidebar(): void {

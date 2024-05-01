@@ -19,7 +19,9 @@
         </div>
         <div class="header-button-notification" *ngIf="notificaciones" (click)="togglenotify()">
             <span class="material-icons">notifications</span>
-            <div class="notification-badge">3</div>
+            <ng-container *ngIf="!activo && noleidas > 0">
+                <div class="notification-badge">{{noleidas <= 9 ? noleidas : '+9'}}</div>
+            </ng-container>
         </div>
         <div class="header-button-user-container" (click)="toogleCerrarSesion()">
             <span class="material-icons">

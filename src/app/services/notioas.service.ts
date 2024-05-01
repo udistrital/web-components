@@ -7,193 +7,126 @@ import { concatMap } from 'rxjs/operators';
 @Injectable({
     providedIn: 'root',
 })
-export class NotioasService {
+export class NotificacionesService {
     NOTIFICACION_SERVICE = '';
-    public messagesSubject: Subject<any>;
 
-    public listMessage: any;
-    private notificacionEstadoUsuario: any;
+    public notificaciones: any = [];
+    private notificacionesSubject = new Subject();
+    public notificaciones$ = this.notificacionesSubject.asObservable();
 
-    private noNotifySubject = new Subject();
-    public noNotify$ = this.noNotifySubject.asObservable();
+    public menuActivo = false;
+    private menuActivoSubject = new BehaviorSubject({});
+    public menuActivo$ = this.menuActivoSubject.asObservable();
 
-    private arrayMessagesSubject = new Subject();
-    public arrayMessages$ = this.arrayMessagesSubject.asObservable();
+    public noleidas: number = 0;
+    private noleidasSubject = new BehaviorSubject({});
+    public noleidas$ = this.noleidasSubject.asObservable();
 
-    private activo = new BehaviorSubject({});
-    public activo$ = this.activo.asObservable();
-
-    private loading = new BehaviorSubject({});
-    public loading$ = this.loading.asObservable();
+    // private loading = new BehaviorSubject({});
+    // public loading$ = this.loading.asObservable();
 
     roles: any;
     user: any;
     nombreCola: string;
-    listaAuxiliarGeneral: any;
-    public menuActivo = false;
+    listaLeidas: any = [];
+    listaNoLeidas: any = [];
+    listaTodasNotificaciones: any = [];
 
     constructor(private confService: ConfiguracionService) {
-        this.listMessage = [];
-        this.listaAuxiliarGeneral = [];
-        this.notificacionEstadoUsuario = [];
-
         //Cerrar el panel de notificaciones al hacer clic por fuera de el
         const up$ = fromEvent(document, 'mouseup');
         up$.subscribe((data: any) => {
-            if (this.activo) {
+            if (this.menuActivo) {
                 if (((data.path
                     .map((info: any) => info.localName))
                     .filter((data: any) => (data === 'ng-uui-notioas'))).length === 0) {
-                    this.closePanel();
+                    this.toogleMenuNotifications();
                 }
             }
         });
     }
 
-    toogleMenuNotify(): void {
+    toogleMenuNotifications(): void {
         this.menuActivo = !this.menuActivo;
-        const data = { activo: this.menuActivo };
-        this.activo.next(data);
-        if (this.menuActivo) {
-            this.changeStateNoView();
-        }
+        this.menuActivoSubject.next({ activo: this.menuActivo });
     }
 
-    closePanel(): void {
-        this.menuActivo = false;
-        this.activo.next({ activo: this.menuActivo });
-    }
-
-    init(pathNotificacion: string, userData): void {
-        console.info('...Init lib notificaciones');
-        this.NOTIFICACION_SERVICE = pathNotificacion;
+    init(pathNotificaciones: string, userData: any): void {
+        this.NOTIFICACION_SERVICE = pathNotificaciones;
         this.confService.setPath(this.NOTIFICACION_SERVICE);
         if (typeof userData.userService !== 'undefined') {
             this.user = userData.userService;
             this.roles = userData.userService.role ? userData.userService.role : [];
-            this.nombreCola = "colaWebComponent.fifo" //Definir el nombre de al cola de acuerdo al rol
-            this.removeNotification();
+            this.nombreCola = "colaWebComponent" //Definir el nombre de al cola de acuerdo al rol
+            this.removeNotifications();
         }
-        
     }
 
-    getNotificaciones(): void {
-        console.log("getNotificaciones");
-        // this.noNotifySubject.next((this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada')).length);
-        // this.arrayMessagesSubject.next(this.listMessage);
+    saveMessage(notificacion: any): void {        
+        let cuerpoNotificacion = notificacion.Body;
+        // Guardar la notificacion por usuario
+        if (cuerpoNotificacion.MessageAttributes.IdUsuario.Value === "usuario2") {
+            if (cuerpoNotificacion.MessageAttributes.Estado.Value === "noleida") {
+                this.listaNoLeidas = [...[cuerpoNotificacion], ...this.listaNoLeidas];
+                this.noleidas++;
+                this.noleidasSubject.next({ noLeidas: this.noleidas });
+            } else {
+                this.listaLeidas = [...[cuerpoNotificacion], ...this.listaLeidas];
+            }
+            /* Filtrar:
+                Añadir las notificaciones 'noleidas' al principio de la lista
+                Y solo 5 notificaciones 'leidas' al final */
+            this.notificaciones = [...this.listaNoLeidas, ...this.listaLeidas.slice(0,5)]
+            this.notificacionesSubject.next(this.notificaciones);
+        }
+        // Guardar las notificaciones(todas) en una lista 
+        this.listaTodasNotificaciones = [...this.listaTodasNotificaciones, ...[cuerpoNotificacion]];
     }
 
-    getNotificacionEstadoUsuario(id) {
-        console.log("getNotificacionEstadoUsuario");
-        // return (this.notificacionEstadoUsuario.filter(data => data.Id === id))[0];
-    }
-
-    addMessage(message: any): void {
-        this.listMessage = [...[message], ...this.listMessage];
-        this.noNotifySubject.next(this.listMessage.length);
-        this.arrayMessagesSubject.next(this.listMessage);
-    }
-
-    changeStateNoView(): void {
-        console.log("changeStateNoView");
-        // if (this.listMessage.filter(data => (data.Estado).toLowerCase() === 'enviada').length >= 1) {
-        //     this.confService.post('notificacion_estado_usuario/changeStateNoView/' + this.user, {})
-        //         .subscribe(res => {
-        //             this.listMessage = [];
-        //             this.queryNotification();
-        //         });
-        // }
-    }
-
-    changeStateToView(id, estado): void {
+    changeStateToView(): void {
         console.log("changeStateToView");
-        // if (estado === 'noleida') {
-        //     const notificacion = this.getNotificacionEstadoUsuario(id);
-        //     this.confService.get('notificacion_estado_usuario/changeStateToView/' + notificacion.Id)
-        //         .subscribe(res => {
-        //             this.listMessage = [];
-        //             this.queryNotification();
-        //         });
-        // }
     }
 
-    // queryNotification(): void {
-    //     this.loading.next({ loading: true })
-    //     // if (this.user.document == "") {
-    //     this.confService.get(`colas/mensajes/espera?nombre=${this.nombreCola}&tiempoEspera=1&filtro=IdUsuarios:${"usuario1"}`)
-    //     .subscribe(
-    //         (data: any) => {
-    //             if (data !== null && data.Data !== null) {
-    //                 let listaNotificaciones = data.Data
-    //                 for (let i = 0; i < listaNotificaciones.length; i++) {
-    //                     //Guardar la notificación en una lista del componente
-    //                     let notificacion = listaNotificaciones[i].Body;
-    //                     notificacion.Estado = Math.random() >= 0.5 ? "leida" : "noLeida";
-    //                     this.addMessage(notificacion);
-
-    //                     //Eliminar las notificaciones de las colas
-    //                     console.log("Empieza a eliminar");
-    //                     this.removeNotification()
-    //                     console.log("Termina de eliminar");
-    //                 }
-    //                 console.log("Vuelve a consultar notifiaciones");
-    //                 this.queryNotification()
-    //                 console.log("Termina de consultar notifiaciones");
-    //             }
-    //             this.loading.next({ loading: false })
-    //         }, (error: any) => {
-    //             console.error('Error al consultar notificaciones', error);
-    //         }
-    //     );
-    //     // }
-    // }
-
-    removeNotification() {       
-        return this.confService.get(`colas/mensajes?nombre=${this.nombreCola}&numMax=10`).pipe(
-            concatMap(data1 => {
-                console.log('Datos 1:', data1);
-                if (data1.Data !== null) {
-                    let notificacion = data1.Data[0]
-                    if (notificacion.Body.MessageAttributes.IdUsuario.Value === "usuario2") {
-                        this.addMessage(notificacion.Body) //Guardar las notificaciones por usuario
-                    }
-                    // Guardar la notificación en lista general auxiliar
-                    // ?? Hacer el filtrado directamente con if's
-                    this.listaAuxiliarGeneral = [...this.listaAuxiliarGeneral, ...[notificacion.Body]];
-                    return this.confService.post(`colas/mensajes/${this.nombreCola}`, notificacion);
+    removeNotifications() {       
+        return this.confService.get(`colas/mensajes?nombre=${this.nombreCola}.fifo&numMax=10`).pipe(
+            concatMap(data => {
+                if (data.Data !== null) {                    
+                    let notificacion = data.Data[0]
+                    this.saveMessage(notificacion)
+                    return this.confService.post(`colas/mensajes/${this.nombreCola}.fifo`, notificacion);
                 } else {
-                    console.log("Lista general: ", this.listaAuxiliarGeneral);
-                    console.log("Lista de usuario2: ", this.listMessage);
-                    //Registrar los mensajes de la lista general
+                    this.addNotifications() //Registrar nuevamente los mensajes de la lista general
                     return EMPTY;
                 }
             })
         ).subscribe(
-            datos => {this.removeNotification()}, 
-            error => {console.log("Error:", error);
-            }
+            data => {this.removeNotifications()}, 
+            error => {console.log("Error al remover notificaciones", error)}
         )
     }
 
-    createNotificacion(notification: any) {
-        const datos = {
-            ArnTopic: notification.TopicArn,
-            Asunto: notification.Subject,
-            Atributos: {
-                IdUsuario: notification.MessageAttributes.IdUsuario.Value,
-                Estado: notification.Estado
-            },
-            DestinatarioId: [ "id"+this.nombreCola ],
-            IdDeduplicacion: new Date().getTime().toString(),
-            IdGrupoMensaje: notification.MessageAttributes.IdUsuario,
-            Mensaje: notification.Message,
-            RemitenteId: notification.MessageAttributes.Remitente.Value,
-        };
-        this.confService.post(`notificaciones/enviar`, datos).subscribe(
-            (data: any) => {},
-            (error: any) => {
-                console.error('Error en la creación de notificacion: ', notification.MessageId);
-            }
-        );
+    addNotifications() {
+        for (let i = 0; i < this.listaTodasNotificaciones.length; i++) {
+            let notificacion = this.listaTodasNotificaciones[i]            
+            const datos = {
+                ArnTopic: notificacion.TopicArn,
+                Asunto: notificacion.Subject,
+                Atributos: {
+                    IdUsuario: notificacion.MessageAttributes.IdUsuario.Value,
+                    Estado: notificacion.MessageAttributes.Estado.Value
+                },
+                DestinatarioId: [ "id"+this.nombreCola ],
+                IdDeduplicacion: new Date().getTime().toString(),
+                IdGrupoMensaje: notificacion.MessageAttributes.IdUsuario.Value,
+                Mensaje: notificacion.Message,
+                RemitenteId: notificacion.MessageAttributes.Remitente.Value,
+            };
+            this.confService.post(`notificaciones/enviar`, datos).subscribe(
+                (data: any) => {},
+                (error: any) => {
+                    console.error('Error creando notificación: ', notificacion.MessageId);
+                }
+            );
+        }
     }
 }

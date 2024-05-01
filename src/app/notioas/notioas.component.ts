@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { NotioasService } from './../services/notioas.service';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { NotificacionesService } from '../services/notioas.service';
 
 @Component({
   selector: 'ng-uui-notioas',
@@ -17,30 +16,29 @@ export class NotioasComponent implements OnInit {
   loading: boolean = false;
 
   ngOnInit(): void {
-    this.notificacionService.activo$
-      .subscribe((isActive: any) => {
+    this.notificacionesService.menuActivo$
+      .subscribe((isActive: any) => {        
         const { activo } = isActive;
         this.activo = activo;
       });
-    this.notificacionService.loading$
-      .subscribe((isLoading: any) => {
-        const { loading } = isLoading;
-        this.loading = loading;
-      });
+    // this.notificacionService.loading$
+    //   .subscribe((isLoading: any) => {
+    //     const { loading } = isLoading;
+    //     this.loading = loading;
+    //   });
   }
 
-  constructor(public notificacionService: NotioasService) {
+  constructor(public notificacionesService: NotificacionesService) {
     this.notificaciones = [];
-    this.notificacionService.arrayMessages$
+    this.notificacionesService.notificaciones$
       .subscribe((notification: any) => {
         this.notificaciones = notification;
       });
-    this.notificacionService.getNotificaciones();
   }
 
   // tslint:disable-next-line: typedef
   redirect(noti) {
-    this.notificacionService.changeStateToView(noti.Id, noti.Estado);
+    this.notificacionesService.changeStateToView();
     window.open(noti.Content.Message.Link, '_blank');
 
     // if (noti.Content.Message.Link.indexOf(path_sub) === -1) {

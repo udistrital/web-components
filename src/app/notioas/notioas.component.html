@@ -11,7 +11,7 @@
                 <div class="notifications-text-container">
                     <p>{{notificacion.Message}}</p>
                 </div>
-                <div *ngIf="notificacion.Estado == 'noLeida'" class="notification-badge"></div>
+                <div *ngIf="notificacion.MessageAttributes.Estado.Value == 'noleida'" class="notification-badge"></div>
             </div>
         </ng-template>
     </div>

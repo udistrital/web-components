@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuAplicacionesService } from '../services/menuAplicaciones.service';
-import { NotioasService } from '../services/notioas.service';
+import { NotificacionesService } from '../services/notioas.service';
 
 
 @Component({
@@ -13,9 +13,10 @@ export class MenuAplicacionesComponent implements OnInit {
   activo: any;
   basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
 
-  constructor( public menuService: MenuAplicacionesService, public notioasService: NotioasService) {
-
-  }
+  constructor( 
+    public menuService: MenuAplicacionesService, 
+    public notificacionesService: NotificacionesService
+  ) {}
 
   // tslint:disable-next-line: typedef
   redirect(link) {
@@ -27,8 +28,6 @@ export class MenuAplicacionesComponent implements OnInit {
     // }
   }
 
-
-
   ngOnInit(): void {
     this.menuService.activo$
     .subscribe((isActive: any) => {
@@ -36,6 +35,4 @@ export class MenuAplicacionesComponent implements OnInit {
       this.activo = activo;
     });
   }
-
-
 }
