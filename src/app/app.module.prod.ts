@@ -8,7 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // services
 import { ConfiguracionService } from './services/configuracion.service';
-import { NotioasService } from './services/notioas.service';
+import { NotificacionesService } from './services/notificaciones.service';
 import { MenuAplicacionesService } from './services/menuAplicaciones.service';
 import { MenuService } from './services/menu.service'
 
@@ -56,7 +56,7 @@ import { TercerosFormComponent } from './terceros-form/terceros-form.component';
     entryComponents: [],
     providers: [
         ConfiguracionService,
-        NotioasService,
+        NotificacionesService,
         MenuAplicacionesService,
         MenuService,
     ],

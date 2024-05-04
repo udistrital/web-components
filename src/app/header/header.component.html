@@ -19,6 +19,9 @@
         </div>
         <div class="header-button-notification"  *ngIf="notificaciones" (click)="togglenotify()">
             <span class="material-icons">notifications</span>
+            <ng-container *ngIf="!menuActivo && numPendientes > 0">
+                <div class="notification-badge">{{numPendientes <= 9 ? numPendientes : '+9'}}</div>
+            </ng-container>
         </div>
         <div class="header-button-user-container" (click)="toogleCerrarSesion()">
             <span class="material-icons">
