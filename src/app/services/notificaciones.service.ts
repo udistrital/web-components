@@ -70,9 +70,9 @@ export class NotificacionesService {
     }
 
     changeStateToView(notificacion: any): void {
-        this.numPendientesSubject.next(0);
         let cuerpoMensaje = notificacion.Body
         if (cuerpoMensaje.MessageAttributes.EstadoMensaje.Value == "pendiente") {
+            this.numPendientesSubject.next(0);
             this.queryNotifications(cuerpoMensaje.MessageId) // Cambia el estado a revisado
         }
         this.notificacionSubject.next(notificacion)
