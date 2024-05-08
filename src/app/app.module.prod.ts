@@ -69,6 +69,9 @@ export class AppModule {
     ) {
         const oas = createCustomElement(OasComponent, { injector });
         customElements.define('ng-uui-oas', oas);
+
+        const notioas = createCustomElement(NotioasComponent, { injector });
+        customElements.define('ng-uui-notioas', notioas);
     }
     ngDoBootstrap() { }
 }

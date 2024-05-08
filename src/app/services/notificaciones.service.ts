@@ -7,9 +7,6 @@ import { fromEvent } from 'rxjs';
     providedIn: 'root',
 })
 export class NotificacionesService {
-    NOTIFICACION_SERVICE = '';
-    DEFAULT_NOTIFICACIONES_REVISADAS = 5;
-
     public notificaciones: any = [];
     private notificacionesSubject = new Subject();
     public notificaciones$ = this.notificacionesSubject.asObservable();
@@ -24,9 +21,22 @@ export class NotificacionesService {
     private loading = new BehaviorSubject(false);
     public loading$ = this.loading.asObservable();
 
-    roles: any;
-    user: any;
+    private notificacionSubject = new BehaviorSubject(false);
+    public notificacion$ = this.notificacionSubject.asObservable();
+
+    rol: any;
+    usuario: any;
     nombreCola:string;
+    path = "http://localhost:8080/v1/"
+
+    // !!!!  Definir el nombre de al cola de acuerdo al rol !!!!
+    colas = {
+        "PLANEACION": "colaAsistentePlaneacion",
+        "JEFE_UNIDAD_PLANEACION": "colaJefePlaneacion",
+        "JEFE_DEPENDENCIA": "colaJefeUnidad",
+        "ASISTENTE_DEPENDENCIA": "colaAsistenteUnidad",
+        "": "colaEstados"
+    }
 
     constructor(private confService: ConfiguracionService) {
         //Cerrar el panel de notificaciones al hacer clic por fuera de el
@@ -50,33 +60,54 @@ export class NotificacionesService {
         this.menuActivoSubject.next(false);
     }
 
-    init(pathNotificaciones: string, userData: any): void {
-        this.NOTIFICACION_SERVICE = pathNotificaciones;
-        this.confService.setPath(this.NOTIFICACION_SERVICE);
-        if (typeof userData.userService !== 'undefined') {
-            this.user = userData.userService;
-            this.roles = userData.userService.role ? userData.userService.role : [];
-            this.nombreCola = "colaEstados" //Definir el nombre de al cola de acuerdo al rol
-            this.queryNotification();
+    init(usuario: any): void {
+        if (typeof usuario.userService !== 'undefined') {
+            this.usuario = usuario.userService;
+            this.rol = usuario.userService.role[0] ?? "";
+            this.nombreCola =  this.colas["JEFE_DEPENDENCIA"]
+            this.queryNotifications("");
         }
     }
 
-    queryNotification(): void {
+    changeStateToView(notificacion: any): void {
+        this.numPendientesSubject.next(0);
+        let cuerpoMensaje = notificacion.Body
+        if (cuerpoMensaje.MessageAttributes.EstadoMensaje.Value == "pendiente") {
+            this.queryNotifications(cuerpoMensaje.MessageId) // Cambia el estado a revisado
+        }
+        this.notificacionSubject.next(notificacion)
+    }
+
+    queryNotifications(id: string): void {
         this.loading.next(true)
-        // if (this.user.document == "") {
-        this.confService.get(`colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&documento=${"usuario1"}`)
-            .subscribe(
-                (res: any) => {
-                    if (res !== null && res.Data !== null) {
-                        this.notificaciones = res.Data;
-                        this.numPendientes = this.notificaciones.filter(
-                            (mensaje:any) => mensaje.Body.MessageAttributes.EstadoMensaje.Value === "pendiente"
-                        ).length; 
-                        this.numPendientesSubject.next(this.numPendientes);
-                        this.notificacionesSubject.next(this.notificaciones);
-                        this.loading.next(false)
-                    }
-                }, (error: any) => {console.log(error)}
-            )
+
+        if (this.usuario.documento === "") {
+            this.loading.next(false);
+            return;
+        }
+
+        // "usuario1" -> CAMBIAR !!!!!
+        let url: string;
+        if (id != "") {
+            url = `colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&documento=${this.usuario.documento}&id=${id}`;
+        } else{
+            url = `colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&documento=${this.usuario.documento}`;
+        }
+        this.confService.getWithoutPath(`${this.path}${url}`).subscribe(
+            (res: any) => {
+                if (res && res.Data) {
+                    this.notificaciones = res.Data;
+                    this.numPendientes = this.notificaciones.filter(
+                        (mensaje:any) => mensaje.Body.MessageAttributes.EstadoMensaje.Value === "pendiente"
+                    ).length; 
+                    this.numPendientesSubject.next(this.numPendientes);
+                    this.notificacionesSubject.next(this.notificaciones);
+                }
+                this.loading.next(false)
+            }, (error: any) => {
+                console.log(error);
+                this.loading.next(false);
+            }
+        )
     }
 }

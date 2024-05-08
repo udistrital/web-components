@@ -82,7 +82,7 @@ export class OasComponent implements OnChanges {
             this.userInfoService = data.userInfoService;
             this.user.emit(data);
             if (this.notificaciones) {
-              this.notificacionesService.init(this.NOTIFICACION_SERVICE, data);
+              this.notificacionesService.init(data);
             }
             if (this.menuApps) {
               this.menuAppService.init(catalogo[this.entorno], data);

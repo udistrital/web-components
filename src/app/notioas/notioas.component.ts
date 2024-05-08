@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NotificacionesService } from './../services/notificaciones.service';
 
 @Component({
@@ -7,11 +7,17 @@ import { NotificacionesService } from './../services/notificaciones.service';
   styleUrls: ['./notioas.component.scss']
 })
 export class NotioasComponent implements OnInit {
+  @Output() notificacion: EventEmitter<any> = new EventEmitter();
+  
   menuActivo: boolean = false;
   loading: boolean;
   notificaciones: any = [];
 
-  constructor(public notificacionesService: NotificacionesService) {}
+  constructor(public notificacionesService: NotificacionesService) {
+    this.notificacionesService.notificacion$.subscribe((notificacion) => {
+      setTimeout(() => (this.notificacion.emit(notificacion)), 100);
+    });
+  }
 
   ngOnInit(): void {
     this.subscribeToMenuActivo();
@@ -38,13 +44,6 @@ export class NotioasComponent implements OnInit {
   }
 
   redirect(notificacion:any) {
-    console.log(notificacion);
-    // this.notificacionService.changeStateToView(noti.Id, noti.Estado);
-    // window.open(noti.Content.Message.Link, '_blank');
-    // if (noti.Content.Message.Link.indexOf(path_sub) === -1) {
-    //   window.open(noti.Content.Message.Link, '_blank');
-    // } else {
-    //   this.router.navigate([noti.Content.Message.Link.substring(noti.Content.Message.Link.indexOf('#') + 1)]);
-    // }
+    this.notificacionesService.changeStateToView(notificacion);
   }
 }
