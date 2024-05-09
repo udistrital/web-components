@@ -29,7 +29,7 @@ export class NotificacionesService {
     nombreCola:string;
     path = "http://localhost:8080/v1/"
 
-    // !!!!  Definir el nombre de al cola de acuerdo al rol !!!!
+    // !!!!  CAMBIAR !!!! - Definir el nombre de al cola de acuerdo al rol 
     colas = {
         "PLANEACION": "colaAsistentePlaneacion",
         "JEFE_UNIDAD_PLANEACION": "colaJefePlaneacion",
@@ -64,7 +64,7 @@ export class NotificacionesService {
         if (typeof usuario.userService !== 'undefined') {
             this.usuario = usuario.userService;
             this.rol = usuario.userService.role[0] ?? "";
-            this.nombreCola =  this.colas["JEFE_DEPENDENCIA"]
+            this.nombreCola =  this.colas["JEFE_DEPENDENCIA"] // !!!!  CAMBIAR !!!!
             this.queryNotifications("");
         }
     }
@@ -86,7 +86,6 @@ export class NotificacionesService {
             return;
         }
 
-        // "usuario1" -> CAMBIAR !!!!!
         let url: string;
         if (id != "") {
             url = `colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&documento=${this.usuario.documento}&id=${id}`;
