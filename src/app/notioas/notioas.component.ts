@@ -15,7 +15,7 @@ export class NotioasComponent implements OnInit {
 
   constructor(public notificacionesService: NotificacionesService) {
     this.notificacionesService.notificacion$.subscribe((notificacion) => {
-      setTimeout(() => (this.notificacion.emit(notificacion)), 100);
+      this.notificacion.emit(notificacion)
     });
   }
 
