@@ -88,9 +88,9 @@ export class NotificacionesService {
 
         let url: string;
         if (id != "") {
-            url = `colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&documento=${this.usuario.documento}&id=${id}`;
+            url = `colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&usuario=${this.usuario.documento}&idMensaje=${id}`;
         } else{
-            url = `colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&documento=${this.usuario.documento}`;
+            url = `colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&usuario=${this.usuario.documento}`;
         }
         this.confService.getWithoutPath(`${this.path}${url}`).subscribe(
             (res: any) => {
