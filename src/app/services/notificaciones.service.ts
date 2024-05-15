@@ -27,15 +27,14 @@ export class NotificacionesService {
     rol: any;
     usuario: any;
     nombreCola:string;
-    path = "http://localhost:8080/v1/"
+    path = "https://autenticacion.portaloas.udistrital.edu.co/apioas/notificacion_mid/v1/"
 
     // !!!!  CAMBIAR !!!! - Definir el nombre de al cola de acuerdo al rol 
     colas = {
         "PLANEACION": "colaAsistentePlaneacion",
         "JEFE_UNIDAD_PLANEACION": "colaJefePlaneacion",
         "JEFE_DEPENDENCIA": "colaJefeUnidad",
-        "ASISTENTE_DEPENDENCIA": "colaAsistenteUnidad",
-        "": "colaEstados"
+        "ASISTENTE_DEPENDENCIA": "colaAsistenteUnidad"
     }
 
     constructor(private confService: ConfiguracionService) {
