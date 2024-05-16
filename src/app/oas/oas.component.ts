@@ -3,7 +3,7 @@ import { ConfiguracionService } from '../services/configuracion.service';
 import { ImplicitAutenticationService } from '../services/implicit_autentication.service';
 import { MenuService } from '../services/menu.service';
 import { MenuAplicacionesService } from '../services/menuAplicaciones.service';
-import { NotioasService } from '../services/notioas.service';
+import { NotificacionesService } from '../services/notificaciones.service';
 import { catalogo } from './../services/catalogo';
 
 if (!('path' in Event.prototype)) {
@@ -56,7 +56,7 @@ export class OasComponent implements OnChanges {
   navItems: any;
   constructor(
     private confService: ConfiguracionService,
-    private notioasService: NotioasService,
+    private notificacionesService: NotificacionesService,
     private menuAppService: MenuAplicacionesService,
     private menuService: MenuService,
     private cdr: ChangeDetectorRef,
@@ -82,7 +82,7 @@ export class OasComponent implements OnChanges {
             this.userInfoService = data.userInfoService;
             this.user.emit(data);
             if (this.notificaciones) {
-              this.notioasService.init(this.NOTIFICACION_SERVICE, data);
+              this.notificacionesService.init(data);
             }
             if (this.menuApps) {
               this.menuAppService.init(catalogo[this.entorno], data);
