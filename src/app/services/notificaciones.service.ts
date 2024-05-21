@@ -27,7 +27,7 @@ export class NotificacionesService {
     rol: any;
     usuario: any;
     nombreCola:string;
-    path = "https://autenticacion.portaloas.udistrital.edu.co/apioas/notificacion_mid/v1/"
+    path: string;
 
     // !!!!  CAMBIAR !!!! - Definir el nombre de al cola de acuerdo al rol 
     colas = {
@@ -59,7 +59,8 @@ export class NotificacionesService {
         this.menuActivoSubject.next(false);
     }
 
-    init(usuario: any): void {
+    init(path:string, usuario: any): void {
+        this.path = path;
         if (typeof usuario.userService !== 'undefined') {
             this.usuario = usuario.userService;
             this.rol = usuario.userService.role[0] ?? "";
