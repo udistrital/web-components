@@ -36,6 +36,25 @@ export class ConfiguracionService {
       ));
   }
 
+  getWithoutPath(endpoint) {
+    this.httpOptions = {
+      headers: new HttpHeaders({
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      }),
+    };
+    return this.http.get<any>(`${endpoint}`, this.httpOptions).pipe(
+      map(
+        (res) => {
+          if (res && res.hasOwnProperty('Body')) {
+            return res.Body;
+          } else {
+            return res;
+          }
+        },
+      ));
+  }
+
   getMenu(roles: string, aplication: string, endpoint: string) {
     this.httpOptions = {
       headers: new HttpHeaders({

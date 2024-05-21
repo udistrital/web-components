@@ -3,7 +3,7 @@ import { Component, Input, ViewEncapsulation, ChangeDetectorRef, Output, EventEm
 import { fromEvent } from 'rxjs';
 import { MenuService } from '../services/menu.service';
 import { MenuAplicacionesService } from './../services/menuAplicaciones.service';
-import { NotioasService } from './../services/notioas.service';
+import { NotificacionesService } from './../services/notificaciones.service';
 
 enum VisibilityState {
   Visible = 'visible',
@@ -51,37 +51,18 @@ enum VisibilityState {
   ]
 })
 export class HeaderComponent implements OnChanges {
-  sidebar = false;
-  load = true;
-  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
   @Input() appname: any;
   @Input() username: any;
   @Input() notificaciones: any;
   @Input() menuApps: any;
   @Output() logoutEvent: EventEmitter<any> = new EventEmitter();
+
+  menuActivo: boolean;
+  numPendientes: number;
+  sidebar = false;
+  load = true;
   cerrarSesion = false;
-
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private menuService: MenuService,
-    private notioasService: NotioasService,
-    public menuAplicacionesService: MenuAplicacionesService,
-  ) {
-    menuService.sidebar$.subscribe((data) => (this.sidebar = data));
-  }
-
-  ngOnInit() {
-    const up$ = fromEvent(document, 'mouseup');
-    up$.subscribe((data: any) => {
-      if (this.cerrarSesion) {
-        if (((data.path
-          .map((info: any) => info.localName))
-          .filter((data: any) => (data === 'header-button-cerrarsesion-container'))).length === 0) {
-          this.toogleCerrarSesion();
-        }
-      }
-    });
-  }
+  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
 
   sidebarClases = {
     open: false,
@@ -99,6 +80,43 @@ export class HeaderComponent implements OnChanges {
     clase: 'notificacion_container'
   };
 
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private menuService: MenuService,
+    private notificacionesService: NotificacionesService,
+    public menuAplicacionesService: MenuAplicacionesService,
+  ) {
+    menuService.sidebar$.subscribe((data) => (this.sidebar = data));
+  }
+
+  ngOnInit() {
+    const up$ = fromEvent(document, 'mouseup');
+    up$.subscribe((data: any) => {
+      if (this.cerrarSesion) {
+        if (((data.path
+          .map((info: any) => info.localName))
+          .filter((data: any) => (data === 'header-button-cerrarsesion-container'))).length === 0) {
+          this.toogleCerrarSesion();
+        }
+      }
+    });
+
+    this.subscribeToMenuActivo();
+    this.subscribeToNumPendientes();
+  }
+
+  private subscribeToMenuActivo(): void {
+    this.notificacionesService.menuActivo$.subscribe((menuActivo: boolean) => {
+      this.menuActivo = menuActivo;
+    });
+  }
+
+  private subscribeToNumPendientes(): void {
+    this.notificacionesService.numPendientes$.subscribe((numPendientes: number) => {
+      this.numPendientes = numPendientes;
+    });
+  }
+
   logout(): void {
     this.logoutEvent.next('clicked');
   }
@@ -110,6 +128,7 @@ export class HeaderComponent implements OnChanges {
       }
     }
   }
+
   toogleCerrarSesion(): void {
     const buttonCerrarSesion = document.getElementById('header-button-cerrarsesion-container');
     if (buttonCerrarSesion.style.display === 'none' || buttonCerrarSesion.style.display === '') {
@@ -126,7 +145,7 @@ export class HeaderComponent implements OnChanges {
   }
 
   togglenotify(): void {
-    this.notioasService.toogleMenuNotify();
+    this.notificacionesService.toogleMenuNotify();
   }
 
   openSidebar(): void {
@@ -136,5 +155,4 @@ export class HeaderComponent implements OnChanges {
   closeSidebar(): void {
     this.menuService.closeNav();
   }
-
 }

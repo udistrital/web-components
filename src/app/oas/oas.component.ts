@@ -3,7 +3,7 @@ import { ConfiguracionService } from '../services/configuracion.service';
 import { ImplicitAutenticationService } from '../services/implicit_autentication.service';
 import { MenuService } from '../services/menu.service';
 import { MenuAplicacionesService } from '../services/menuAplicaciones.service';
-import { NotioasService } from '../services/notioas.service';
+import { NotificacionesService } from '../services/notificaciones.service';
 import { catalogo } from './../services/catalogo';
 
 if (!('path' in Event.prototype)) {
@@ -51,12 +51,12 @@ export class OasComponent implements OnChanges {
   notificaciones: false;
   menuApps: false;
   CONFIGURACION_SERVICE: any;
-  NOTIFICACION_SERVICE: any;
+  NOTIFICACION_MID_SERVICE: any;
   entorno: any;
   navItems: any;
   constructor(
     private confService: ConfiguracionService,
-    private notioasService: NotioasService,
+    private notificacionesService: NotificacionesService,
     private menuAppService: MenuAplicacionesService,
     private menuService: MenuService,
     private cdr: ChangeDetectorRef,
@@ -82,7 +82,7 @@ export class OasComponent implements OnChanges {
             this.userInfoService = data.userInfoService;
             this.user.emit(data);
             if (this.notificaciones) {
-              this.notioasService.init(this.NOTIFICACION_SERVICE, data);
+              this.notificacionesService.init(this.NOTIFICACION_MID_SERVICE, data);
             }
             if (this.menuApps) {
               this.menuAppService.init(catalogo[this.entorno], data);
@@ -110,8 +110,9 @@ export class OasComponent implements OnChanges {
   ngOnChanges(changes): void {
     if (changes.environment !== undefined) {
       if (changes.environment.currentValue !== undefined) {
-        const { CONFIGURACION_SERVICE,
-          NOTIFICACION_SERVICE,
+        const { 
+          CONFIGURACION_SERVICE,
+          NOTIFICACION_MID_SERVICE,
           entorno,
           notificaciones,
           menuApps,
@@ -127,7 +128,7 @@ export class OasComponent implements OnChanges {
         this.menuApps = menuApps;
         this.entorno = entorno;
         this.CONFIGURACION_SERVICE = CONFIGURACION_SERVICE;
-        this.NOTIFICACION_SERVICE = NOTIFICACION_SERVICE;
+        this.NOTIFICACION_MID_SERVICE = NOTIFICACION_MID_SERVICE;
         this.confService.setPath(CONFIGURACION_SERVICE);
         if (autenticacion) {
           this.autenticacionService.init(TOKEN);
