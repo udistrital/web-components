@@ -24,21 +24,12 @@ export class NotificacionesService {
     private notificacionSubject = new BehaviorSubject(false);
     public notificacion$ = this.notificacionSubject.asObservable();
 
-    rol: any;
-    usuario: any;
-    nombreCola:string;
+    docUsuario: any;
+    cola:string;
     path: string;
 
-    // !!!!  CAMBIAR !!!! - Definir el nombre de al cola de acuerdo al rol 
-    colas = {
-        "PLANEACION": "colaAsistentePlaneacion",
-        "JEFE_UNIDAD_PLANEACION": "colaJefePlaneacion",
-        "JEFE_DEPENDENCIA": "colaJefeUnidad",
-        "ASISTENTE_DEPENDENCIA": "colaAsistenteUnidad"
-    }
-
     constructor(private confService: ConfiguracionService) {
-        //Cerrar el panel de notificaciones al hacer clic por fuera de el
+        // Cerrar el panel de notificaciones al hacer clic por fuera de el
         const up$ = fromEvent(document, 'mouseup');
         up$.subscribe((data: any) => {
             if (this.menuActivoSubject) {
@@ -59,13 +50,19 @@ export class NotificacionesService {
         this.menuActivoSubject.next(false);
     }
 
-    init(path:string, usuario: any): void {
+    init(path:string, colas: any, usuario: any, entorno: string): void {
         this.path = path;
-        if (typeof usuario.userService !== 'undefined') {
-            this.usuario = usuario.userService;
-            this.rol = usuario.userService.role[0] ?? "";
-            this.nombreCola =  this.colas["JEFE_DEPENDENCIA"] // !!!!  CAMBIAR !!!!
-            this.queryNotifications("");
+        const userService = usuario.userService
+        if (userService) {            
+            this.docUsuario = userService.documento;
+            let roles = userService.role;
+            
+            // Obtener el nombre de la cola a partir del rol y dependiendo del entorno
+            let rol = Object.keys(colas).find((rol) => roles.includes(rol)) ?? null;            
+            if (rol) {
+                this.cola = entorno == 'test' ? `cola${colas[rol]}` : colas[rol];
+                this.queryNotifications();
+            }
         }
     }
 
@@ -73,25 +70,21 @@ export class NotificacionesService {
         let cuerpoMensaje = notificacion.Body
         if (cuerpoMensaje.MessageAttributes.EstadoMensaje.Value == "pendiente") {
             this.numPendientesSubject.next(0);
-            this.queryNotifications(cuerpoMensaje.MessageId) // Cambia el estado a revisado
+            this.queryNotifications(cuerpoMensaje.MessageId) // Cambiar estado a revisado
         }
         this.notificacionSubject.next(notificacion)
     }
 
-    queryNotifications(id: string): void {
+    queryNotifications(id: string = ''): void {
         this.loading.next(true)
 
-        if (this.usuario.documento === "") {
+        if (this.docUsuario === "") {
             this.loading.next(false);
             return;
         }
 
-        let url: string;
-        if (id != "") {
-            url = `colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&usuario=${this.usuario.documento}&idMensaje=${id}`;
-        } else{
-            url = `colas/mensajes/usuario?nombre=${this.nombreCola}.fifo&usuario=${this.usuario.documento}`;
-        }
+        const endpoint = `colas/mensajes/usuario?nombre=${this.cola}.fifo&usuario=${this.docUsuario}`;
+        const url = id ? `${endpoint}&idMensaje=${id}` : endpoint;
         this.confService.getWithoutPath(`${this.path}${url}`).subscribe(
             (res: any) => {
                 if (res && res.Data) {
