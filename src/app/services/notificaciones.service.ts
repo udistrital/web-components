@@ -24,7 +24,7 @@ export class NotificacionesService {
     private notificacionSubject = new BehaviorSubject(false);
     public notificacion$ = this.notificacionSubject.asObservable();
 
-    docUsuario: any;
+    docUsuario: string;
     cola:string;
     path: string;
 
