@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ConfiguracionService } from './configuracion.service';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { WebSocketSubject } from 'rxjs/webSocket';
 import { fromEvent } from 'rxjs';
 
 @Injectable({
@@ -24,9 +25,12 @@ export class NotificacionesService {
     private notificacionSubject = new BehaviorSubject(false);
     public notificacion$ = this.notificacionSubject.asObservable();
 
+    url_ws: string;    
+    private socket$: WebSocketSubject<any>;
+    
+    path: string;
     docUsuario: string;
     cola:string;
-    path: string;
 
     constructor(private confService: ConfiguracionService) {
         // Cerrar el panel de notificaciones al hacer clic por fuera de el
@@ -42,6 +46,34 @@ export class NotificacionesService {
         });
     }
 
+    connectWebSocket(docUsuario:string){
+        if (!this.url_ws) {
+            console.error('URL del WebSocket no está definida');
+            return;
+        }
+
+        this.socket$ = new WebSocketSubject(this.url_ws);
+
+        this.socket$.subscribe(
+            (message) => {
+              console.log("Mensaje recibido en el web component:", message);
+              this.notificaciones.unshift({Body: message})
+              console.log(this.notificaciones);
+              
+            },
+            (err) => console.error(err),
+        );
+
+        this.socket$.next(docUsuario+"ws"); // Enviar el docuemento de usuario al servidor cuando se establezca la conexión
+        
+        // Simular envío de mensaje
+        // setTimeout(() => {
+        //     const testMessage = { tipo: 'test', contenido: 'Mensaje de prueba' };
+        //     this.socket$.next(testMessage);
+        //     console.log("Mensaje enviado desde web-component:", testMessage);
+        // }, 2000); // Enviar mensaje de prueba después de 2 segundos
+    }
+
     toogleMenuNotify(): void {
         this.menuActivoSubject.next(true);
     }
@@ -50,17 +82,18 @@ export class NotificacionesService {
         this.menuActivoSubject.next(false);
     }
 
-    init(path:string, colas: any, usuario: any, entorno: string): void {
+    init(ws:string, path:string, colas: any, usuario: any, entorno: string): void {
+        this.url_ws = ws;
         this.path = path;
-        const userService = usuario.userService
-        if (userService) {            
-            this.docUsuario = userService.documento;
-            let roles = userService.role;
-            
+        this.docUsuario = usuario.userService?.documento;
+        const roles = usuario.userService?.role;
+
+        if (this.docUsuario && roles) {            
             // Obtener el nombre de la cola a partir del rol y dependiendo del entorno
             let rol = Object.keys(colas).find((rol) => roles.includes(rol)) ?? null;            
             if (rol) {
                 this.cola = entorno == 'test' ? `cola${colas[rol]}` : colas[rol];
+                this.connectWebSocket(this.docUsuario);
                 this.queryNotifications();
             }
         }
