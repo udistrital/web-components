@@ -56,22 +56,18 @@ export class NotificacionesService {
 
         this.socket$.subscribe(
             (message) => {
-              console.log("Mensaje recibido en el web component:", message);
-              this.notificaciones.unshift({Body: message})
-              console.log(this.notificaciones);
-              
+                console.log("Mensaje recibido en el web component:", message);
+                this.numPendientes++;
+                this.numPendientesSubject.next(this.numPendientes);
+                this.notificaciones.unshift({Body: message});
+                this.notificacionesSubject.next(this.notificaciones);
+                console.log(this.notificaciones);
             },
             (err) => console.error(err),
         );
 
-        this.socket$.next(docUsuario+"ws"); // Enviar el docuemento de usuario al servidor cuando se establezca la conexión
-        
-        // Simular envío de mensaje
-        // setTimeout(() => {
-        //     const testMessage = { tipo: 'test', contenido: 'Mensaje de prueba' };
-        //     this.socket$.next(testMessage);
-        //     console.log("Mensaje enviado desde web-component:", testMessage);
-        // }, 2000); // Enviar mensaje de prueba después de 2 segundos
+        // Enviar el docuemento de usuario al servidor cuando se establezca la conexión
+        this.socket$.next(docUsuario+"wc");
     }
 
     toogleMenuNotify(): void {
