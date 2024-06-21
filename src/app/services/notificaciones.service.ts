@@ -56,12 +56,10 @@ export class NotificacionesService {
 
         this.socket$.subscribe(
             (message) => {
-                console.log("Mensaje recibido en el web component:", message);
                 this.numPendientes++;
                 this.numPendientesSubject.next(this.numPendientes);
                 this.notificaciones.unshift({Body: message});
                 this.notificacionesSubject.next(this.notificaciones);
-                console.log(this.notificaciones);
             },
             (err) => console.error(err),
         );
@@ -126,7 +124,7 @@ export class NotificacionesService {
                 }
                 this.loading.next(false)
             }, (error: any) => {
-                console.log(error);
+                console.error(error);
                 this.loading.next(false);
             }
         )
