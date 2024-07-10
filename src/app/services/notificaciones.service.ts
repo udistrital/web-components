@@ -25,12 +25,14 @@ export class NotificacionesService {
     private notificacionSubject = new BehaviorSubject(false);
     public notificacion$ = this.notificacionSubject.asObservable();
 
-    url_ws: string;    
+    public notificacionesNoLeidas: any = [];
+    public notificacionesLeidas: any = [];
+
     private socket$: WebSocketSubject<any>;
     
-    path: string;
-    docUsuario: string;
-    cola:string;
+    private ws: string;
+    private crud: string;
+    private documentoUsuario: string;
 
     constructor(private confService: ConfiguracionService) {
         // Cerrar el panel de notificaciones al hacer clic por fuera de el
@@ -46,26 +48,27 @@ export class NotificacionesService {
         });
     }
 
+    // Conexión por WebSocket
     connectWebSocket(docUsuario:string){
-        if (!this.url_ws) {
+        if (!this.ws) {
             console.error('URL del WebSocket no está definida');
             return;
         }
 
-        this.socket$ = new WebSocketSubject(this.url_ws);
+        this.socket$ = new WebSocketSubject(this.ws);
 
         this.socket$.subscribe(
-            (message) => {
+            (notificacion) => {
                 this.numPendientes++;
                 this.numPendientesSubject.next(this.numPendientes);
-                this.notificaciones.unshift({Body: message});
+                this.notificaciones.unshift(notificacion);
                 this.notificacionesSubject.next(this.notificaciones);
             },
             (err) => console.error(err),
         );
 
         // Enviar el docuemento de usuario al servidor cuando se establezca la conexión
-        this.socket$.next(docUsuario+"wc");
+        this.socket$.next(docUsuario + "wc");
     }
 
     toogleMenuNotify(): void {
@@ -76,53 +79,85 @@ export class NotificacionesService {
         this.menuActivoSubject.next(false);
     }
 
-    init(ws:string, path:string, colas: any, usuario: any, entorno: string): void {
-        this.url_ws = ws;
-        this.path = path;
-        this.docUsuario = usuario.userService?.documento;
-        const roles = usuario.userService?.role;
-
-        if (this.docUsuario && roles) {            
-            // Obtener el nombre de la cola a partir del rol y dependiendo del entorno
-            let rol = Object.keys(colas).find((rol) => roles.includes(rol)) ?? null;            
-            if (rol) {
-                this.cola = entorno == 'test' ? `cola${colas[rol]}` : colas[rol];
-                this.connectWebSocket(this.docUsuario);
-                this.queryNotifications();
-            }
+    init(ws:string, crud:any, usuario: any): void {
+        this.ws = ws;
+        this.crud = crud;
+        this.documentoUsuario = usuario.userService?.documento;
+        if (this.documentoUsuario) {            
+            this.connectWebSocket(this.documentoUsuario);
+            this.queryNotifications();
         }
     }
 
+    // Actualizar lista de notificaciones
+    updateNotifications(): void {
+        this.notificaciones = [...this.notificacionesNoLeidas, ...this.notificacionesLeidas];
+        this.notificacionesSubject.next(this.notificaciones);
+    }
+
+    // Actualizar notificación
     changeStateToView(notificacion: any): void {
-        let cuerpoMensaje = notificacion.Body
-        if (cuerpoMensaje.MessageAttributes.EstadoMensaje.Value == "pendiente") {
-            this.numPendientesSubject.next(0);
-            this.queryNotifications(cuerpoMensaje.MessageId) // Cambiar estado a revisado
+        if (!notificacion.lectura) {
+            this.numPendientes--;
+            this.numPendientesSubject.next(this.numPendientes);
+            this.confService.putWithoutPath(`${this.crud}notificacion/${notificacion._id}`, {}).subscribe(
+                (res: any) => {
+                    if (res && res.Data) {
+                        notificacion.lectura = true;  // Cambiar el estado de la notificación a leida
+
+                        // Eliminar notificación de la lista de notificaciones no leidas
+                        this.notificacionesNoLeidas = this.notificacionesNoLeidas.filter(
+                            (no_leida:any) => no_leida._id !== notificacion._id
+                        );
+
+                        // Agregar notificación al inicio de las notificaciones leidas 
+                        this.notificacionesLeidas.unshift(notificacion); 
+
+                        // Mantener únicamente 5 notificaciones leidas
+                        if (this.notificacionesLeidas.length > 5) {
+                            this.notificacionesLeidas.pop();
+                        }
+                                               
+                        this.updateNotifications();
+                    }
+                }, 
+                (error: any) => {console.error(error);}
+            )
         }
-        this.notificacionSubject.next(notificacion)
+        this.notificacionSubject.next(notificacion);
     }
 
-    queryNotifications(id: string = ''): void {
-        this.loading.next(true)
+    // Consultar listado de notificaciones
+    queryNotifications(): void {
+        this.loading.next(true);
 
-        if (this.docUsuario === "") {
+        if (this.documentoUsuario === "") {
             this.loading.next(false);
             return;
         }
 
-        const endpoint = `colas/mensajes/usuario?nombre=${this.cola}.fifo&usuario=${this.docUsuario}`;
-        const url = id ? `${endpoint}&idMensaje=${id}` : endpoint;
-        this.confService.getWithoutPath(`${this.path}${url}`).subscribe(
+        const query = `notificacion?query=destinatario:${this.documentoUsuario}`;
+        const no_leidas = `,lectura:false,&sortby=fecha_creacion&order=desc&limit=0`;
+        this.confService.getWithoutPath(`${this.crud}${query + no_leidas}`).subscribe(
             (res: any) => {
                 if (res && res.Data) {
-                    this.notificaciones = res.Data;
-                    this.numPendientes = this.notificaciones.filter(
-                        (mensaje:any) => mensaje.Body.MessageAttributes.EstadoMensaje.Value === "pendiente"
-                    ).length; 
-                    this.numPendientesSubject.next(this.numPendientes);
-                    this.notificacionesSubject.next(this.notificaciones);
+                    this.notificacionesNoLeidas = res.Data;
+                    this.numPendientes = res.Data.length;
+                    const leidas = `,lectura:true,&sortby=fecha_lectura&order=desc&limit=5`;
+                    this.confService.getWithoutPath(`${this.crud}${query + leidas}`).subscribe(
+                        (res: any) => {
+                            if (res && res.Data) {
+                                this.notificacionesLeidas = res.Data;
+                                this.numPendientesSubject.next(this.numPendientes);
+                                this.updateNotifications();
+                            }
+                        }, (error: any) => {
+                            console.error(error);
+                            this.loading.next(false);
+                        }
+                    )
                 }
-                this.loading.next(false)
+                this.loading.next(false);
             }, (error: any) => {
                 console.error(error);
                 this.loading.next(false);

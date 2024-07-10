@@ -15,7 +15,7 @@ export class NotioasComponent implements OnInit {
 
   constructor(public notificacionesService: NotificacionesService) {
     this.notificacionesService.notificacion$.subscribe((notificacion) => {
-      this.notificacion.emit(notificacion)
+      this.notificacion.emit(notificacion);
     });
   }
 

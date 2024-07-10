@@ -7,9 +7,9 @@
         <ng-template #loadedContent>
             <div *ngFor="let notificacion of notificaciones" (click)="redirect(notificacion)" class="notification-item">
                 <div class="notifications-text-container">
-                    <p>{{notificacion.Body.Message}}</p>
+                    <p>{{notificacion.mensaje}}</p>
                 </div>
-                <div *ngIf="notificacion.Body.MessageAttributes.EstadoMensaje.Value == 'pendiente'" class="notification-badge"></div>
+                <div *ngIf="notificacion.lectura == false" class="notification-badge"></div>
             </div>
         </ng-template>
     </div>
