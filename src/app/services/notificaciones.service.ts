@@ -61,8 +61,8 @@ export class NotificacionesService {
             (notificacion) => {
                 this.numPendientes++;
                 this.numPendientesSubject.next(this.numPendientes);
-                this.notificaciones.unshift(notificacion);
-                this.notificacionesSubject.next(this.notificaciones);
+                this.notificacionesNoLeidas.unshift(notificacion);
+                this.updateNotifications();
             },
             (err) => console.error(err),
         );
