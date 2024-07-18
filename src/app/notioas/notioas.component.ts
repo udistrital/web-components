@@ -1,10 +1,29 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NotificacionesService } from './../services/notificaciones.service';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'ng-uui-notioas',
   templateUrl: './notioas.component.html',
-  styleUrls: ['./notioas.component.scss']
+  styleUrls: ['./notioas.component.scss'],
+  animations: [
+    trigger('listAnimation', [
+      state('void', style({
+        opacity: 0,
+        transform: 'translateY(-20px)'
+      })),
+      state('*', style({
+        opacity: 1,
+        transform: 'translateY(0)'
+      })),
+      transition('void => *', [
+        animate('300ms ease-out')
+      ]),
+      transition('* => void', [
+        animate('300ms ease-in')
+      ])
+    ]),
+  ]
 })
 export class NotioasComponent implements OnInit {
   @Output() notificacion: EventEmitter<any> = new EventEmitter();

@@ -1,8 +1,3 @@
-// .aplicaciones_menu_container p {
-//     margin-bottom: 11px;
-//     margin-top: 0;
-// }
-
 // .menu-app {
 //     border-color: #34495e;
 //     border-radius: 7px;
@@ -51,6 +46,34 @@
     color: #7d7d7d;
     font-family: "Open Sans", sans-serif;
     font-size: 14px;
+}
+
+.no-notifications {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+
+    span {
+        font-size: 100px;
+        margin: 15px;
+        cursor: default;
+        color: var(--color900);
+    }
+
+    p {
+        margin: 0;
+    }
+
+    .no-notifications-title {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .no-notifications-subtitle {
+        font-size: 14px;
+        color: #777;
+    }
 }
 
 .aplicaciones_menu_container {
