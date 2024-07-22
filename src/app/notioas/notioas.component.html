@@ -6,9 +6,11 @@
         <div *ngIf="loading; else loadedContent"><ng-uui-load></ng-uui-load></div>
         <ng-template #loadedContent>
             <div *ngIf="notificaciones.length > 0; else noNotifications">
-                <div *ngFor="let notificacion of notificaciones" (click)="redirect(notificacion)" class="notification-item" [@listAnimation]>
+                <div *ngFor="let notificacion of notificaciones" 
+                    (click)="redirect(notificacion)" class="notification-item" [@cardAnimation]>
                     <div class="notifications-text-container">
                         <p>{{notificacion.mensaje}}</p>
+                        <span>{{timeAgo(notificacion.fecha_creacion)}}</span>
                     </div>
                     <div *ngIf="!notificacion.lectura" class="notification-badge"></div>
                 </div>
@@ -16,8 +18,7 @@
             <ng-template #noNotifications>
                 <div class="no-notifications">
                     <span class="material-icons">verified</span>
-                    <p class="no-notifications-title">No hay notificaciones nuevas</p>
-                    <p class="no-notifications-subtitle">¡Listo! Ya no quedan mensajes por revisar</p>
+                    <p>No hay notificaciones nuevas</p>
                   </div>
             </ng-template>
         </ng-template>

@@ -9,20 +9,20 @@ import { fromEvent } from 'rxjs';
 })
 export class NotificacionesService {
     public notificaciones: any = [];
-    private notificacionesSubject = new Subject();
+    private notificacionesSubject = new Subject<any[]>();
     public notificaciones$ = this.notificacionesSubject.asObservable();
 
     public numPendientes: number = 0;
-    private numPendientesSubject = new BehaviorSubject(0);
+    private numPendientesSubject = new BehaviorSubject<number>(0);
     public numPendientes$ = this.numPendientesSubject.asObservable();
 
-    private menuActivoSubject = new BehaviorSubject(false);
+    private menuActivoSubject = new BehaviorSubject<boolean>(false);
     public menuActivo$ = this.menuActivoSubject.asObservable();
 
-    private loading = new BehaviorSubject(false);
+    private loading = new BehaviorSubject<boolean>(false);
     public loading$ = this.loading.asObservable();
 
-    private notificacionSubject = new BehaviorSubject(false);
+    private notificacionSubject = new BehaviorSubject<any>(null);
     public notificacion$ = this.notificacionSubject.asObservable();
 
     public notificacionesNoLeidas: any = [];
@@ -63,8 +63,7 @@ export class NotificacionesService {
                 this.numPendientesSubject.next(this.numPendientes);
                 this.notificacionesNoLeidas.unshift(notificacion);
                 this.updateNotifications();
-            },
-            (err) => console.error(err),
+            }
         );
 
         // Enviar el docuemento de usuario al servidor cuando se establezca la conexión
@@ -98,11 +97,13 @@ export class NotificacionesService {
     // Actualizar notificación
     changeStateToView(notificacion: any): void {
         if (!notificacion.lectura) {
+            this.loading.next(true);
             this.numPendientes--;
             this.numPendientesSubject.next(this.numPendientes);
+
             this.confService.putWithoutPath(`${this.crud}notificacion/${notificacion._id}`, {}).subscribe(
                 (res: any) => {
-                    if (res && res.Data) {
+                    if (res?.Data) {
                         notificacion.lectura = true;  // Cambiar el estado de la notificación a leida
 
                         // Eliminar notificación de la lista de notificaciones no leidas
@@ -119,9 +120,15 @@ export class NotificacionesService {
                         }
                                                
                         this.updateNotifications();
+                        this.loading.next(false);
+                        setTimeout(() => this.closePanel(), 1000);
                     }
                 }, 
-                (error: any) => {console.error(error);}
+                (error: any) => {
+                    console.error(error);
+                    this.loading.next(false);
+                    setTimeout(() => this.closePanel(), 1000);
+                }
             )
         }
         this.notificacionSubject.next(notificacion);
@@ -129,24 +136,26 @@ export class NotificacionesService {
 
     // Consultar listado de notificaciones
     queryNotifications(): void {
-        this.loading.next(true);
-
         if (this.documentoUsuario === "") {
             this.loading.next(false);
             return;
         }
 
+        this.loading.next(true);
+
         const query = `notificacion?query=destinatario:${this.documentoUsuario}`;
-        const no_leidas = `,lectura:false,&sortby=fecha_creacion&order=desc&limit=0`;
-        this.confService.getWithoutPath(`${this.crud}${query + no_leidas}`).subscribe(
+        const noLeidasQuery = `,lectura:false,&sortby=fecha_creacion&order=desc&limit=0`;
+        const leidasQuery = `,lectura:true,&sortby=fecha_lectura&order=desc&limit=5`;
+
+        this.confService.getWithoutPath(`${this.crud}${query + noLeidasQuery}`).subscribe(
             (res: any) => {
-                if (res && res.Data) {
+                if (res?.Data) {
                     this.notificacionesNoLeidas = res.Data;
                     this.numPendientes = res.Data.length;
-                    const leidas = `,lectura:true,&sortby=fecha_lectura&order=desc&limit=5`;
-                    this.confService.getWithoutPath(`${this.crud}${query + leidas}`).subscribe(
+                    
+                    this.confService.getWithoutPath(`${this.crud}${query + leidasQuery}`).subscribe(
                         (res: any) => {
-                            if (res && res.Data) {
+                            if (res?.Data) {
                                 this.notificacionesLeidas = res.Data;
                                 this.numPendientesSubject.next(this.numPendientes);
                                 this.updateNotifications();

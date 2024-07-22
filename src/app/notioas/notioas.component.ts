@@ -1,13 +1,15 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NotificacionesService } from './../services/notificaciones.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import * as moment from 'moment';
+import 'moment/locale/es';
 
 @Component({
   selector: 'ng-uui-notioas',
   templateUrl: './notioas.component.html',
   styleUrls: ['./notioas.component.scss'],
   animations: [
-    trigger('listAnimation', [
+    trigger('cardAnimation', [
       state('void', style({
         opacity: 0,
         transform: 'translateY(-20px)'
@@ -18,9 +20,6 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
       })),
       transition('void => *', [
         animate('300ms ease-out')
-      ]),
-      transition('* => void', [
-        animate('300ms ease-in')
       ])
     ]),
   ]
@@ -39,6 +38,7 @@ export class NotioasComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    moment.locale('es');
     this.subscribeToMenuActivo();
     this.subscribeToLoading();
     this.subscribeToNotificaciones();
@@ -64,5 +64,9 @@ export class NotioasComponent implements OnInit {
 
   redirect(notificacion:any) {
     this.notificacionesService.changeStateToView(notificacion);
+  }
+
+  timeAgo(date: Date): string {
+    return moment(date).fromNow();
   }
 }
