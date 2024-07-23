@@ -30,9 +30,9 @@ export class NotificacionesService {
 
     private socket$: WebSocketSubject<any>;
     
-    private ws: string;
-    private crud: string;
-    private documentoUsuario: string;
+    private ws: string | undefined;
+    private crud: string | undefined;
+    private documentoUsuario: string | undefined;
 
     constructor(private confService: ConfiguracionService) {
         // Cerrar el panel de notificaciones al hacer clic por fuera de el
@@ -57,14 +57,12 @@ export class NotificacionesService {
 
         this.socket$ = new WebSocketSubject(this.ws);
 
-        this.socket$.subscribe(
-            (notificacion) => {
-                this.numPendientes++;
-                this.numPendientesSubject.next(this.numPendientes);
-                this.notificacionesNoLeidas.unshift(notificacion);
-                this.updateNotifications();
-            }
-        );
+        this.socket$.subscribe((notificacion) => {
+            this.numPendientes++;
+            this.numPendientesSubject.next(this.numPendientes);
+            this.notificacionesNoLeidas.unshift(notificacion);
+            this.updateNotifications();
+        });
 
         // Enviar el docuemento de usuario al servidor cuando se establezca la conexión
         this.socket$.next(docUsuario + "wc");

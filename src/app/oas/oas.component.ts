@@ -51,7 +51,7 @@ export class OasComponent implements OnChanges {
   notificaciones: false;
   menuApps: false;
   CONFIGURACION_SERVICE: any;
-  NOTIFICACION_WS:any;
+  NOTIFICACION_WS: any;
   NOTIFICACIONES_CRUD: any;
   entorno: any;
   navItems: any;

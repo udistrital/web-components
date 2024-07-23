@@ -107,13 +107,13 @@ export class ConfiguracionService {
     return this.http.put<any>(`${this.path}${endpoint}/${element.Id}`, element, this.httpOptions);
   }
 
-   /**
+  /**
    * Perform a PUT http request
    * @param endpoint service's end-point
    * @param element data to send as JSON, With the id to UPDATE
    * @returns Observable<any>
    */
-   putWithoutPath(endpoint, element) {
+  putWithoutPath(endpoint, element) {
     this.httpOptions = {
       headers: new HttpHeaders({
         Accept: 'application/json',
