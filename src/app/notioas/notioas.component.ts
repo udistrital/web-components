@@ -1,10 +1,28 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NotificacionesService } from './../services/notificaciones.service';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+import * as moment from 'moment';
+import 'moment/locale/es';
 
 @Component({
   selector: 'ng-uui-notioas',
   templateUrl: './notioas.component.html',
-  styleUrls: ['./notioas.component.scss']
+  styleUrls: ['./notioas.component.scss'],
+  animations: [
+    trigger('cardAnimation', [
+      state('void', style({
+        opacity: 0,
+        transform: 'translateY(-20px)'
+      })),
+      state('*', style({
+        opacity: 1,
+        transform: 'translateY(0)'
+      })),
+      transition('void => *', [
+        animate('300ms ease-out')
+      ])
+    ]),
+  ]
 })
 export class NotioasComponent implements OnInit {
   @Output() notificacion: EventEmitter<any> = new EventEmitter();
@@ -15,11 +33,12 @@ export class NotioasComponent implements OnInit {
 
   constructor(public notificacionesService: NotificacionesService) {
     this.notificacionesService.notificacion$.subscribe((notificacion) => {
-      this.notificacion.emit(notificacion)
+      this.notificacion.emit(notificacion);
     });
   }
 
   ngOnInit(): void {
+    moment.locale('es');
     this.subscribeToMenuActivo();
     this.subscribeToLoading();
     this.subscribeToNotificaciones();
@@ -45,5 +64,9 @@ export class NotioasComponent implements OnInit {
 
   redirect(notificacion:any) {
     this.notificacionesService.changeStateToView(notificacion);
+  }
+
+  timeAgo(date: Date): string {
+    return moment(date).fromNow();
   }
 }
