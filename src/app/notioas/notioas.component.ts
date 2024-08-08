@@ -28,8 +28,8 @@ export class NotioasComponent implements OnInit {
   @Output() notificacion: EventEmitter<any> = new EventEmitter();
   
   menuActivo: boolean = false;
-  loading: boolean;
-  notificaciones: any = [];
+  loading: boolean = true;
+  notificaciones: any[] = [];
 
   constructor(public notificacionesService: NotificacionesService) {
     this.notificacionesService.notificacion$.subscribe((notificacion) => {
@@ -62,7 +62,7 @@ export class NotioasComponent implements OnInit {
     });
   }
 
-  redirect(notificacion:any) {
+  redirect(notificacion: any) {
     this.notificacionesService.changeStateToView(notificacion);
   }
 
