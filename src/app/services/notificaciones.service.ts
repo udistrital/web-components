@@ -19,7 +19,7 @@ export class NotificacionesService {
     private menuActivoSubject = new BehaviorSubject<boolean>(false);
     public menuActivo$ = this.menuActivoSubject.asObservable();
 
-    private loading = new BehaviorSubject<boolean>(false);
+    private loading = new BehaviorSubject<boolean>(true);
     public loading$ = this.loading.asObservable();
 
     private notificacionSubject = new BehaviorSubject<any>(null);
@@ -49,7 +49,7 @@ export class NotificacionesService {
     }
 
     // Conexión por WebSocket
-    connectWebSocket(docUsuario:string){
+    connectWebSocket(docUsuario: string){
         if (!this.ws) {
             console.error('URL del WebSocket no está definida');
             return;
@@ -76,7 +76,7 @@ export class NotificacionesService {
         this.menuActivoSubject.next(false);
     }
 
-    init(ws:string, crud:any, usuario: any): void {
+    init(ws: string, crud: any, usuario: any): void {
         this.ws = ws;
         this.crud = crud;
         this.documentoUsuario = usuario.userService?.documento;
@@ -106,7 +106,7 @@ export class NotificacionesService {
 
                         // Eliminar notificación de la lista de notificaciones no leidas
                         this.notificacionesNoLeidas = this.notificacionesNoLeidas.filter(
-                            (no_leida:any) => no_leida._id !== notificacion._id
+                            (no_leida: any) => no_leida._id !== notificacion._id
                         );
 
                         // Agregar notificación al inicio de las notificaciones leidas 
@@ -134,7 +134,7 @@ export class NotificacionesService {
 
     // Consultar listado de notificaciones
     queryNotifications(): void {
-        if (this.documentoUsuario === "") {
+        if (!this.documentoUsuario) {
             this.loading.next(false);
             return;
         }
@@ -158,13 +158,15 @@ export class NotificacionesService {
                                 this.numPendientesSubject.next(this.numPendientes);
                                 this.updateNotifications();
                             }
+                            this.loading.next(false);
                         }, (error: any) => {
                             console.error(error);
                             this.loading.next(false);
                         }
                     )
+                } else {
+                    this.loading.next(false);
                 }
-                this.loading.next(false);
             }, (error: any) => {
                 console.error(error);
                 this.loading.next(false);
