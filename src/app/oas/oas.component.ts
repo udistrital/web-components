@@ -68,54 +68,61 @@ export class OasComponent implements OnChanges {
       }
     })
     this.autenticacionService.user$.subscribe((data: any) => {
-      if (JSON.stringify(data) !== '{}' && this.username !== '') {
-        setTimeout(() => {
-          if ((data.user && data.userService) && (!this.userInfo && !this.userInfoService) && this.username !== '') {
-            this.userInfo = data.user;
-            this.userInfoService = data.userInfoService
-            this.user.emit(data)
-            if (this.notificaciones) {
-              this.notioasService.init(this.NOTIFICACION_SERVICE, data);
-            }
-            if (this.menuApps) {
-              this.menuAppService.init(catalogo[this.entorno], data);
-            }
-            this.username = data.user ? data.user.email ? data.user.email : '' : '';
-            this.isLogin = false;
-            this.isloading = true;
-          } else {
-            this.isLogin = true;
-            // setTimeout(() => { this.isloading ? this.isloading = false : this.isloading = true }, 2500)
-          }
+      const isValid = data && data.user && data.userService;
+      if (isValid) {
+        this.userInfo = data.user;
+        this.userInfoService = data.userService;
+        this.username = data.user?.email || '';
+        this.user.emit(data);
+        if (this.notificaciones) {
+          this.notioasService.init(this.NOTIFICACION_SERVICE, data);
         }
-          , 100)
-      } else {
+        if (this.menuApps) {
+          this.menuAppService.init(catalogo[this.entorno], data);
+        }
         this.isLogin = true;
         this.isloading = true;
-        setTimeout(() => { this.isloading ? this.isloading = false : this.isloading = true }, 2500)
-
       }
+    });
 
-    })
+
   }
   title = 'app-client';
 
-  ngOnChanges(changes): void {
-    if (changes.environment !== undefined) {
-      if (changes.environment.currentValue !== undefined) {
-        const { CONFIGURACION_SERVICE, NOTIFICACION_SERVICE, entorno, notificaciones, menuApps, appMenu, navItems, appname, autenticacion, TOKEN } = changes.environment.currentValue;
-        this.appMenu = appMenu;
-        this.navItems = navItems;
-        this.appname = appname;
-        this.notificaciones = notificaciones;
-        this.menuApps = menuApps;
-        this.entorno = entorno;
-        this.CONFIGURACION_SERVICE = CONFIGURACION_SERVICE;
-        this.NOTIFICACION_SERVICE = NOTIFICACION_SERVICE;
-        this.confService.setPath(CONFIGURACION_SERVICE);
-        if (autenticacion) {
-          this.autenticacionService.init(TOKEN);
-          this.autenticacionService.login(true);
+  async ngOnChanges(changes): Promise<void> {
+
+    if (changes.environment?.currentValue) {
+      const {
+        CONFIGURACION_SERVICE,
+        NOTIFICACION_SERVICE,
+        entorno,
+        notificaciones,
+        menuApps,
+        appMenu,
+        navItems,
+        appname,
+        autenticacion,
+        TOKEN
+      } = changes.environment.currentValue;
+
+      this.appMenu = appMenu;
+      this.navItems = navItems;
+      this.appname = appname;
+      this.notificaciones = notificaciones;
+      this.menuApps = menuApps;
+      this.entorno = entorno;
+      this.CONFIGURACION_SERVICE = CONFIGURACION_SERVICE;
+      this.NOTIFICACION_SERVICE = NOTIFICACION_SERVICE;
+
+
+      this.confService.setPath(CONFIGURACION_SERVICE);
+
+      if (autenticacion) {
+        this.isloading = true;
+        try {
+          await this.autenticacionService.init(TOKEN);
+        } catch (err) {
+          this.isloading = false;
         }
       }
     }
