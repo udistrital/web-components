@@ -39,92 +39,122 @@ export class ImplicitAutenticationService {
             }
         });
     }
-    init(entorno): any {
-        this.environment = entorno;
-        const id_token = window.localStorage.getItem('id_token');
-        if (window.localStorage.getItem('id_token') === null) {
-            var params = {}, queryString = location.hash.substring(1), regex = /([^&=]+)=([^&]*)/g;
+    init(entorno): Promise<any> {
+        return new Promise((resolve, reject) => {
+          this.environment = entorno;
+          const idToken = window.localStorage.getItem('id_token');
+      
+          if (!idToken) {
+            const params: any = {};
+            const queryString = location.hash.substring(1);
+            const regex = /([^&=]+)=([^&]*)/g;
             let m;
-            while (m = regex.exec(queryString)) {
-                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            while ((m = regex.exec(queryString))) {
+              params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
             }
-            // And send the token over to the server
-            const req = new XMLHttpRequest();
-            // consider using POST so query isn't logged
-            const query = 'https://' + window.location.host + '?' + queryString;
-            req.open('GET', query, true);
-            if (!!params['id_token']) {
-                //if token setear
-                const id_token_array = (params['id_token']).split('.');
-                const payload = JSON.parse(atob(id_token_array[1]));
-                window.localStorage.setItem('access_token', params['access_token']);
-                window.localStorage.setItem('expires_in', params['expires_in']);
-                window.localStorage.setItem('state', params['state']);
-                window.localStorage.setItem('id_token', params['id_token']);
-                // this.userSubject.next({ user: payload });
-                this.httpOptions = {
-                    headers: new HttpHeaders({
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${params['access_token']}`,
-                    }),
-                };
-                this.updateAuth(payload);
-            } else {
-                this.clearStorage();
+    
+            if (!params.id_token) {
+              reject('No id_token found in URL');
+              return;
             }
-            req.onreadystatechange = function (e) {
-                if (req.readyState === 4) {
-                    if (req.status === 200) {
-                        // window.location = params.state;
-                    } else if (req.status === 400) {
-                        window.alert('There was an error processing the token.');
-                    } else {
-
-                    }
-                }
-            };
-        } else {
-            const id_token = window.localStorage.getItem('id_token').split('.');
-            const payload = JSON.parse(atob(id_token[1]));
-            this.updateAuth(payload);
-        }
-        const expires = this.setExpiresAt();
-        this.autologout(expires);
-        this.clearUrl();
-    }
-
-
-    updateAuth(payload) {
-        const user = localStorage.getItem('user');
-        if (user) {
-            this.userSubject.next(JSON.parse(atob(user)));
-        } else {
-            this.httpOptions = {
+            try {
+              const idTokenArray = params.id_token.split('.');
+              const payload = JSON.parse(atob(idTokenArray[1]));
+      
+              window.localStorage.setItem('access_token', params.access_token);
+              window.localStorage.setItem('expires_in', params.expires_in);
+              window.localStorage.setItem('state', params.state);
+              window.localStorage.setItem('id_token', params.id_token);
+      
+              this.httpOptions = {
                 headers: new HttpHeaders({
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                  Accept: 'application/json',
+                  Authorization: `Bearer ${params.access_token}`,
                 }),
+              };
+      
+              this.updateAuth(payload)
+                .then(() => {
+                  const expires = this.setExpiresAt();
+                  this.autologout(expires);
+                  this.clearUrl();
+                  resolve(payload);
+                })
+                .catch((err) => {
+                  this.clearStorage();
+                  reject(err);
+                });
+            } catch (err) {
+              this.clearStorage();
+              reject(err);
+            }
+          } else {
+            try {
+              const idTokenArray = idToken.split('.');
+              const payload = JSON.parse(atob(idTokenArray[1]));
+      
+              this.updateAuth(payload)
+                .then(() => {
+                  const expires = this.setExpiresAt();
+                  this.autologout(expires);
+                  this.clearUrl();
+                  resolve(payload);
+                })
+                .catch((err) => {
+                  this.clearStorage();
+                  reject(err);
+                });
+            } catch (err) {
+              this.clearStorage();
+              reject(err);
+            }
+          }
+        });
+      }
+      
+      
+
+
+    updateAuth(payload): Promise<any> {
+        return new Promise((resolve, reject) => {
+            
+          const user = localStorage.getItem('user');
+      
+          if (user) {
+            const parsedUser = JSON.parse(atob(user));
+            this.userSubject.next(parsedUser);
+            resolve(parsedUser);
+          } else {
+            this.httpOptions = {
+              headers: new HttpHeaders({
+                Accept: 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+              }),
             };
+      
             const userTemp = payload.email;
             this.user = { user: userTemp };
+      
             this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
-                user: (payload.email)
+              user: payload.email,
             }, this.httpOptions)
-                .pipe(retry(3))
-                .subscribe((res: any) => {
-                    this.clearUrl();
-                    localStorage.setItem('user', btoa(JSON.stringify({ ...{ user: payload }, ...{ userService: res } })));
-                    this.userSubject.next({ ...{ user: payload }, ...{ userService: res } });
-                },(error) => (console.log(error))
-                );
-            this.httpOptions = {
-                headers: new HttpHeaders({
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                }),
-            };
-        }
-    }
+              .pipe(retry(3))
+              .subscribe(
+                (res: any) => {
+                  const fullUser = { user: payload, userService: res };
+                  this.clearUrl();
+                  localStorage.setItem('user', btoa(JSON.stringify(fullUser)));
+                  this.userSubject.next(fullUser);
+                  resolve(fullUser);
+                },
+                (error) => {
+                  console.error(error);
+                  reject(error);
+                }
+              );
+          }
+        });
+      }
 
     public logout(action): void {
         const state = localStorage.getItem('state');
