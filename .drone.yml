@@ -1,0 +1,98 @@
+kind: pipeline
+name: oas_cliente_ci
+
+steps:
+- name: run_sonar_scanner
+  image: aosapps/drone-sonar-plugin
+  settings:
+    sonar_host:
+      from_secret: SONAR_HOST
+    sonar_token:
+      from_secret: SONAR_TOKEN
+  when:
+    branch:
+    - develop
+    - feature/*
+    - release/*
+    event:
+    - push
+
+- name: build
+  image: node:12.11
+  commands:
+  - node --version
+  - npm i
+  - npm run build
+  when:
+    branch:
+    - release/*
+    - master
+    event:
+    - push
+
+- name: publish_s3_release
+  image: plugins/s3
+  settings:
+    bucket: cliente-pruebas
+    access_key:
+      from_secret: aws_access_key_id
+    secret_key:
+      from_secret: aws_secret_access_key
+    region: us-east-1
+    source: dist/layout-web-component.js
+    target: /assets
+    strip_prefix: dist/
+  when:
+    branch:
+    - release/*
+    event:
+    - push
+
+- name: publish_s3_master
+  image: plugins/s3
+  settings:
+    bucket: cliente-prod
+    access_key:
+      from_secret: aws_access_key_id
+    secret_key:
+      from_secret: aws_secret_access_key
+    region: us-east-1
+    source: dist/layout-web-component.js
+    target: /assets
+    strip_prefix: dist/
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+- name: notify_telegram
+  image: appleboy/drone-telegram
+  settings:
+    token:
+      from_secret: telegram_token
+    to:
+      from_secret: telegram_to
+    format: html
+    message: >
+      {{#success build.status}}
+        ✅ <a href="{{build.link}}">SUCCESS</a> <b>Build #{{build.number}}</b> (type: <code>{{ build.event }}</code>)
+        <b>Repo:</b><code>{{repo.name}}</code> <b>Branch:</b><code>{{commit.branch}}</code>
+        <b>Commit:</b> <a href="{{commit.link}}">{{truncate commit.sha 7}}</a>
+        <b>Autor:</b>{{commit.author}} <code>&#128526 </code>
+      {{else}}
+        ❌ <a href="{{build.link}}">FAILURE</a> <b>Build #{{build.number}}</b> (type: <code>{{ build.event }}</code>)
+        <b>Repo:</b><code>{{repo.name}}</code> <b>Branch:</b> <code>{{commit.branch}}</code>
+        <b>Commit:</b> <a href="{{commit.link}}">{{truncate commit.sha 7}}</a>
+        <b>Autor:</b>{{commit.author}} <code>&#128549 </code>
+      {{/success}}
+  when:
+    branch:
+    - develop
+    - release/*
+    - master
+    event:
+    - push
+    status:
+    - failure
+    - success
