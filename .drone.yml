@@ -1,52 +1,7 @@
 kind: pipeline
 name: oas_cliente_ci
 
-trigger:
-  event:
-    exclude:
-      - tag
-
 steps:
-- name: check_readme
-  image: jjvargass/qa_develoment:latest
-  commands:
-  - python /app/check_readme.py
-  when:
-    branch:
-    - develop
-    - feature/*
-    - hotfix/*
-    - release/*
-    event:
-    - push
-
-- name: check_branch
-  image: jjvargass/qa_develoment:latest
-  commands:
-  - python /app/check_branch.py -H ${DRONE_GIT_HTTP_URL}
-  when:
-    branch:
-    - develop
-    - feature/*
-    - hotfix/*
-    - release/*
-    event:
-    - push
-
-- name: check_commits
-  image: jjvargass/qa_develoment:latest
-  failure: ignore
-  commands:
-  - python /app/check_commits.py
-  when:
-    branch:
-    - develop
-    - feature/*
-    - hotfix/*
-    - release/*
-    event:
-    - push
-
 - name: run_sonar_scanner
   image: aosapps/drone-sonar-plugin
   settings:
@@ -62,25 +17,57 @@ steps:
     event:
     - push
 
-- name: nodejs_build
-  image: node:16.19.0
+- name: build
+  image: node:12.11
   commands:
   - node --version
-  - npm i --legacy-peer-deps
+  - npm i
   - npm run build
   when:
     branch:
-    - feature/*
-    - develop
     - release/*
-    - dependabot/**
+    - master
+    event:
+    - push
+
+- name: publish_s3_release
+  image: plugins/s3
+  settings:
+    bucket: cliente-pruebas
+    access_key:
+      from_secret: aws_access_key_id
+    secret_key:
+      from_secret: aws_secret_access_key
+    region: us-east-1
+    source: dist/layout-web-component.js
+    target: /assets
+    strip_prefix: dist/
+  when:
+    branch:
+    - release/*
+    event:
+    - push
+
+- name: publish_s3_master
+  image: plugins/s3
+  settings:
+    bucket: cliente-prod
+    access_key:
+      from_secret: aws_access_key_id
+    secret_key:
+      from_secret: aws_secret_access_key
+    region: us-east-1
+    source: dist/layout-web-component.js
+    target: /assets
+    strip_prefix: dist/
+  when:
+    branch:
     - master
     event:
     - push
 
 - name: notify_telegram
   image: appleboy/drone-telegram
-  failure: ignore
   settings:
     token:
       from_secret: telegram_token
