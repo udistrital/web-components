@@ -5,6 +5,7 @@ import { MenuService } from '../services/menu.service';
 import { MenuAplicacionesService } from '../services/menuAplicaciones.service';
 import { NotificacionesService } from '../services/notificaciones.service';
 import { catalogo } from './../services/catalogo';
+import { filter, take } from 'rxjs/operators';
 
 if (!('path' in Event.prototype)) {
   Object.defineProperty(Event.prototype, 'path', {
@@ -54,6 +55,7 @@ export class OasComponent implements OnChanges {
   NOTIFICACIONES_CRUD: any;
   entorno: any;
   navItems: any;
+
   constructor(
     private confService: ConfiguracionService,
     private notificacionesService: NotificacionesService,
@@ -61,43 +63,11 @@ export class OasComponent implements OnChanges {
     private menuService: MenuService,
     private cdr: ChangeDetectorRef,
     private autenticacionService: ImplicitAutenticationService,
-  ) {
-    this.menuService.sidebar$.subscribe((opened) => (this.opened = opened));
-    this.menuService.option$.subscribe((op) => {
-      setTimeout(() => (this.option.emit(op)), 100);
-    });
-    this.menuService.menu$.subscribe((menu) => {
-      setTimeout(() => (this.menu.emit(menu)), 100);
-    });
-    this.autenticacionService.logout$.subscribe((logoutEvent: any) => {
-      if (logoutEvent) {
-        this.logout.emit(logoutEvent);
-      }
-    });
-    this.autenticacionService.user$.subscribe((data: any) => {
-      const isValid = data && data.user && data.userService;
-      if (isValid) {
-        this.userInfo = data.user;
-        this.userInfoService = data.userService;
-        this.username = data.user?.email || '';
-        this.user.emit(data);
-        if (this.notificaciones) {
-          this.notificacionesService.init(this.NOTIFICACION_MID_WS, this.NOTIFICACIONES_CRUD, data);
-        }
-        if (this.menuApps) {
-          this.menuAppService.init(catalogo[this.entorno], data);
-        }
-        this.isLogin = true;
-        this.isloading = true;
-      }
-    });
+  ) {}
 
-
-  }
   title = 'app-client';
 
   async ngOnChanges(changes): Promise<void> {
-
     if (changes.environment?.currentValue) {
       const {
         CONFIGURACION_SERVICE,
@@ -144,8 +114,45 @@ export class OasComponent implements OnChanges {
     this.autenticacionService.logout('action-event');
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.menuService.sidebar$.subscribe((opened) => (this.opened = opened));
 
+    this.menuService.option$.subscribe((op) => {
+      setTimeout(() => (this.option.emit(op)), 100);
+    });
+
+    this.menuService.menu$.subscribe((menu) => {
+      setTimeout(() => (this.menu.emit(menu)), 100);
+    });
+
+    this.autenticacionService.logout$.subscribe((logoutEvent: any) => {
+      if (logoutEvent) {
+        this.logout.emit(logoutEvent);
+      }
+    });
+
+    this.autenticacionService.user$
+      .pipe(
+        filter((data: any) => !!data && !!data.user && !!data.userService),
+        take(1)
+      ).subscribe((data: any) => {
+        if (data && data.user && data.userService) {
+          this.userInfo = data.user;
+          this.userInfoService = data.userService;
+          this.username = data.user?.email || '';
+          this.user.emit(data);
+
+          if (this.notificaciones) {
+            this.notificacionesService.init(this.NOTIFICACION_MID_WS, this.NOTIFICACIONES_CRUD, data);
+          }
+          if (this.menuApps) {
+            this.menuAppService.init(catalogo[this.entorno], data);
+          }
+
+          this.isLogin = true;
+          this.isloading = true;
+        }
+      });
   }
 
 }

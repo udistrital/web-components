@@ -7,6 +7,7 @@ export const environment = {
   appname: 'sga',
   appMenu: 'SGA',
   assets: 'https://pruebasassets.portaloas.udistrital.edu.co/',
+  //assets: 'http://127.0.0.1:8080/',
   NUXEO: {
     PATH: 'https://documental.udistrital.edu.co/nuxeo/',
   },
