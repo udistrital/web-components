@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // services
 import { ConfiguracionService } from './services/configuracion.service';
-import { NotioasService } from './services/notioas.service';
+import { NotificacionesService } from './services/notificaciones.service';
 import { MenuAplicacionesService } from './services/menuAplicaciones.service';
 import { MenuService } from './services/menu.service';
 
@@ -53,7 +53,7 @@ import { OasComponent } from './oas/oas.component';
   entryComponents: [],
   providers: [
     ConfiguracionService,
-    NotioasService,
+    NotificacionesService,
     MenuAplicacionesService,
     MenuService,
   ],

@@ -1,10 +1,10 @@
 <ng-uui-header [appname]="appname" [username]="username" [notificaciones]="notificaciones" [menuApps]="menuApps" (logoutEvent)="logoutEvent()"></ng-uui-header>
 <ng-uui-login 
-*ngIf="isLogin"
+*ngIf="!isLogin"
 [appname]="appname"
 [isloading]="isloading"
 (loginEvent)="loginEvent()"></ng-uui-login>
-<div *ngIf="!isLogin">
+<div *ngIf="isLogin">
     <ng-uui-sidebar [appMenu]="appMenu" [navItems]="navItems"></ng-uui-sidebar>
 </div>
-<ng-uui-footer *ngIf="!isLogin"></ng-uui-footer>
+<ng-uui-footer *ngIf="isLogin"></ng-uui-footer>

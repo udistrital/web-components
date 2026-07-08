@@ -10,6 +10,7 @@ export class LoginComponent implements OnInit {
   constructor() { }
   @Input() appname: any;
   basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
+  //basePathAssets = 'http://127.0.0.1:8080/';
   @Input() isloading = false;
   @Output() loginEvent: EventEmitter<any> = new EventEmitter();
 
