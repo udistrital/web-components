@@ -48,16 +48,7 @@ export class MenuService {
                     if (roles) {
                         this.configuracionService.getMenu(roles, appMenu, 'menu_opcion_padre/permisos_roles')
                             .subscribe((data) => {
-                                let navItems = data;
-                                navItems = [...[{
-                                    Icono: 'home',
-                                    Nombre: 'Inicio',
-                                    Opciones: [],
-                                    TipoOpcion: 'Menú',
-                                    Url: 'pages',
-                                }]
-                                    , ...navItems];
-                                this.updateMenu(navItems);
+                                this.updateMenu(data);
                             });
                     }
                 }

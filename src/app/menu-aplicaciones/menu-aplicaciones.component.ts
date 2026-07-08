@@ -32,10 +32,10 @@ export class MenuAplicacionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.menuService.activo$
-    .subscribe((isActive: any) => {
-      const { activo } = isActive;
-      this.activo = activo;
-    });
+      .subscribe((isActive: any) => {
+        const { activo } = isActive;
+        this.activo = activo;
+      });
   }
 
 
