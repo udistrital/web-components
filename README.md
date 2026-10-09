@@ -1,11 +1,11 @@
-# WebComponent base para construcción de aplicaciones Oficina Asesora de Sistemas Universidad Distrital
+# WebComponent base para construcción de aplicaciones Oficina Asesora de Tecnologías e Información Universidad Distrital
 
-  Construye header, menu sidebar, footer, autenticación vía wso2
-  
+Construye header, footer, se autentica wso2 y construye el menú.,
+
 ## Especificaciones Técnicas
 
 ## Tecnologías Implementadas y Versiones
-* [Angular 11.2.1](https://angular.io/)
+* [Angular 11.2.9](https://angular.io/)
 
 ## Ejecución del Proyecto
 
@@ -23,7 +23,7 @@ npx npm install
 or
 npm install
 # start server
-npm start 
+npm start
 # Whenever you want to change the port just run
 npx ng dev --port = 9528
 ```
@@ -47,7 +47,6 @@ dist
   sidebar
   ![image](https://user-images.githubusercontent.com/8224759/114635580-9ee28f80-9c8a-11eb-9eb1-38f90681b2da.png)
 
-  
 ## Estado CI
 
 | Develop | Relese 0.0.1 | Master |

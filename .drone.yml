@@ -1,0 +1,74 @@
+kind: pipeline
+name: oas_cliente_ci
+
+steps:
+- name: run_sonar_scanner
+  image: sonarsource/sonar-scanner-cli:latest
+  environment:
+    SONAR_HOST_URL:
+      from_secret: SONAR_HOST
+    SONAR_TOKEN:
+      from_secret: SONAR_TOKEN
+    SONAR_SCANNER_OPTS: "-Dsonar.working.directory=/tmp/.scannerwork"
+  commands:
+    - sonar-scanner
+  when:
+    branch:
+    - develop
+    - feature/*
+    - release/*
+    - hotfix/*
+    - master
+    event:
+    - push
+
+- name: build
+  image: node:12.11
+  commands:
+  - node --version
+  - npm i
+  - npm run build
+  when:
+    branch:
+    - release/*
+    - master
+    event:
+    - push
+
+- name: publish_s3_release
+  image: plugins/s3
+  settings:
+    bucket:
+      from_secret: BUCKET_CLIENTES_TEST
+    access_key:
+      from_secret: aws_access_key_id
+    secret_key:
+      from_secret: aws_secret_access_key
+    region: us-east-1
+    source: dist/layout-web-component.js
+    target: /assets
+    strip_prefix: dist/
+  when:
+    branch:
+    - release/*
+    event:
+    - push
+
+- name: publish_s3_master
+  image: plugins/s3
+  settings:
+    bucket:
+      from_secret: BUCKET_CLIENTES_PROD
+    access_key:
+      from_secret: aws_access_key_id
+    secret_key:
+      from_secret: aws_secret_access_key
+    region: us-east-1
+    source: dist/layout-web-component.js
+    target: /assets
+    strip_prefix: dist/
+  when:
+    branch:
+    - master
+    event:
+    - push

@@ -16,7 +16,7 @@ export class ImplicitAutenticationService {
     logoutUrl: any;
     params: any;
     payload: any;
-    timeActiveAlert: number = 4000;
+    timeActiveAlert = 4000;
     private user: any;
     private timeLogoutBefore = 1000; // logout before in miliseconds
     private timeAlert = 300000; // alert in miliseconds 5 minutes
@@ -32,8 +32,8 @@ export class ImplicitAutenticationService {
 
     httpOptions: { headers: HttpHeaders; };
     constructor(private httpClient: HttpClient) {
-        document.addEventListener("visibilitychange", () => {
-            if(document.visibilityState === 'visible') {
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
                 const expires = this.setExpiresAt();
                 this.autologout(expires);
             }
@@ -176,13 +176,12 @@ export class ImplicitAutenticationService {
         return payload;
     }
 
-
-    public logoutValid() {
-        var state;
-        var valid = true;
-        var queryString = location.search.substring(1);
-        var regex = /([^&=]+)=([^&]*)/g;
-        var m;
+    public logoutValid(): boolean {
+        let state;
+        let valid = true;
+        const queryString = location.search.substring(1);
+        const regex = /([^&=]+)=([^&]*)/g;
+        let m;
         while (!!(m = regex.exec(queryString))) {
             state = decodeURIComponent(m[2]);
         }
@@ -208,12 +207,12 @@ export class ImplicitAutenticationService {
         }
     }
 
-    public clearUrl() {
-        const clean_uri = window.location.origin + window.location.pathname;
-        window.history.replaceState({}, document.title, clean_uri);
+    public clearUrl(): void {
+        const cleanURI = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanURI);
     }
 
-    public getAuthorizationUrl() {
+    public getAuthorizationUrl(): string {
         this.params = this.environment;
         if (!this.params.hasOwnProperty('nonce')) {
             const nonceData = this.generateState();
@@ -282,11 +281,11 @@ export class ImplicitAutenticationService {
             }
         }
     }
-    public expired() {
+    public expired(): boolean {
         return (new Date(window.localStorage.getItem('expires_at')) < new Date());
     }
 
-    public clearStorage() {
+    public clearStorage(): void {
         window.localStorage.removeItem('access_token');
         window.localStorage.removeItem('id_token');
         window.localStorage.removeItem('expires_in');
@@ -295,6 +294,5 @@ export class ImplicitAutenticationService {
         window.localStorage.removeItem('menu');
         window.localStorage.removeItem('user');
         window.localStorage.removeItem('apps_menu');
-
     }
 }

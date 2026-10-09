@@ -16,7 +16,7 @@ export class MenuAplicacionesService {
     isLogin = false;
     roles: any;
     userInfo: any;
-    public menuActivo: Boolean = false;
+    public menuActivo = false;
 
     constructor(
         private configuracionService: ConfiguracionService,
@@ -68,7 +68,8 @@ export class MenuAplicacionesService {
                 this.configuracionService.post('aplicacion_rol/aplicacion_rol', this.roles)
                     .subscribe((data: any) => {
                         let nuevasAplicaciones = this.categorias.map((categoria: any) => {
-                            categoria.aplicaciones = categoria.aplicaciones.filter((aplicacion: any) => (this.existe(aplicacion.nombre, data)));
+                            categoria.aplicaciones = categoria.aplicaciones.filter((aplicacion: any) =>
+                                (this.existe(aplicacion.nombre, data)));
                             categoria.aplicaciones = categoria.aplicaciones.map((app: any) => {
                                 return { ...app, ...{ estilo_logo: app.estilo.split('-')[0] } };
                             });

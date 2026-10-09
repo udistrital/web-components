@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { distinct, distinctUntilChanged } from 'rxjs/operators';
 import { NavItem } from '../interfaces/nav-item';
 import { MenuService } from '../services/menu.service';
@@ -26,28 +26,46 @@ enum VisibilityState {
     ])
   ]
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnChanges {
   sidebarAnimation: VisibilityState = VisibilityState.Hidden;
   @Input() navItems: NavItem[];
-  @Input() appMenu: 'string';
+  @Input() appMenu: string;
 
   constructor(
     public menuService: MenuService,
-  ) {
+  ) { }
 
-  }
   ngOnInit(): void {
     this.menuService.menu$
       .pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev[0]) === JSON.stringify(curr[0])))
       .subscribe((data: NavItem[]) => {
         if (JSON.stringify(data) !== '{}') {
           if (!this.navItems) {
-            this.navItems = data;
+            const home = <NavItem>{
+              Icono: 'home',
+              Nombre: 'Inicio',
+              Opciones: [],
+              TipoOpcion: 'Menú',
+              Url: 'pages',
+            };
+
+            const permisos = [home];
+            data.forEach(val => permisos.push(Object.assign({}, val)));
+            this.navItems = this.filterOpciones(permisos);
           }
         }
-      })
+      });
     this.menuService.sidebar$.subscribe((opened) =>
       (this.sidebarAnimation = opened ? VisibilityState.Visible : VisibilityState.Hidden));
+  }
+
+  private filterOpciones(permisos: NavItem[]): any {
+    return permisos.filter(opt => {
+      if (opt.Opciones) {
+        opt.Opciones = this.filterOpciones(opt.Opciones)
+      }
+      return opt?.TipoOpcion === 'Menú';
+    });
   }
 
   ngOnChanges(changes): void {

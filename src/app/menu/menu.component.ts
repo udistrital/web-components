@@ -17,7 +17,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
   ]
 })
 export class MenuComponent{
-  expanded: boolean = false;
+  expanded = false;
   @HostBinding('attr.aria-expanded') ariaExpanded = this.expanded;
   @Input() item: NavItem;
   @Input() depth: number;
@@ -28,7 +28,7 @@ export class MenuComponent{
     }
   }
 
-  onItemSelected(item: NavItem) {
+  onItemSelected(item: NavItem): void {
     if (!item.Opciones || !item.Opciones.length) {
       this.navService.updateOption(item);
       this.navService.closeNav();
